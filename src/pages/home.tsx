@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Layout, Menu, theme, Button } from "antd";
 const { Header, Content, Footer, Sider } = Layout;
 import {
@@ -13,11 +13,39 @@ import {
   HiTag,
 } from "react-icons/hi";
 import Image from "next/image";
-import { useHookstate } from "@hookstate/core";
-import { UserContext } from "@/globalState/userState";
+import { DataSiswa } from "@/components/DataSiswa";
+import { DataBayarSPP } from "@/components/PembayaranSpp";
+import { DataBayarPerin } from "@/components/PembayaranPerin";
+import { DataBayarSeragam } from "@/components/PembayaranSeragam";
 export const Home = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const { user, setUser } = useContext(UserContext);
+  const [userData, setUserData] = useState({
+    username: "",
+    role: "",
+    id: "",
+    isLogin: false,
+  });
+  let componentToRender;
+  const [value, setValue] = useState("");
+
+  const handleRender = (selectedValue: string) => {
+    setValue(selectedValue);
+  };
+
+  useEffect(() => {
+    let storedData = localStorage.getItem("user");
+
+    if (storedData !== null) {
+      try {
+        setUserData(JSON.parse(storedData));
+      } catch (error) {
+        // Handle JSON parse error
+        console.error("Error parsing data:", error);
+        window.location.href = "/";
+      }
+    }
+  }, []);
+
   const menuList = [
     {
       icon: HiUser,
@@ -36,6 +64,24 @@ export const Home = () => {
       label: "Pembayaran Prakerin",
     },
   ];
+
+  switch (value) {
+    case "1":
+      componentToRender = <DataSiswa />;
+      break;
+    case "2":
+      componentToRender = <DataBayarSPP />;
+      break;
+    case "3":
+      componentToRender = <DataBayarSeragam />;
+      break;
+    case "4":
+      componentToRender = <DataBayarPerin />;
+      break;
+    default:
+      componentToRender = null;
+  }
+
   return (
     <Layout className="h-screen w-screen">
       <Sider trigger={null} collapsible collapsed={collapsed} width={230}>
@@ -51,6 +97,9 @@ export const Home = () => {
             icon: React.createElement(value.icon),
             label: value.label,
           }))}
+          onClick={({ key }) => {
+            handleRender(key);
+          }}
         />
       </Sider>
       <Layout>
@@ -69,7 +118,7 @@ export const Home = () => {
             }}
           />
           <div className="mx-2 my-2 lg:w-[20%] md:w-[30%] sm:w-[40%] flex justify-end items-center">
-            <div className="mr-3">{user?.username}</div>
+            <div className="mr-3">{userData?.username}</div>
             <Image
               src="/assets/images/profileDummy.jpg"
               alt={""}
@@ -79,11 +128,7 @@ export const Home = () => {
             />
           </div>
         </Header>
-        <Content style={{ margin: "24px 16px 0" }}>
-          <div style={{ padding: 24, minHeight: 360 }} className="bg-white">
-            content
-          </div>
-        </Content>
+        <Content style={{ margin: "24px 16px 0" }}>{componentToRender}</Content>
         <Footer style={{ textAlign: "center" }}>
           Ant Design ©2023 Created by Ant UED
         </Footer>

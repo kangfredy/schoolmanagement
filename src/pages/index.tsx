@@ -1,8 +1,6 @@
 import Image from "next/image";
 import { Inter } from "next/font/google";
 import { useContext, useState } from "react";
-import { UserContext } from "@/globalState/userState";
-import { useHookstate } from "@hookstate/core";
 import { Alert, message } from "antd";
 import axios from "axios";
 
@@ -11,7 +9,6 @@ const inter = Inter({ subsets: ["latin"] });
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { user, setUser } = useContext(UserContext);
   const [messageApi, contextHolder] = message.useMessage();
 
   const handleLogin = async () => {
@@ -21,12 +18,15 @@ export default function Login() {
         .then((response) => {
           console.log(response);
           messageApi.open({ type: "success", content: "Login Succes" });
-          setUser({
-            id: response.data.user.id,
-            username: response.data.user.username,
-            isLogin: true,
-            role: response.data.user.role,
-          });
+          localStorage.setItem(
+            "user",
+            JSON.stringify({
+              id: response.data.user.id,
+              username: response.data.user.username,
+              isLogin: true,
+              role: response.data.user.role,
+            })
+          );
           window.location.href = "/home";
         })
         .catch((err) => {
@@ -36,20 +36,6 @@ export default function Login() {
             content: "username dan password salah",
           });
         });
-
-      // if (response.ok) {
-      //   console.log(response);
-      //   messageApi.open({ type: "success", content: "Login Succes" });
-      //   //setUser({id: response.user.id, username: response.user.username, isLogin: true})
-      //   //window.location.href = '/home';
-      // } else {
-      //   const data = await response.json();
-      //   console.error("Login error:", data);
-      //   messageApi.open({
-      //     type: "error",
-      //     content: "username dan password salah",
-      //   });
-      // }
     } catch (error) {
       console.error("Login error:", error);
     }
