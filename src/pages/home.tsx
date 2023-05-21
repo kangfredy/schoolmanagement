@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Layout, Menu, theme, Button } from "antd";
 const { Header, Content, Footer, Sider } = Layout;
 import {
@@ -14,10 +14,10 @@ import {
 } from "react-icons/hi";
 import Image from "next/image";
 import { useHookstate } from "@hookstate/core";
-import { userState } from "@/globalState/userState";
+import { UserContext } from "@/globalState/userState";
 export const Home = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const globalState = useHookstate(userState)
+  const { user, setUser } = useContext(UserContext);
   const menuList = [
     {
       icon: HiUser,
@@ -69,10 +69,14 @@ export const Home = () => {
             }}
           />
           <div className="mx-2 my-2 lg:w-[20%] md:w-[30%] sm:w-[40%] flex justify-end items-center">
-           <div className="mr-3">{globalState.get().username}</div> 
-          <Image src="/assets/images/profileDummy.jpg"
-           alt={""}
-           style={{borderRadius: 9999}} width={45} height={45} />
+            <div className="mr-3">{user?.username}</div>
+            <Image
+              src="/assets/images/profileDummy.jpg"
+              alt={""}
+              style={{ borderRadius: 9999 }}
+              width={45}
+              height={45}
+            />
           </div>
         </Header>
         <Content style={{ margin: "24px 16px 0" }}>

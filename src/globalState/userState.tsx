@@ -1,11 +1,12 @@
 // contexts/UserContext.tsx
 
-import { createContext, useState, ReactNode } from 'react';
+import { createContext, useState, ReactNode } from "react";
 
 type User = {
   id: number;
   username: string;
   isLogin: boolean;
+  role: string;
 };
 
 type UserContextType = {
