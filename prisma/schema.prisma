@@ -10,91 +10,91 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id Int @id @default(autoincrement())
-  username String @unique @db.VarChar(255)
-  password String @db.VarChar(255)
-  role String @db.VarChar(20)
+  id        Int      @id @default(autoincrement())
+  username  String   @unique @db.VarChar(255)
+  password  String   @db.VarChar(255)
+  role      String   @db.VarChar(20)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  isDeleted Boolean @default(false)
+  isDeleted Boolean  @default(false)
 }
 
 model Kelas {
-  id Int @id @default(autoincrement())
-  namaKelas String @db.VarChar(32)
-  dataSiswa DataSiswa []
+  id        Int         @id @default(autoincrement())
+  namaKelas String      @db.VarChar(32)
+  isDeleted Boolean     @default(false)
+  dataSiswa DataSiswa[]
 }
 
 model DataSiswa {
-  id Int @id @default(autoincrement())
-  nama String
-  alamat String
-  tanggalMasuk DateTime 
-  kelas Kelas   @relation(fields: [kelasId], references: [id])
-  kelasId Int
-  jenisKelamin Int
-  agama String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  isDeleted Boolean @default(false)
-  pembayaranSpp PembayaranSpp []
-  pembayaranSeragam PembayaranSeragam []
+  id                Int                 @id @default(autoincrement())
+  nama              String
+  alamat            String
+  tanggalMasuk      DateTime
+  kelas             Kelas               @relation(fields: [kelasId], references: [id])
+  kelasId           Int
+  jenisKelamin      Int
+  agama             String
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  isDeleted         Boolean             @default(false)
+  pembayaranSpp     PembayaranSpp[]
+  pembayaranSeragam PembayaranSeragam[]
 }
 
 model PembayaranSpp {
-  id Int @id @default(autoincrement())
-  siswa DataSiswa   @relation(fields: [siswaId], references: [id])
-  siswaId Int 
-  tunggakan Int
-  TotalBayar Int
-  HistoryPembayaranSpp HistoryPembayaranSpp []
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  isDeleted Boolean @default(false)
+  id                   Int                    @id @default(autoincrement())
+  siswa                DataSiswa              @relation(fields: [siswaId], references: [id])
+  siswaId              Int
+  tunggakan            Int
+  TotalBayar           Int
+  HistoryPembayaranSpp HistoryPembayaranSpp[]
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  isDeleted            Boolean                @default(false)
 }
 
 model HistoryPembayaranSpp {
-id Int @id @default(autoincrement())
-pembayaranSpp PembayaranSpp   @relation(fields: [pembayaranSppId], references: [id])
-pembayaranSppId Int
-jatuhTempo DateTime
-jumlah Int
-sudahDibayar Boolean @default(false)
-tanggalPembayaran DateTime @default(now())
-createdAt DateTime @default(now())
-updatedAt DateTime @updatedAt
-isDeleted Boolean @default(false)
+  id                Int           @id @default(autoincrement())
+  pembayaranSpp     PembayaranSpp @relation(fields: [pembayaranSppId], references: [id])
+  pembayaranSppId   Int
+  jatuhTempo        DateTime
+  jumlah            Int
+  sudahDibayar      Boolean       @default(false)
+  tanggalPembayaran DateTime      @default(now())
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  isDeleted         Boolean       @default(false)
 }
 
 model Seragam {
-  id Int @id @default(autoincrement())
-  nama String
-  historyPembayaran HistoryPembayaranSeragam []
+  id                Int                        @id @default(autoincrement())
+  nama              String
+  historyPembayaran HistoryPembayaranSeragam[]
 }
 
 model PembayaranSeragam {
-  id Int @id @default(autoincrement())
-  siswa DataSiswa   @relation(fields: [siswaId], references: [id])
-  siswaId Int
-  TotalBayar Int
-  Tunggakan Int
-  HistoryPembayaranSeragam HistoryPembayaranSeragam []
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  isDeleted Boolean @default(false)
+  id                       Int                        @id @default(autoincrement())
+  siswa                    DataSiswa                  @relation(fields: [siswaId], references: [id])
+  siswaId                  Int
+  TotalBayar               Int
+  Tunggakan                Int
+  HistoryPembayaranSeragam HistoryPembayaranSeragam[]
+  createdAt                DateTime                   @default(now())
+  updatedAt                DateTime                   @updatedAt
+  isDeleted                Boolean                    @default(false)
 }
 
 model HistoryPembayaranSeragam {
-  id Int @id @default(autoincrement())
-  pembayaranSeragam PembayaranSeragam @relation(fields: [pembayaranSeragamId], references: [id])
+  id                  Int               @id @default(autoincrement())
+  pembayaranSeragam   PembayaranSeragam @relation(fields: [pembayaranSeragamId], references: [id])
   pembayaranSeragamId Int
-  jumlahDiBayar Int
-  tanggalPembayaran DateTime @default(now())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  isDeleted Boolean @default(false)
-  seragamId Int
-  seragam Seragam @relation(fields: [seragamId], references: [id])
+  jumlahDiBayar       Int
+  tanggalPembayaran   DateTime          @default(now())
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  isDeleted           Boolean           @default(false)
+  seragamId           Int
+  seragam             Seragam           @relation(fields: [seragamId], references: [id])
 }
