@@ -6,33 +6,31 @@ import type { FilterConfirmProps } from "antd/es/table/interface";
 import React, { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 
-const { Column, ColumnGroup } = Table;
-
 interface DataType {
     nama: string;
     tanggalMasuk: string;
     alamat: string;
     kelas: string;
-    jenisKelamin: number;
+    jenisKelamin: string;
     agama: string;
 }
 type DataIndex = keyof DataType;
 
 const data: DataType[] = [
     {
-        nama: "ucok",
+        nama: "Ani",
         alamat: "Jalan 1",
         tanggalMasuk: "123123123",
         kelas: "TKJ 1",
-        jenisKelamin: 1,
-        agama: "kong",
+        jenisKelamin: "Perempuan",
+        agama: "islam",
     },
     {
-        nama: "dedi",
+        nama: "Zedy",
         alamat: "Jalan mawar",
         tanggalMasuk: "2011-11-10T14:48:00",
         kelas: "TKJ 2",
-        jenisKelamin: 1,
+        jenisKelamin: "Laki-laki",
         agama: "hindu",
     },
     {
@@ -40,7 +38,7 @@ const data: DataType[] = [
         alamat: "Jalan hitam",
         tanggalMasuk: "2011-12-10T14:48:00",
         kelas: "TKJ 41",
-        jenisKelamin: 1,
+        jenisKelamin: "Perempuan",
         agama: "islam",
     },
     {
@@ -48,7 +46,7 @@ const data: DataType[] = [
         alamat: "Jalan 1",
         tanggalMasuk: "2011-31-10T14:48:00",
         kelas: "TKJ 3",
-        jenisKelamin: 1,
+        jenisKelamin: "Laki-laki",
         agama: "budha",
     },
 ];
@@ -150,6 +148,8 @@ export const DataSiswa = () => {
             key: "nama",
             width: "30%",
             ...getColumnSearchProps("nama"),
+            sorter: (a, b) => a.alamat.length - b.alamat.length,
+            sortDirections: ["descend", "ascend"],
         },
         {
             title: "Kelas",
@@ -164,6 +164,24 @@ export const DataSiswa = () => {
             key: "alamat",
             ...getColumnSearchProps("alamat"),
             sorter: (a, b) => a.alamat.length - b.alamat.length,
+            sortDirections: ["descend", "ascend"],
+        },
+        {
+            title: "Jenis Kelamin",
+            dataIndex: "jenisKelamin",
+            key: "jenisKelamin",
+            width: "20%",
+            ...getColumnSearchProps("jenisKelamin"),
+            sorter: (a, b) => a.jenisKelamin.length - b.jenisKelamin.length,
+            sortDirections: ["descend", "ascend"],
+        },
+        {
+            title: "agama",
+            dataIndex: "agama",
+            key: "agama",
+            width: "20%",
+            ...getColumnSearchProps("agama"),
+            sorter: (a, b) => a.agama.length - b.agama.length,
             sortDirections: ["descend", "ascend"],
         },
     ];
