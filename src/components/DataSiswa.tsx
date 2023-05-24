@@ -123,6 +123,7 @@ export const DataSiswa = () => {
             icon={<SearchOutlined />}
             size="small"
             style={{ width: 90 }}
+            className="text-black"
           >
             Search
           </Button>
