@@ -13,10 +13,10 @@ import {
   HiTag,
 } from "react-icons/hi";
 import Image from "next/image";
-import { DataSiswa } from "@/components/DataSiswa";
-import { DataBayarSPP } from "@/components/PembayaranSpp";
-import { DataBayarPerin } from "@/components/PembayaranPerin";
-import { DataBayarSeragam } from "@/components/PembayaranSeragam";
+import { DataSiswa } from "@/screens/DataSiswa";
+import { DataBayarSPP } from "@/screens/PembayaranSpp";
+import { DataBayarPerin } from "@/screens/PembayaranPerin";
+import { DataBayarSeragam } from "@/screens/PembayaranSeragam";
 export const Home = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [userData, setUserData] = useState({

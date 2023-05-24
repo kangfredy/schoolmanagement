@@ -5,7 +5,7 @@ import type { ColumnType, ColumnsType } from "antd/es/table";
 import type { FilterConfirmProps } from "antd/es/table/interface";
 import React, { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
-import { ModalTambahSiswa } from "./Modal";
+import { ModalTambahSiswa } from "../components/ModalTambahSiswa";
 
 interface DataType {
   nama: string;
