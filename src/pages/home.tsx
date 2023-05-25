@@ -13,10 +13,10 @@ import {
   HiTag,
 } from "react-icons/hi";
 import Image from "next/image";
-import { DataSiswa } from "@/components/DataSiswa";
-import { DataBayarSPP } from "@/components/PembayaranSpp";
-import { DataBayarPerin } from "@/components/PembayaranPerin";
-import { DataBayarSeragam } from "@/components/PembayaranSeragam";
+import { DataSiswa } from "@/screens/DataSiswa";
+import { DataBayarSPP } from "@/screens/PembayaranSpp";
+import { DataBayarPerin } from "@/screens/PembayaranPerin";
+import { DataBayarSeragam } from "@/screens/PembayaranSeragam";
 export const Home = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [userData, setUserData] = useState({
@@ -85,13 +85,13 @@ export const Home = () => {
   return (
     <Layout className="h-screen w-screen">
       <Sider trigger={null} collapsible collapsed={collapsed} width={230}>
-        <div className="flex items-center justify-center h-[60px]">
-          <div className="h-[40px] w-[80%] bg-slate-300 mt-2 flex" />
+        <div className="flex h-[60px] items-center justify-center">
+          <div className="mt-2 flex h-[40px] w-[80%] bg-slate-300" />
         </div>
         <Menu
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={["4"]}
+          defaultSelectedKeys={["1"]}
           items={menuList.map((value, index) => ({
             key: String(index + 1),
             icon: React.createElement(value.icon),
@@ -105,7 +105,7 @@ export const Home = () => {
       <Layout>
         <Header
           style={{ padding: 0 }}
-          className="bg-white flex justify-between"
+          className="flex justify-between bg-white"
         >
           <Button
             type="text"
@@ -117,7 +117,7 @@ export const Home = () => {
               height: 64,
             }}
           />
-          <div className="mx-2 my-2 lg:w-[20%] md:w-[30%] sm:w-[40%] flex justify-end items-center">
+          <div className="mx-2 my-2 flex items-center justify-end sm:w-[40%] md:w-[30%] lg:w-[20%]">
             <div className="mr-3">{userData?.username}</div>
             <Image
               src="/assets/images/profileDummy.jpg"
