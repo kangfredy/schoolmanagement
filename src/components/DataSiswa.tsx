@@ -1,10 +1,11 @@
 import { SearchOutlined } from "@ant-design/icons";
-import type { InputRef } from "antd";
+import { InputRef, Modal } from "antd";
 import { Button, Input, Space, Table } from "antd";
 import type { ColumnType, ColumnsType } from "antd/es/table";
 import type { FilterConfirmProps } from "antd/es/table/interface";
 import React, { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
+import { ModalTambahSiswa } from "./Modal";
 
 interface DataType {
     nama: string;
@@ -54,6 +55,24 @@ export const DataSiswa = () => {
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
     const searchInput = useRef<InputRef>(null);
+    const [open, setOpen] = useState(false);
+    const [confirmLoading, setConfirmLoading] = useState(false);
+
+    const showModal = () => {
+        setOpen(true);
+    };
+    const handleOk = () => {
+        setConfirmLoading(true);
+        setTimeout(() => {
+            setOpen(false);
+            setConfirmLoading(false);
+        }, 2000);
+    };
+
+    const handleCancel = () => {
+        console.log("Clicked cancel button");
+        setOpen(false);
+    };
 
     const handleSearch = (
         selectedKeys: string[],
@@ -148,43 +167,66 @@ export const DataSiswa = () => {
             key: "nama",
             width: "30%",
             ...getColumnSearchProps("nama"),
-            sorter: (a, b) => a.alamat.length - b.alamat.length,
+            sorter: (a, b) => a.nama.localeCompare(b.nama),
             sortDirections: ["descend", "ascend"],
         },
         {
             title: "Kelas",
             dataIndex: "kelas",
             key: "kelas",
-            width: "20%",
+            width: "10%",
             ...getColumnSearchProps("kelas"),
+            sorter: (a, b) => a.kelas.localeCompare(b.kelas),
+            sortDirections: ["descend", "ascend"],
         },
         {
             title: "Alamat",
             dataIndex: "alamat",
             key: "alamat",
+            width: "30%",
             ...getColumnSearchProps("alamat"),
-            sorter: (a, b) => a.alamat.length - b.alamat.length,
+            sorter: (a, b) => a.alamat.localeCompare(b.alamat),
             sortDirections: ["descend", "ascend"],
         },
         {
             title: "Jenis Kelamin",
             dataIndex: "jenisKelamin",
             key: "jenisKelamin",
-            width: "20%",
+            width: "15%",
             ...getColumnSearchProps("jenisKelamin"),
-            sorter: (a, b) => a.jenisKelamin.length - b.jenisKelamin.length,
+            sorter: (a, b) => a.jenisKelamin.localeCompare(b.jenisKelamin),
             sortDirections: ["descend", "ascend"],
         },
         {
             title: "agama",
             dataIndex: "agama",
             key: "agama",
-            width: "20%",
+            width: "15%",
             ...getColumnSearchProps("agama"),
-            sorter: (a, b) => a.agama.length - b.agama.length,
+            sorter: (a, b) => a.agama.localeCompare(b.agama),
             sortDirections: ["descend", "ascend"],
         },
     ];
 
-    return <Table columns={columns} dataSource={data} />;
+    return (
+        <div className="rounded-md bg-white p-2 ">
+            <div className="my-4 flex items-center justify-between px-4">
+                <div className="flex items-center">
+                    <h2 className="text-xl font-bold text-black">Data Siswa</h2>
+                </div>
+                <div className="flex items-center">
+                    <Button type="primary" size="middle" className="bg-blue-500" onClick={showModal}>
+                        Tambah Data Siswa
+                    </Button>
+                    <ModalTambahSiswa
+                        open={open}
+                        handleOk={handleOk}
+                        handleCancel={handleCancel}
+                        confirmLoading={confirmLoading}
+                    />
+                </div>
+            </div>
+            <Table columns={columns} dataSource={data} />
+        </div>
+    );
 };

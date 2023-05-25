@@ -91,7 +91,7 @@ export const Home = () => {
                 <Menu
                     theme="dark"
                     mode="inline"
-                    defaultSelectedKeys={["4"]}
+                    defaultSelectedKeys={["1"]}
                     items={menuList.map((value, index) => ({
                         key: String(index + 1),
                         icon: React.createElement(value.icon),
