@@ -7,7 +7,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (req.method === 'POST') {
       const { id } = req.body;
   
-      // Update Kelas
+      // Delete Data
       const deleteSiswaData = await prisma.dataSiswa.update({
         where: {
           id: id,
@@ -19,7 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         },
       })
   
-      // Return a success message or user data
+      // Return a success or failed message
       res.status(200).json({ message: 'Delete successful', deleteSiswaData });
     } else {
       res.status(405).json({ message: 'Method not allowed' });

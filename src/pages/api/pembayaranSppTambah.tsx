@@ -5,20 +5,17 @@ const prisma = new PrismaClient();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
-      const { id, namaKelas } = req.body;
+      const { siswaId, tunggakan, TotalBayar } = req.body;
   
-      // Update Data
-      const updateKelas = await prisma.kelas.update({
-        where: {
-          id: id,
-        },
-        data: {
-          namaKelas: namaKelas,
-        },
-      })
+      // Create Data Baru
+      const tambahPembayaranSpp = await prisma.pembayaranSpp.create({data: {
+        siswaId: siswaId,
+        tunggakan: tunggakan,
+        TotalBayar: TotalBayar
+      }})
   
       // Return a success or failed message
-      res.status(200).json({ message: 'Update successful', updateKelas });
+      res.status(200).json({ message: 'Create successful', tambahPembayaranSpp });
     } else {
       res.status(405).json({ message: 'Method not allowed' });
     }

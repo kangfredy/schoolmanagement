@@ -5,20 +5,23 @@ const prisma = new PrismaClient();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
-      const { id, namaKelas } = req.body;
+        const { id, pembayaranSeragamId, jumlahDiBayar, seragamId, tanggalPembayaran } = req.body;
   
       // Update Data
-      const updateKelas = await prisma.kelas.update({
+      const updateHistoryPembayaranSeragam = await prisma.historyPembayaranSeragam.update({
         where: {
           id: id,
         },
         data: {
-          namaKelas: namaKelas,
+          pembayaranSeragamId: pembayaranSeragamId,
+          seragamId: seragamId,
+          jumlahDiBayar: jumlahDiBayar,
+          tanggalPembayaran: tanggalPembayaran
         },
       })
   
       // Return a success or failed message
-      res.status(200).json({ message: 'Update successful', updateKelas });
+      res.status(200).json({ message: 'Update successful', updateHistoryPembayaranSeragam });
     } else {
       res.status(405).json({ message: 'Method not allowed' });
     }

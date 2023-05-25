@@ -29,9 +29,11 @@ model Kelas {
 
 model DataSiswa {
   id                Int                 @id @default(autoincrement())
+  nim               String              @db.VarChar(100)
   nama              String
   alamat            String
   tanggalMasuk      DateTime
+  tanggalLahir      DateTime
   kelas             Kelas               @relation(fields: [kelasId], references: [id])
   kelasId           Int
   jenisKelamin      Int
@@ -71,6 +73,7 @@ model HistoryPembayaranSpp {
 model Seragam {
   id                Int                        @id @default(autoincrement())
   nama              String
+  isDeleted         Boolean                    @default(false)
   historyPembayaran HistoryPembayaranSeragam[]
 }
 
