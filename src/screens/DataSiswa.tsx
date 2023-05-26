@@ -3,9 +3,10 @@ import { InputRef, Modal, Popconfirm } from "antd";
 import { Button, Input, Space, Table,message } from "antd";
 import type { ColumnType, ColumnsType } from "antd/es/table";
 import type { FilterConfirmProps } from "antd/es/table/interface";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { ModalTambahSiswa } from "../components/ModalTambahSiswa";
+import { getDataSiswa } from "@/helper/apiHelper/getDataSiswa";
 
 interface DataType {
     nama: string;
@@ -128,10 +129,20 @@ export const DataSiswa = () => {
     const searchInput = useRef<InputRef>(null);
     const [open, setOpen] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
+    const [DataSiswa, setDataSiswa] = useState(data)
 
     const showModal = () => {
         setOpen(true);
     };
+
+    useEffect(()=> {
+        getDataSiswa()
+        .then(response => {
+            console.log(response.data.dataSiswaData)
+            setDataSiswa(response.data.dataSiswaData)
+        })
+        .catch(error =>  console.log(error))
+    },[])
 
     const handleOk = () => {
         setConfirmLoading(true);
@@ -338,7 +349,7 @@ export const DataSiswa = () => {
                     />
                 </div>
             </div>
-            <Table columns={columns} dataSource={data} scroll={{ x: 400}} className="h-[100%]"/>
+            <Table columns={columns} dataSource={DataSiswa} scroll={{ x: 400}} className="h-[100%]"/>
         </div>
     );
 };
