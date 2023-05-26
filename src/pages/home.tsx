@@ -126,7 +126,7 @@ export const Home = () => {
                         />
                     </div>
                 </Header>
-                <Content style={{ margin: "24px 16px 0" }}>{componentToRender}</Content>
+                <Content className="m-5">{componentToRender}</Content>
                 <Footer style={{ textAlign: "center" }}>Ant Design ©2023 Created by Ant UED</Footer>
             </Layout>
         </Layout>

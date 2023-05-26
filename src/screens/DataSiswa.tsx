@@ -1,6 +1,6 @@
 import { SearchOutlined } from "@ant-design/icons";
 import { InputRef, Modal, Popconfirm } from "antd";
-import { Button, Input, Space, Table } from "antd";
+import { Button, Input, Space, Table,message } from "antd";
 import type { ColumnType, ColumnsType } from "antd/es/table";
 import type { FilterConfirmProps } from "antd/es/table/interface";
 import React, { useRef, useState } from "react";
@@ -163,12 +163,11 @@ export const DataSiswa = () => {
     };
 
     //handle Popconfrim
-    const confirm = (e: React.MouseEvent<HTMLElement>) => {
-        console.log(e);
+    const handleConfirmDelete = (e: React.MouseEvent<HTMLElement>) => {
         message.success("Click on Yes");
     };
 
-    const cancel = (e: React.MouseEvent<HTMLElement>) => {
+    const handleCancelDelete = (e: React.MouseEvent<HTMLElement>) => {
         console.log(e);
         message.error("Click on No");
     };
@@ -312,10 +311,8 @@ export const DataSiswa = () => {
                     <Popconfirm
                         title="Delete the task"
                         description="Are you sure to delete this task?"
-                        onConfirm={confirm}
-                        onCancel={cancel}
-                        okText="Yes"
-                        cancelText="No">
+                        onConfirm={handleConfirmDelete}
+                        okText="Yes">
                         <Button danger>Delete</Button>
                     </Popconfirm>
                 </Space>
@@ -324,7 +321,7 @@ export const DataSiswa = () => {
     ];
 
     return (
-        <div className="rounded-md bg-white p-2 ">
+        <div className="rounded-md bg-white p-2 h-[100%] overflow-scroll">
             <div className="my-4 flex items-center justify-between px-4">
                 <div className="flex items-center">
                     <h2 className="text-xl font-bold text-black">Data Siswa</h2>
@@ -341,7 +338,7 @@ export const DataSiswa = () => {
                     />
                 </div>
             </div>
-            <Table columns={columns} dataSource={data} scroll={{ x: 400 }} />
+            <Table columns={columns} dataSource={data} scroll={{ x: 400}} className="h-[100%]"/>
         </div>
     );
 };
