@@ -6,7 +6,7 @@ import type { FilterConfirmProps } from "antd/es/table/interface";
 import React, { useEffect, useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { ModalTambahSiswa } from "../components/ModalTambahSiswa";
-import { getDataSiswa } from "@/helper/apiHelper/getDataSiswa";
+import { getDataSiswa } from "@/helper/apiHelper/dataSiswa";
 
 interface DataType {
     nama: string;
@@ -129,7 +129,7 @@ export const DataSiswa = () => {
     const searchInput = useRef<InputRef>(null);
     const [open, setOpen] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
-    const [DataSiswa, setDataSiswa] = useState(data)
+    const [DataSiswa, setDataSiswa] = useState<DataType>([])
 
     const showModal = () => {
         setOpen(true);
@@ -349,7 +349,7 @@ export const DataSiswa = () => {
                     />
                 </div>
             </div>
-            <Table columns={columns} dataSource={DataSiswa} scroll={{ x: 400}} className="h-[100%]"/>
+            <Table columns={columns} dataSource={data} scroll={{ x: 400}} className="h-[100%]"/>
         </div>
     );
 };
