@@ -1,33 +1,13 @@
-import { DatePicker, DatePickerProps, Input, Modal, Spin, message } from "antd";
-import { UserOutlined, IdcardOutlined } from "@ant-design/icons";
-import { BsGenderAmbiguous } from "react-icons/bs";
-import { BiMapAlt } from "react-icons/bi";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import {  Input, Modal, Spin, message } from "antd";
+import {  useEffect, useState } from "react";
 import { Select, Space } from "antd";
 import { dataKelasUpdate, tambahKelas } from "@/helper/apiHelper/kelas";
-import { Ikelas } from "@/screens/DataKelas";
 import { SiGoogleclassroom } from "react-icons/si";
 import { getJurusan } from "@/helper/apiHelper/jurusan";
+import { ISelect } from "@/interface/ui/component/dropdown";
+import { IDataKelasModal } from "@/interface/ui/state/dataKelasModal";
+import { ModalTambahKelasProps } from "@/interface/ui/props/ModalTambahKelas";
 
-export interface IDataKelas {
-  id?: number;
-  namaKelas: string;
-  jurusanId: number;
-}
-
-interface IjurusanData {
-  value: number;
-  label: string;
-}
-
-interface ModalTambahKelasProps {
-  open: boolean;
-  action: string;
-  setOpen: Dispatch<SetStateAction<boolean>>;
-  getData: () => any;
-  setDataKelasInput: Dispatch<SetStateAction<IDataKelas>>;
-  dataKelasInput: IDataKelas;
-}
 
 export function ModalTambahKelas({
   action,
@@ -40,8 +20,8 @@ export function ModalTambahKelas({
 
  
   const [confirmLoading, setConfirmLoading] = useState(false);
-  const [dataJurusan, setDataJurusan] = useState<IjurusanData[]>(
-    [] as IjurusanData[]
+  const [dataJurusan, setDataJurusan] = useState<ISelect[]>(
+    [] as ISelect[]
   );
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -87,7 +67,7 @@ export function ModalTambahKelas({
       tambahKelas(dataKelasInput)
         .then((response: any) => {
           getData();
-          setDataKelasInput({} as IDataKelas);
+          setDataKelasInput({} as IDataKelasModal);
           setConfirmLoading(false);
         })
         .then((response) => {
@@ -102,7 +82,7 @@ export function ModalTambahKelas({
       dataKelasUpdate(dataKelasInput)
         .then((response: any) => {
           getData();
-          setDataKelasInput({} as IDataKelas);
+          setDataKelasInput({} as IDataKelasModal);
           setConfirmLoading(false);
         })
         .then((response) => {
@@ -120,7 +100,7 @@ export function ModalTambahKelas({
   };
 
   const handleCancel = () => {
-    setDataKelasInput({} as IDataKelas);
+    setDataKelasInput({} as IDataKelasModal);
     setOpen(false);
   };
 

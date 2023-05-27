@@ -5,21 +5,12 @@ import type { ColumnType, ColumnsType } from "antd/es/table";
 import type { FilterConfirmProps } from "antd/es/table/interface";
 import React, { useEffect, useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
-import { IDataKelas, ModalTambahKelas } from "../components/ModalTambahKelas";
+import { ModalTambahKelas } from "../components/ModalTambahKelas";
 import { dataKelasDelete, getDataKelas } from "@/helper/apiHelper/kelas";
-import { error } from "console";
-// import { getDataKelas } from "@/helper/apiHelper/getDataKelas";
+import { IDataKelasModal } from "@/interface/ui/state/dataKelasModal";
+import { Ikelas } from "@/interface/ui/state/dataKelasTable";
 
-export interface Ikelas {
-  id: number;
-  namaKelas: string;
-  jurusan: Ijurusan;
-}
 
-export interface Ijurusan {
-  id: number;
-  namaJurusan: string;
-}
 type DataIndex = keyof Ikelas;
 
 export const DataKelas = () => {
@@ -30,11 +21,8 @@ export const DataKelas = () => {
   const [actions, setActions] = useState("");
   const [dataKelas, setDataKelas] = useState<Ikelas[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [selectedDataKelas, setSelectedDataKelas] = useState<Ikelas>(
-    {} as Ikelas
-  );
-  const [dataKelasInput, setDataKelasInput] = useState<IDataKelas>(
-    {} as IDataKelas
+  const [dataKelasInput, setDataKelasInput] = useState<IDataKelasModal>(
+    {} as IDataKelasModal
   );
 
   const showModal = (action: string, data: Ikelas) => {

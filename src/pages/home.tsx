@@ -12,6 +12,7 @@ import {
     HiCash,
     HiTag,
 } from "react-icons/hi";
+import { MdClass } from "react-icons/md"
 import Image from "next/image";
 import { DataSiswa } from "@/screens/DataSiswa";
 import { PembayaranSpp } from "@/screens/PembayaranSpp";
@@ -55,7 +56,7 @@ export const Home = () => {
             label: "Data Siswa",
         },
         {
-            icon: HiUser,
+            icon: MdClass,
             label: "Data Kelas",
         },
         {
