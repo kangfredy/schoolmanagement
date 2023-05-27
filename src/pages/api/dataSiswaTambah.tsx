@@ -8,16 +8,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const { nim, nama, alamat, tanggalMasuk, tanggalLahir, kelasId, jenisKelamin, agama } = req.body;
   
       // Create Data Baru
-      const tambahSiswaData = await prisma.dataSiswa.create({data: {
-        nim: nim,
-        nama: nama,
-        alamat: alamat,
-        tanggalMasuk: tanggalMasuk,
-        tanggalLahir: tanggalLahir,
-        kelasId: kelasId,
-        jenisKelamin: jenisKelamin,
-        agama: agama
-      }})
+      const tambahSiswaData = await prisma.dataSiswa.create({
+        data: {
+          nama: nama,
+          nim: nim,
+          alamat: alamat,
+          tanggalMasuk: tanggalMasuk,
+          tanggalLahir: tanggalLahir,
+          kelasId: kelasId,
+          jenisKelamin: jenisKelamin,
+          agama: agama,
+        },
+      });
   
       // Return a success or failed message
       res.status(200).json({ message: 'Create successful', tambahSiswaData });
