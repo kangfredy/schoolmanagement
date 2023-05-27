@@ -24,7 +24,16 @@ model Kelas {
   id        Int         @id @default(autoincrement())
   namaKelas String      @db.VarChar(32)
   isDeleted Boolean     @default(false)
+  jurusan   Jurusan     @relation(fields: [jurusanId], references: [id])
+  jurusanId Int
   dataSiswa DataSiswa[]
+}
+
+model Jurusan {
+  id          Int     @id @default(autoincrement())
+  namaJurusan String  @db.VarChar(32)
+  isDeleted   Boolean @default(false)
+  Kelas       Kelas[]
 }
 
 model DataSiswa {
