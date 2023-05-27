@@ -25,7 +25,8 @@ interface ModalTambahKelasProps {
   action: string;
   setOpen: Dispatch<SetStateAction<boolean>>;
   getData: () => any;
-  dataKelas?: Ikelas;
+  setDataKelasInput: Dispatch<SetStateAction<IDataKelas>>;
+  dataKelasInput: IDataKelas;
 }
 
 export function ModalTambahKelas({
@@ -33,16 +34,11 @@ export function ModalTambahKelas({
   open,
   setOpen,
   getData,
-  dataKelas,
+  setDataKelasInput,
+  dataKelasInput,
 }: ModalTambahKelasProps) {
-  const EditDataKelas = {
-    id: dataKelas?.id,
-    namaKelas: dataKelas?.namaKelas,
-    jurusanId: dataKelas?.jurusan?.id,
-  };
-  const [dataKelasInput, setDataKelasInput] = useState<IDataKelas>(
-    EditDataKelas as IDataKelas
-  );
+
+ 
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [dataJurusan, setDataJurusan] = useState<IjurusanData[]>(
     [] as IjurusanData[]
@@ -84,6 +80,7 @@ export function ModalTambahKelas({
     getJurusanData();
   }, []);
 
+
   const handleOk = () => {
     setConfirmLoading(true);
     if (action === "tambah") {
@@ -99,6 +96,7 @@ export function ModalTambahKelas({
         })
         .catch((error: any) => {
           message.error(error.message);
+          setOpen(false);
         });
     } else if (action === "edit") {
       dataKelasUpdate(dataKelasInput)
@@ -113,6 +111,7 @@ export function ModalTambahKelas({
         })
         .catch((error: any) => {
           message.error(error.message);
+          setOpen(false);
         });
     } else {
       setConfirmLoading(false);
@@ -158,7 +157,6 @@ export function ModalTambahKelas({
                 onChange={(e) => handleChange(e)}
                 className="ml-2 w-60"
                 required
-                defaultValue={EditDataKelas?.namaKelas}
               />
             </div>
           </div>
@@ -177,7 +175,7 @@ export function ModalTambahKelas({
                 onChange={handleJurusan}
                 options={dataJurusan}
                 className="ml-2 w-60"
-                defaultValue={EditDataKelas?.jurusanId}
+                value={dataKelasInput.jurusanId}
               />
             </div>
           </div>

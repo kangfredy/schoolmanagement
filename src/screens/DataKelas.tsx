@@ -33,12 +33,19 @@ export const DataKelas = () => {
   const [selectedDataKelas, setSelectedDataKelas] = useState<Ikelas>(
     {} as Ikelas
   );
+  const [dataKelasInput, setDataKelasInput] = useState<IDataKelas>(
+    {} as IDataKelas
+  );
 
   const showModal = (action: string, data: Ikelas) => {
-    console.log(data);
+    let dataInput = {
+      id: data?.id,
+      namaKelas: data?.namaKelas,
+      jurusanId: data?.jurusan?.id,
+    }
+    setDataKelasInput(dataInput)
     setActions(action);
     setOpen(true);
-    setSelectedDataKelas(data);
   };
 
   const initiateData = async () => {
@@ -262,7 +269,8 @@ export const DataKelas = () => {
               action={actions}
               open={open}
               setOpen={setOpen}
-              dataKelas={selectedDataKelas}
+              dataKelasInput={dataKelasInput}
+              setDataKelasInput={setDataKelasInput}
             />
           </div>
         </div>
