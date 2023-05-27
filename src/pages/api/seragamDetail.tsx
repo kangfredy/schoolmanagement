@@ -5,16 +5,17 @@ const prisma = new PrismaClient();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
-      const { namaKelas, jurusanId } = req.body;
+      const { id } = req.body;
   
-      // Create Data Baru
-      const tambahKelas = await prisma.kelas.create({data: {
-        namaKelas: namaKelas,
-        jurusanId: jurusanId
-      }})
-  
-      // Return a success or failed message
-      res.status(200).json({ message: 'Create successful', tambahKelas });
+      // Get Data
+      const detailSeragam = await prisma.seragam.findUnique({
+        where: {
+          id: id,
+        }
+      })
+
+      // Return a success or failed message 
+      res.status(200).json({ message: 'Get Data successful', detailSeragam });
     } else {
       res.status(405).json({ message: 'Method not allowed' });
     }

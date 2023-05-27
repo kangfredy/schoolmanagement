@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
-      const { id, namaKelas } = req.body;
+      const { id, namaKelas, jurusanId } = req.body;
   
       // Update Data
       const updateKelas = await prisma.kelas.update({
@@ -14,6 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         },
         data: {
           namaKelas: namaKelas,
+          jurusanId: jurusanId
         },
       })
   

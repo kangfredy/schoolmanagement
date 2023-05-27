@@ -10,7 +10,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const getKelas = await prisma.kelas.findMany({
         where: {
           isDeleted: false,
-        }
+        },
+        include: {
+          jurusan: true
+      }
       })
   
       // Return a success or failed message
