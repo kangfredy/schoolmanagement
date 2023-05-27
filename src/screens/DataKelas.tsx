@@ -1,128 +1,26 @@
 import { SearchOutlined } from "@ant-design/icons";
-import { InputRef, Modal, Popconfirm, message } from "antd";
+import { InputRef, Modal, Popconfirm, Spin, message } from "antd";
 import { Button, Input, Space, Table } from "antd";
 import type { ColumnType, ColumnsType } from "antd/es/table";
 import type { FilterConfirmProps } from "antd/es/table/interface";
 import React, { useEffect, useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
-import { ModalTambahKelas } from "../components/ModalTambahKelas";
-import { getDataKelas } from "@/helper/apiHelper/kelas";
+import { IDataKelas, ModalTambahKelas } from "../components/ModalTambahKelas";
+import { dataKelasDelete, getDataKelas } from "@/helper/apiHelper/kelas";
+import { error } from "console";
 // import { getDataKelas } from "@/helper/apiHelper/getDataKelas";
 
-interface DataType {
-  nama: string;
-  nim: string;
-  tanggalMasuk: string;
-  tanggalLahir: string;
-  alamat: string;
-  kelasId: string;
-  jenisKelamin: string;
-  agama: string;
+export interface Ikelas {
+  id: number;
+  namaKelas: string;
+  jurusan: Ijurusan;
 }
-type DataIndex = keyof DataType;
 
-const data: DataType[] = [
-  {
-    nama: "Akul Santoso",
-    nim: "9876543210",
-    alamat: "Jalan 2",
-    tanggalMasuk: "2023-06-20T09:30:00Z",
-    tanggalLahir: "2001-03-15T14:30:00Z",
-    kelasId: "TKJ 2",
-    jenisKelamin: "Laki-laki",
-    agama: "Islam",
-  },
-  {
-    nama: "Citra Sari",
-    nim: "2468135790",
-    alamat: "Jalan 3",
-    tanggalMasuk: "2023-07-10T10:15:00Z",
-    tanggalLahir: "2002-01-05T11:45:00Z",
-    kelasId: "ABK 2",
-    jenisKelamin: "Perempuan",
-    agama: "Islam",
-  },
-  {
-    nama: "Zaki Prasetyo",
-    nim: "1357924680",
-    alamat: "Jalan 4",
-    tanggalMasuk: "2023-08-05T08:45:00Z",
-    tanggalLahir: "2003-06-25T13:20:00Z",
-    kelasId: "BPP 1",
-    jenisKelamin: "Laki-laki",
-    agama: "Islam",
-  },
-  {
-    nama: "Eka Putri",
-    nim: "8024671359",
-    alamat: "Jalan 5",
-    tanggalMasuk: "2023-09-15T12:00:00Z",
-    tanggalLahir: "2002-10-12T16:00:00Z",
-    kelasId: "RPL 1",
-    jenisKelamin: "Perempuan",
-    agama: "Islam",
-  },
-  {
-    nama: "Viki Rahman",
-    nim: "5739162840",
-    alamat: "Jalan 6",
-    tanggalMasuk: "2023-10-25T11:30:00Z",
-    tanggalLahir: "2001-05-28T09:15:00Z",
-    kelasId: "TB 2",
-    jenisKelamin: "Laki-laki",
-    agama: "Islam",
-  },
-  {
-    nama: "Gita Puspita",
-    nim: "9182736450",
-    alamat: "Jalan 7",
-    tanggalMasuk: "2023-11-10T15:45:00Z",
-    tanggalLahir: "2003-09-18T08:30:00Z",
-    kelasId: "TBW 1",
-    jenisKelamin: "Perempuan",
-    agama: "Islam",
-  },
-  {
-    nama: "Joko Pramono",
-    nim: "5063728194",
-    alamat: "Jalan 8",
-    tanggalMasuk: "2023-12-05T11:00:00Z",
-    tanggalLahir: "2002-07-07T14:15:00Z",
-    kelasId: "TKR 2",
-    jenisKelamin: "Laki-laki",
-    agama: "Islam",
-  },
-  {
-    nama: "Ika Dewi",
-    nim: "1928374650",
-    alamat: "Jalan 9",
-    tanggalMasuk: "2024-01-15T09:45:00Z",
-    tanggalLahir: "2001-11-30T12:45:00Z",
-    kelasId: "TKW 1",
-    jenisKelamin: "Perempuan",
-    agama: "Islam",
-  },
-  {
-    nama: "Joko Susanto",
-    nim: "3746582910",
-    alamat: "Jalan 10",
-    tanggalMasuk: "2024-02-20T14:00:00Z",
-    tanggalLahir: "2003-04-10T11:30:00Z",
-    kelasId: "TKA 2",
-    jenisKelamin: "Laki-laki",
-    agama: "Islam",
-  },
-  {
-    nama: "Karin Lestari",
-    nim: "5019283746",
-    alamat: "Jalan 11",
-    tanggalMasuk: "2024-03-10T10:30:00Z",
-    tanggalLahir: "2002-09-20T13:15:00Z",
-    kelasId: "LWT 1",
-    jenisKelamin: "Perempuan",
-    agama: "Islam",
-  },
-];
+export interface Ijurusan {
+  id: number;
+  namaJurusan: string;
+}
+type DataIndex = keyof Ikelas;
 
 export const DataKelas = () => {
   const [searchText, setSearchText] = useState("");
@@ -130,20 +28,35 @@ export const DataKelas = () => {
   const searchInput = useRef<InputRef>(null);
   const [open, setOpen] = useState(false);
   const [actions, setActions] = useState("");
-  const [dataKelas, setDataKelas] = useState<DataType[]>([]);
+  const [dataKelas, setDataKelas] = useState<Ikelas[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [selectedDataKelas, setSelectedDataKelas] = useState<Ikelas>(
+    {} as Ikelas
+  );
 
-  const showModal = (action: string) => {
+  const showModal = (action: string, data: Ikelas) => {
+    console.log(data);
     setActions(action);
     setOpen(true);
+    setSelectedDataKelas(data);
+  };
+
+  const initiateData = async () => {
+    setLoading(true);
+    await getDataKelas()
+      .then((response) => {
+        setDataKelas(response.data.getKelas);
+      })
+      .then(() => {
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
+      });
   };
 
   useEffect(() => {
-    getDataKelas()
-      .then((response) => {
-        console.log(response.data.DataKelasData);
-        setDataKelas(response.data.DataKelasData);
-      })
-      .catch((error) => console.log(error));
+    initiateData();
   }, []);
 
   const handleSearch = (
@@ -166,19 +79,23 @@ export const DataKelas = () => {
   };
 
   //handle Popconfrim
-  const handleConfirmDelete = (e: React.MouseEvent<HTMLElement>) => {
-    console.log(e);
-    message.success("Click on Yes");
+  const handleConfirmDelete = async (clickedData: any) => {
+    setLoading(true);
+    await dataKelasDelete({ id: clickedData.id })
+      .then((response) => {
+        message.success("Click on Yes");
+        initiateData();
+      })
+      .then(() => {
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
+        message.error(error.message);
+      });
   };
 
-  const handleCancelDelete = (e: React.MouseEvent<HTMLElement>) => {
-    console.log(e);
-    message.error("Click on No");
-  };
-
-  const getColumnSearchProps = (
-    dataIndex: DataIndex
-  ): ColumnType<DataType> => ({
+  const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<Ikelas> => ({
     filterDropdown: ({
       setSelectedKeys,
       selectedKeys,
@@ -268,24 +185,31 @@ export const DataKelas = () => {
       ),
   });
 
-  const columns: ColumnsType<DataType> = [
+  const columns: ColumnsType<Ikelas> = [
     {
       title: "Id",
-      dataIndex: "nim",
-      key: "nim",
+      dataIndex: "id",
+      key: "id",
       width: "13%",
-      ...getColumnSearchProps("nim"),
-      sorter: (a, b) => a.nim.localeCompare(b.nim),
+      ...getColumnSearchProps("id"),
+      sorter: (a, b) => a.id - b.id,
       sortDirections: ["descend", "ascend"],
     },
     {
-      title: "Kelas",
-      dataIndex: "kelasId",
-      key: "kelasId",
+      title: "Nama",
+      dataIndex: "namaKelas",
+      key: "nama",
       width: "40%",
-      ...getColumnSearchProps("kelasId"),
-      sorter: (a, b) => a.kelasId.localeCompare(b.kelasId),
+      ...getColumnSearchProps("namaKelas"),
+      sorter: (a, b) => a.namaKelas.localeCompare(b.namaKelas),
       sortDirections: ["descend", "ascend"],
+    },
+    {
+      title: "jurusan",
+      dataIndex: ["jurusan", "namaJurusan"],
+      key: "jurusan",
+      width: "40%",
+      ...getColumnSearchProps("jurusan"),
     },
     {
       title: "Action",
@@ -296,23 +220,14 @@ export const DataKelas = () => {
             type="primary"
             size="middle"
             className="bg-blue-500"
-            onClick={() => showModal("edit")}
+            onClick={() => showModal("edit", record)}
           >
             Edit Kelas
-          </Button>
-          <Button
-            type="primary"
-            size="middle"
-            className="bg-blue-500"
-            onClick={() => showModal("detail")}
-          >
-            Detail
           </Button>
           <Popconfirm
             title="Delete the task"
             description="Are you sure to delete this task?"
-            onConfirm={(e) => handleConfirmDelete(e)}
-            onCancel={(e) => handleCancelDelete(e)}
+            onConfirm={(e) => handleConfirmDelete(record)}
             okText="Yes"
             okButtonProps={{ className: "bg-blue-500", size: "small" }}
             cancelText="No"
@@ -327,29 +242,37 @@ export const DataKelas = () => {
   ];
 
   return (
-    <div className="rounded-md bg-white p-2 h-[100%] overflow-scroll">
-      <div className="my-4 flex items-center justify-between px-4">
-        <div className="flex items-center">
-          <h2 className="text-xl font-bold text-black">Data Kelas</h2>
+    <Spin tip="Loading Data" spinning={loading}>
+      <div className="rounded-md bg-white p-2 h-[100%] overflow-scroll">
+        <div className="my-4 flex items-center justify-between px-4">
+          <div className="flex items-center">
+            <h2 className="text-xl font-bold text-black">Data Kelas</h2>
+          </div>
+          <div className="flex items-center">
+            <Button
+              type="primary"
+              size="middle"
+              className="bg-blue-500"
+              onClick={() => showModal("tambah", {} as Ikelas)}
+            >
+              Tambah Kelas
+            </Button>
+            <ModalTambahKelas
+              getData={initiateData}
+              action={actions}
+              open={open}
+              setOpen={setOpen}
+              dataKelas={selectedDataKelas}
+            />
+          </div>
         </div>
-        <div className="flex items-center">
-          <Button
-            type="primary"
-            size="middle"
-            className="bg-blue-500"
-            onClick={() => showModal("tambah")}
-          >
-            Tambah Kelas
-          </Button>
-          <ModalTambahKelas action={actions} open={open} setOpen={setOpen} />
-        </div>
+        <Table
+          columns={columns}
+          dataSource={dataKelas}
+          scroll={{ x: 400 }}
+          className="h-[100%]"
+        />
       </div>
-      <Table
-        columns={columns}
-        dataSource={dataKelas}
-        scroll={{ x: 400 }}
-        className="h-[100%]"
-      />
-    </div>
+    </Spin>
   );
 };
