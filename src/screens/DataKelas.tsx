@@ -5,75 +5,125 @@ import type { ColumnType, ColumnsType } from "antd/es/table";
 import type { FilterConfirmProps } from "antd/es/table/interface";
 import React, { useEffect, useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
-import { ModalSpp } from "../components/ModalSpp";
-// import { getPembayaranSpp } from "@/helper/apiHelper/getPembayaranSpp";
+import { ModalTambahKelas } from "../components/ModalTambahKelas";
+// import { getDataKelas } from "@/helper/apiHelper/getDataKelas";
 
 interface DataType {
-    siswaId: number;
     nama: string;
-    tunggakan: number;
-    totalbayar: number;
+    nim: string;
+    tanggalMasuk: string;
+    tanggalLahir: string;
+    alamat: string;
+    kelasId: string;
+    jenisKelamin: string;
+    agama: string;
 }
 type DataIndex = keyof DataType;
 
 const data: DataType[] = [
     {
-        siswaId: 1,
-        nama: "Dani Vicky Mahendra",
-        tunggakan: 50000,
-        totalbayar: 450000,
+        nama: "Akul Santoso",
+        nim: "9876543210",
+        alamat: "Jalan 2",
+        tanggalMasuk: "2023-06-20T09:30:00Z",
+        tanggalLahir: "2001-03-15T14:30:00Z",
+        kelasId: "TKJ 2",
+        jenisKelamin: "Laki-laki",
+        agama: "Islam",
     },
     {
-        siswaId: 2,
-        nama: "Eka Rizky Pratama",
-        tunggakan: 75000,
-        totalbayar: 525000,
+        nama: "Citra Sari",
+        nim: "2468135790",
+        alamat: "Jalan 3",
+        tanggalMasuk: "2023-07-10T10:15:00Z",
+        tanggalLahir: "2002-01-05T11:45:00Z",
+        kelasId: "ABK 2",
+        jenisKelamin: "Perempuan",
+        agama: "Islam",
     },
     {
-        siswaId: 3,
-        nama: "Fani Nurul Aini",
-        tunggakan: 100000,
-        totalbayar: 600000,
+        nama: "Zaki Prasetyo",
+        nim: "1357924680",
+        alamat: "Jalan 4",
+        tanggalMasuk: "2023-08-05T08:45:00Z",
+        tanggalLahir: "2003-06-25T13:20:00Z",
+        kelasId: "BPP 1",
+        jenisKelamin: "Laki-laki",
+        agama: "Islam",
     },
     {
-        siswaId: 4,
-        nama: "Gina Lestari Putri",
-        tunggakan: 125000,
-        totalbayar: 675000,
+        nama: "Eka Putri",
+        nim: "8024671359",
+        alamat: "Jalan 5",
+        tanggalMasuk: "2023-09-15T12:00:00Z",
+        tanggalLahir: "2002-10-12T16:00:00Z",
+        kelasId: "RPL 1",
+        jenisKelamin: "Perempuan",
+        agama: "Islam",
     },
     {
-        siswaId: 5,
-        nama: "Hadi Prasetyo",
-        tunggakan: 150000,
-        totalbayar: 750000,
+        nama: "Viki Rahman",
+        nim: "5739162840",
+        alamat: "Jalan 6",
+        tanggalMasuk: "2023-10-25T11:30:00Z",
+        tanggalLahir: "2001-05-28T09:15:00Z",
+        kelasId: "TB 2",
+        jenisKelamin: "Laki-laki",
+        agama: "Islam",
     },
     {
-        siswaId: 6,
-        nama: "Indra Setiawan",
-        tunggakan: 175000,
-        totalbayar: 825000,
+        nama: "Gita Puspita",
+        nim: "9182736450",
+        alamat: "Jalan 7",
+        tanggalMasuk: "2023-11-10T15:45:00Z",
+        tanggalLahir: "2003-09-18T08:30:00Z",
+        kelasId: "TBW 1",
+        jenisKelamin: "Perempuan",
+        agama: "Islam",
     },
     {
-        siswaId: 7,
-        nama: "Jeni Sari",
-        tunggakan: 200000,
-        totalbayar: 900000,
+        nama: "Joko Pramono",
+        nim: "5063728194",
+        alamat: "Jalan 8",
+        tanggalMasuk: "2023-12-05T11:00:00Z",
+        tanggalLahir: "2002-07-07T14:15:00Z",
+        kelasId: "TKR 2",
+        jenisKelamin: "Laki-laki",
+        agama: "Islam",
     },
     {
-        siswaId: 8,
-        nama: "Kiki Rahmawati",
-        tunggakan: 225000,
-        totalbayar: 975000,
+        nama: "Ika Dewi",
+        nim: "1928374650",
+        alamat: "Jalan 9",
+        tanggalMasuk: "2024-01-15T09:45:00Z",
+        tanggalLahir: "2001-11-30T12:45:00Z",
+        kelasId: "TKW 1",
+        jenisKelamin: "Perempuan",
+        agama: "Islam",
     },
     {
-        siswaId: 9,
-        nama: "Lina Wati",
-        tunggakan: 250000,
-        totalbayar: 1050000,
+        nama: "Joko Susanto",
+        nim: "3746582910",
+        alamat: "Jalan 10",
+        tanggalMasuk: "2024-02-20T14:00:00Z",
+        tanggalLahir: "2003-04-10T11:30:00Z",
+        kelasId: "TKA 2",
+        jenisKelamin: "Laki-laki",
+        agama: "Islam",
+    },
+    {
+        nama: "Karin Lestari",
+        nim: "5019283746",
+        alamat: "Jalan 11",
+        tanggalMasuk: "2024-03-10T10:30:00Z",
+        tanggalLahir: "2002-09-20T13:15:00Z",
+        kelasId: "LWT 1",
+        jenisKelamin: "Perempuan",
+        agama: "Islam",
     },
 ];
 
-export const PembayaranSpp = () => {
+export const DataKelas = () => {
     const [searchText, setSearchText] = useState("");
     const [searchedColumn, setSearchedColumn] = useState("");
     const searchInput = useRef<InputRef>(null);
@@ -86,10 +136,10 @@ export const PembayaranSpp = () => {
     };
 
     // useEffect(() => {
-    //     getPembayaranSpp()
+    //     getDataKelas()
     //         .then((response) => {
-    //             console.log(response.data.PembayaranSppData);
-    //             setPembayaranSpp(response.data.PembayaranSppData);
+    //             console.log(response.data.DataKelasData);
+    //             setDataKelas(response.data.DataKelasData);
     //         })
     //         .catch((error) => console.log(error));
     // }, []);
@@ -111,12 +161,12 @@ export const PembayaranSpp = () => {
     };
 
     //handle Popconfrim
-    const handleConfirmDelete = (e: any) => {
+    const handleConfirmDelete = (e: React.MouseEvent<HTMLElement>) => {
         console.log(e);
         message.success("Click on Yes");
     };
 
-    const handleCancelDelete = (e: any) => {
+    const handleCancelDelete = (e: React.MouseEvent<HTMLElement>) => {
         console.log(e);
         message.error("Click on No");
     };
@@ -195,39 +245,21 @@ export const PembayaranSpp = () => {
 
     const columns: ColumnsType<DataType> = [
         {
-            title: "Id Siswa",
-            dataIndex: "siswaId",
-            key: "siswaId",
+            title: "Id",
+            dataIndex: "nim",
+            key: "nim",
             width: "13%",
-            ...getColumnSearchProps("siswaId"),
-            sorter: (a, b) => a.siswaId - b.siswaId,
+            ...getColumnSearchProps("nim"),
+            sorter: (a, b) => a.nim.localeCompare(b.nim),
             sortDirections: ["descend", "ascend"],
         },
         {
-            title: "Nama",
-            dataIndex: "nama",
-            key: "nama",
+            title: "Kelas",
+            dataIndex: "kelasId",
+            key: "kelasId",
             width: "40%",
-            ...getColumnSearchProps("nama"),
-            sorter: (a, b) => a.nama.localeCompare(b.nama),
-            sortDirections: ["descend", "ascend"],
-        },
-        {
-            title: "Tunggakan",
-            dataIndex: "tunggakan",
-            key: "tunggakan",
-            width: "20%",
-            ...getColumnSearchProps("tunggakan"),
-            sorter: (a, b) => a.tunggakan - b.tunggakan,
-            sortDirections: ["descend", "ascend"],
-        },
-        {
-            title: "Total Pembayaran",
-            dataIndex: "totalbayar",
-            key: "totalbayar",
-            width: "20%",
-            ...getColumnSearchProps("totalbayar"),
-            sorter: (a, b) => a.totalbayar - b.totalbayar,
+            ...getColumnSearchProps("kelasId"),
+            sorter: (a, b) => a.kelasId.localeCompare(b.kelasId),
             sortDirections: ["descend", "ascend"],
         },
         {
@@ -236,10 +268,10 @@ export const PembayaranSpp = () => {
             render: (_, record) => (
                 <Space size="middle" split>
                     <Button type="primary" size="middle" className="bg-blue-500" onClick={() => showModal("edit")}>
-                        Edit Pembayaran
+                        Edit Kelas
                     </Button>
                     <Button type="primary" size="middle" className="bg-blue-500" onClick={() => showModal("detail")}>
-                        Detail Pembayaran
+                        Detail
                     </Button>
                     <Popconfirm
                         title="Delete the task"
@@ -262,13 +294,13 @@ export const PembayaranSpp = () => {
         <div className="rounded-md bg-white p-2 h-[100%] overflow-scroll">
             <div className="my-4 flex items-center justify-between px-4">
                 <div className="flex items-center">
-                    <h2 className="text-xl font-bold text-black">Pembayaran SPP</h2>
+                    <h2 className="text-xl font-bold text-black">Data Kelas</h2>
                 </div>
                 <div className="flex items-center">
                     <Button type="primary" size="middle" className="bg-blue-500" onClick={() => showModal("tambah")}>
-                        Tambah Pembayaran
+                        Tambah Kelas
                     </Button>
-                    <ModalSpp action={actions} open={open} setOpen={setOpen} />
+                    <ModalTambahKelas action={actions} open={open} setOpen={setOpen} />
                 </div>
             </div>
             <Table columns={columns} dataSource={data} scroll={{ x: 400 }} className="h-[100%]" />
