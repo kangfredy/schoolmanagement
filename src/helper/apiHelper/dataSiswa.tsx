@@ -8,6 +8,14 @@ export const getDataSiswa  = () => {
     })
 }
 
+export const getDetailSiswa  = (payload: any) => {
+  return new Promise<any>((resolve, reject) => {
+      axios.post('/api/dataSiswaDetail', payload)
+      .then(response => resolve(response))
+      .catch((error) => reject(error))
+  })
+}
+
 export const tambahSiswa = (payload: any) => {
   return new Promise<any>((resolve, reject) => {
     axios

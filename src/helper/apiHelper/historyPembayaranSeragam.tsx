@@ -1,45 +1,38 @@
 import axios from "axios";
 
-export const getDataKelas = () => {
+export const getHistoryPembayaranSeragam = () => {
   return new Promise<any>((resolve, reject) => {
     axios
-      .get("/api/kelasData")
+      .get("/api/historyPembayaranSeragamData")
       .then((response) => resolve(response))
       .catch((error) => reject(error));
   });
 };
 
-export const getDetailKelas  = (payload: any) => {
-  return new Promise<any>((resolve, reject) => {
-      axios.post('/api/kelasDetail', payload)
-      .then(response => resolve(response))
-      .catch((error) => reject(error))
-  })
-}
-
-export const tambahKelas = (payload: any) => {
+export const tambahHistoryPembayaranSeragam = (payload: any) => {
   return new Promise<any>((resolve, reject) => {
     axios
-      .post("/api/kelasTambah", payload)
+      .post("/api/historyPembayaranSeragamTambah", payload)
       .then((response) => resolve(response))
       .catch((error) => reject(error));
   });
 };
 
-export const dataKelasDelete = (payload: any) => {
+export const dataHistoryPembayaranSeragamDelete = (payload: any) => {
   return new Promise<any>((resolve, reject) => {
     axios
-      .post("/api/kelasDelete", payload)
+      .post("/api/historyPembayaranSeragamDelete", payload)
       .then((response) => resolve(response))
       .catch((error) => reject(error));
   });
 };
 
-export const dataKelasUpdate = (payload: any) => {
+export const dataHistoryPembayaranSeragamUpdate = (payload: any) => {
   return new Promise<any>((resolve, reject) => {
     axios
-      .post("/api/kelasUpdate", payload)
+      .post("/api/historyPembayaranSeragamUpdate", payload)
       .then((response) => resolve(response))
       .catch((error) => reject(error));
   });
 };
+

@@ -1,44 +1,44 @@
 import axios from "axios";
 
-export const getDataKelas = () => {
+export const getJurusan = () => {
   return new Promise<any>((resolve, reject) => {
     axios
-      .get("/api/kelasData")
+      .get("/api/jurusanData")
       .then((response) => resolve(response))
       .catch((error) => reject(error));
   });
 };
 
-export const getDetailKelas  = (payload: any) => {
-  return new Promise<any>((resolve, reject) => {
-      axios.post('/api/kelasDetail', payload)
-      .then(response => resolve(response))
-      .catch((error) => reject(error))
-  })
-}
+export const getDetailJurusan  = (payload: any) => {
+    return new Promise<any>((resolve, reject) => {
+        axios.post('/api/jurusanDetail', payload)
+        .then(response => resolve(response))
+        .catch((error) => reject(error))
+    })
+  }
 
-export const tambahKelas = (payload: any) => {
+export const tambahJurusan = (payload: any) => {
   return new Promise<any>((resolve, reject) => {
     axios
-      .post("/api/kelasTambah", payload)
+      .post("/api/jurusanTambah", payload)
       .then((response) => resolve(response))
       .catch((error) => reject(error));
   });
 };
 
-export const dataKelasDelete = (payload: any) => {
+export const dataJurusanDelete = (payload: any) => {
   return new Promise<any>((resolve, reject) => {
     axios
-      .post("/api/kelasDelete", payload)
+      .post("/api/jurusanDelete", payload)
       .then((response) => resolve(response))
       .catch((error) => reject(error));
   });
 };
 
-export const dataKelasUpdate = (payload: any) => {
+export const dataJurusanUpdate = (payload: any) => {
   return new Promise<any>((resolve, reject) => {
     axios
-      .post("/api/kelasUpdate", payload)
+      .post("/api/jurusanUpdate", payload)
       .then((response) => resolve(response))
       .catch((error) => reject(error));
   });

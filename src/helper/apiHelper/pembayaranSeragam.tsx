@@ -1,45 +1,46 @@
 import axios from "axios";
 
-export const getDataKelas = () => {
+export const getPembayaranSeragam = () => {
   return new Promise<any>((resolve, reject) => {
     axios
-      .get("/api/kelasData")
+      .get("/api/pembayaranSeragamData")
       .then((response) => resolve(response))
       .catch((error) => reject(error));
   });
 };
 
-export const getDetailKelas  = (payload: any) => {
+export const getDetailPembayaranSeragam  = (payload: any) => {
   return new Promise<any>((resolve, reject) => {
-      axios.post('/api/kelasDetail', payload)
+      axios.post('/api/pembayaranSeragamDetail', payload)
       .then(response => resolve(response))
       .catch((error) => reject(error))
   })
 }
 
-export const tambahKelas = (payload: any) => {
+export const tambahPembayaranSeragam = (payload: any) => {
   return new Promise<any>((resolve, reject) => {
     axios
-      .post("/api/kelasTambah", payload)
+      .post("/api/pembayaranSeragamTambah", payload)
       .then((response) => resolve(response))
       .catch((error) => reject(error));
   });
 };
 
-export const dataKelasDelete = (payload: any) => {
+export const dataPembayaranSeragamDelete = (payload: any) => {
   return new Promise<any>((resolve, reject) => {
     axios
-      .post("/api/kelasDelete", payload)
+      .post("/api/pembayaranSeragamDelete", payload)
       .then((response) => resolve(response))
       .catch((error) => reject(error));
   });
 };
 
-export const dataKelasUpdate = (payload: any) => {
+export const dataPembayaranSeragamUpdate = (payload: any) => {
   return new Promise<any>((resolve, reject) => {
     axios
-      .post("/api/kelasUpdate", payload)
+      .post("/api/pembayaranSeragamUpdate", payload)
       .then((response) => resolve(response))
       .catch((error) => reject(error));
   });
 };
+

@@ -1,45 +1,46 @@
 import axios from "axios";
 
-export const getDataKelas = () => {
+export const getDataSeragam = () => {
   return new Promise<any>((resolve, reject) => {
     axios
-      .get("/api/kelasData")
+      .get("/api/seragamData")
       .then((response) => resolve(response))
       .catch((error) => reject(error));
   });
 };
 
-export const getDetailKelas  = (payload: any) => {
+export const getDetailSeragam  = (payload: any) => {
   return new Promise<any>((resolve, reject) => {
-      axios.post('/api/kelasDetail', payload)
+      axios.post('/api/seragamDetail', payload)
       .then(response => resolve(response))
       .catch((error) => reject(error))
   })
 }
 
-export const tambahKelas = (payload: any) => {
+export const tambahSeragam = (payload: any) => {
   return new Promise<any>((resolve, reject) => {
     axios
-      .post("/api/kelasTambah", payload)
+      .post("/api/seragamTambah", payload)
       .then((response) => resolve(response))
       .catch((error) => reject(error));
   });
 };
 
-export const dataKelasDelete = (payload: any) => {
+export const dataSeragamDelete = (payload: any) => {
   return new Promise<any>((resolve, reject) => {
     axios
-      .post("/api/kelasDelete", payload)
+      .post("/api/seragamDelete", payload)
       .then((response) => resolve(response))
       .catch((error) => reject(error));
   });
 };
 
-export const dataKelasUpdate = (payload: any) => {
+export const dataSeragamUpdate = (payload: any) => {
   return new Promise<any>((resolve, reject) => {
     axios
-      .post("/api/kelasUpdate", payload)
+      .post("/api/seragamUpdate", payload)
       .then((response) => resolve(response))
       .catch((error) => reject(error));
   });
 };
+
