@@ -14,9 +14,11 @@ import {
 } from "react-icons/hi";
 import Image from "next/image";
 import { DataSiswa } from "@/screens/DataSiswa";
-import { DataBayarSPP } from "@/screens/PembayaranSpp";
+import { PembayaranSpp } from "@/screens/PembayaranSpp";
 import { DataBayarPerin } from "@/screens/PembayaranPerin";
 import { DataBayarSeragam } from "@/screens/PembayaranSeragam";
+import { DataKelas } from "@/screens/DataKelas";
+
 export const Home = () => {
     const [collapsed, setCollapsed] = useState(false);
     const [userData, setUserData] = useState({
@@ -53,6 +55,10 @@ export const Home = () => {
             label: "Data Siswa",
         },
         {
+            icon: HiUser,
+            label: "Data Kelas",
+        },
+        {
             icon: HiCalendar,
             label: "Pembayaran SPP",
         },
@@ -71,12 +77,15 @@ export const Home = () => {
             componentToRender = <DataSiswa />;
             break;
         case "2":
-            componentToRender = <DataBayarSPP />;
+            componentToRender = <DataKelas />;
             break;
         case "3":
-            componentToRender = <DataBayarSeragam />;
+            componentToRender = <PembayaranSpp />;
             break;
         case "4":
+            componentToRender = <DataBayarSeragam />;
+            break;
+        case "5":
             componentToRender = <DataBayarPerin />;
             break;
         default:
