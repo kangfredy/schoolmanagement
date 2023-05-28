@@ -11,14 +11,16 @@ import {
     HiCalendar,
     HiCash,
     HiTag,
+    HiAcademicCap,
 } from "react-icons/hi";
-import { MdClass } from "react-icons/md"
+import { MdClass, MdWarehouse } from "react-icons/md"
 import Image from "next/image";
 import { DataSiswa } from "@/screens/DataSiswa";
 import { PembayaranSpp } from "@/screens/PembayaranSpp";
 import { DataBayarPerin } from "@/screens/PembayaranPerin";
 import { DataBayarSeragam } from "@/screens/PembayaranSeragam";
 import { DataKelas } from "@/screens/DataKelas";
+import { DataJurusan } from "@/screens/DataJurusan";
 
 export const Home = () => {
     const [collapsed, setCollapsed] = useState(false);
@@ -52,12 +54,16 @@ export const Home = () => {
 
     const menuList = [
         {
-            icon: HiUser,
-            label: "Data Siswa",
+            icon: MdWarehouse,
+            label: "jurusan"
         },
         {
             icon: MdClass,
             label: "Data Kelas",
+        },
+        {
+            icon: HiAcademicCap,
+            label: "Data Siswa",
         },
         {
             icon: HiCalendar,
@@ -75,18 +81,21 @@ export const Home = () => {
 
     switch (value) {
         case "1":
-            componentToRender = <DataSiswa />;
+            componentToRender = <DataJurusan />;
             break;
         case "2":
             componentToRender = <DataKelas />;
             break;
         case "3":
-            componentToRender = <PembayaranSpp />;
+            componentToRender = <DataSiswa />;
             break;
         case "4":
-            componentToRender = <DataBayarSeragam />;
+            componentToRender = <PembayaranSpp />;
             break;
         case "5":
+            componentToRender = <DataBayarSeragam />;
+            break;
+        case "6":
             componentToRender = <DataBayarPerin />;
             break;
         default:
