@@ -15,6 +15,7 @@ interface DataType {
     tanggalLahir: string;
     alamat: string;
     kelasId: string;
+    namaKelas: string;
     jenisKelamin: string;
     agama: string;
 }
@@ -35,8 +36,26 @@ export const DataSiswa = () => {
   useEffect(() => {
     getDataSiswa()
       .then((response) => {
-        console.log(response.data.dataSiswaData);
-        setDataSiswa(response.data.dataSiswaData);
+        // console.log(response.data.dataSiswaData);
+
+        const responseData = response.data.dataSiswaData
+        const readyData = responseData.map((item: any) => {
+          return {
+            id: item.id,
+            nim: item.nim,
+            nama: item.nama,
+            kelasId: item.kelasId,
+            namaKelas: item.kelas.namaKelas,
+            alamat: item.alamat,
+            jenisKelamin: item.jenisKelamin,
+            agama: item.agama,
+            tanggalLahir: item.tanggalLahir,
+            tanggalMasuk: item.tanggalMasuk,
+          }
+        })
+        // console.log("READY DATA", readyData)
+
+        setDataSiswa(readyData);
       })
       .catch((error) => console.log(error));
   }, []);
@@ -196,11 +215,11 @@ export const DataSiswa = () => {
     },
     {
       title: "Kelas",
-      dataIndex: "kelasId",
-      key: "kelasId",
+      dataIndex: "namaKelas",
+      key: "namaKelas",
       width: "10%",
-      ...getColumnSearchProps("kelasId"),
-      sorter: (a, b) => a.kelasId.localeCompare(b.kelasId),
+      ...getColumnSearchProps("namaKelas"),
+      sorter: (a, b) => a.namaKelas.localeCompare(b.namaKelas),
       sortDirections: ["descend", "ascend"],
     },
     {
