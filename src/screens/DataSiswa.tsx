@@ -8,7 +8,7 @@ import Highlighter from "react-highlight-words";
 import { ModalTambahSiswa } from "../components/ModalTambahSiswa";
 import { getDataSiswa } from "@/helper/apiHelper/dataSiswa";
 
-interface DataType {
+interface IDataSiswa {
     nama: string;
     nim: string;
     tanggalMasuk: string;
@@ -18,7 +18,7 @@ interface DataType {
     jenisKelamin: string;
     agama: string;
 }
-type DataIndex = keyof DataType;
+type DataIndex = keyof IDataSiswa;
 
 export const DataSiswa = () => {
   const [searchText, setSearchText] = useState("");
@@ -26,7 +26,7 @@ export const DataSiswa = () => {
   const searchInput = useRef<InputRef>(null);
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
-  const [DataSiswa, setDataSiswa] = useState<DataType[]>([]);
+  const [DataSiswa, setDataSiswa] = useState<IDataSiswa[]>([]);
 
   const showModal = () => {
     setOpen(true);
@@ -74,18 +74,13 @@ export const DataSiswa = () => {
   };
 
   //handle Popconfrim
-  const handleConfirmDelete = (e: React.MouseEvent<HTMLElement>) => {
+  const handleConfirmDelete = (data: IDataSiswa) => {
     message.success("Click on Yes");
-  };
-
-  const handleCancelDelete = (e: React.MouseEvent<HTMLElement>) => {
-    console.log(e);
-    message.error("Click on No");
   };
 
   const getColumnSearchProps = (
     dataIndex: DataIndex
-  ): ColumnType<DataType> => ({
+  ): ColumnType<IDataSiswa> => ({
     filterDropdown: ({
       setSelectedKeys,
       selectedKeys,
@@ -175,7 +170,7 @@ export const DataSiswa = () => {
       ),
   });
 
-  const columns: ColumnsType<DataType> = [
+  const columns: ColumnsType<IDataSiswa> = [
     {
       title: "Nim",
       dataIndex: "nim",
@@ -247,7 +242,7 @@ export const DataSiswa = () => {
           <Popconfirm
             title="Delete the task"
             description="Are you sure to delete this task?"
-            onConfirm={handleConfirmDelete}
+            onConfirm={()=>handleConfirmDelete(record)}
             okText="Yes"
           >
             <Button danger>Delete</Button>
