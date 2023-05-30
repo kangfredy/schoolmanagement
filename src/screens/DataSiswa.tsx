@@ -34,7 +34,6 @@ export const DataSiswa = () => {
       tanggalLahir: data?.tanggalLahir,
       alamat: data?.alamat,
       kelasId: data?.kelas?.id,
-      namaKelas: data?.kelas?.namaKelas,
       jenisKelamin: data?.jenisKelamin,
       agama: data?.agama,
     }
@@ -47,23 +46,6 @@ export const DataSiswa = () => {
     setLoading(true)
     await getDataSiswa()
       .then(response => {
-        // const responseData = response.data.dataSiswaData
-        // const readyData = responseData.map((item: any) => {
-        //   return {
-        //     id: item.id,
-        //     nim: item.nim,
-        //     nama: item.nama,
-        //     kelasId: item.kelasId,
-        //     namaKelas: item.kelas.namaKelas,
-        //     alamat: item.alamat,
-        //     jenisKelamin: item.jenisKelamin,
-        //     agama: item.agama,
-        //     tanggalLahir: item.tanggalLahir,
-        //     tanggalMasuk: item.tanggalMasuk,
-        //   }
-        // })
-        // console.log("READY DATA", readyData)
-
         setDataSiswa(response.data.dataSiswaData)
       })
       .then(() => {
@@ -243,7 +225,8 @@ export const DataSiswa = () => {
       key: 'jenisKelamin',
       width: '15%',
       ...getColumnSearchProps('jenisKelamin'),
-      sorter: (a, b) => a.jenisKelamin.localeCompare(b.jenisKelamin),
+      sorter: (a, b) =>
+        a.jenisKelamin.toString().localeCompare(b.jenisKelamin.toString()),
       sortDirections: ['descend', 'ascend'],
     },
     {
@@ -252,7 +235,7 @@ export const DataSiswa = () => {
       key: 'agama',
       width: '15%',
       ...getColumnSearchProps('agama'),
-      sorter: (a, b) => a.agama.localeCompare(b.agama),
+      sorter: (a, b) => a.agama.toString().localeCompare(b.agama.toString()),
       sortDirections: ['descend', 'ascend'],
     },
     {

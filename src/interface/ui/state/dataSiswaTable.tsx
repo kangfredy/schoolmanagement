@@ -6,7 +6,7 @@ export interface Isiswa {
   tanggalMasuk: string
   tanggalLahir: string
   jenisKelamin: number
-  agama: string
+  agama: number
   kelas: Ikelas
 }
 
