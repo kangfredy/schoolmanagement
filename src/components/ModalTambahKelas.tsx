@@ -1,13 +1,12 @@
-import {  Input, Modal, Spin, message } from "antd";
-import {  useEffect, useState } from "react";
-import { Select, Space } from "antd";
-import { dataKelasUpdate, tambahKelas } from "@/helper/apiHelper/kelas";
-import { SiGoogleclassroom } from "react-icons/si";
-import { getJurusan } from "@/helper/apiHelper/jurusan";
-import { ISelect } from "@/interface/ui/component/dropdown";
-import { IDataKelasModal } from "@/interface/ui/state/dataKelasModal";
-import { ModalTambahKelasProps } from "@/interface/ui/props/ModalTambahKelas";
-
+import { Input, Modal, Spin, message } from 'antd'
+import { useEffect, useState } from 'react'
+import { Select, Space } from 'antd'
+import { dataKelasUpdate, tambahKelas } from '@/helper/apiHelper/kelas'
+import { SiGoogleclassroom } from 'react-icons/si'
+import { getJurusan } from '@/helper/apiHelper/jurusan'
+import { ISelect } from '@/interface/ui/component/dropdown'
+import { IDataKelasModal } from '@/interface/ui/state/dataKelasModal'
+import { ModalTambahKelasProps } from '@/interface/ui/props/ModalTambahKelas'
 
 export function ModalTambahKelas({
   action,
@@ -17,112 +16,106 @@ export function ModalTambahKelas({
   setDataKelasInput,
   dataKelasInput,
 }: ModalTambahKelasProps) {
-
- 
-  const [confirmLoading, setConfirmLoading] = useState(false);
-  const [dataJurusan, setDataJurusan] = useState<ISelect[]>(
-    [] as ISelect[]
-  );
-  const [loading, setLoading] = useState<boolean>(false);
+  const [confirmLoading, setConfirmLoading] = useState(false)
+  const [dataJurusan, setDataJurusan] = useState<ISelect[]>([] as ISelect[])
+  const [loading, setLoading] = useState<boolean>(false)
 
   const handleChange = (e: { target: { name: string; value: any } }) =>
-    setDataKelasInput((prevState) => ({
+    setDataKelasInput(prevState => ({
       ...prevState,
       [e.target.name]: e.target.value,
-    }));
+    }))
 
   const getJurusanData = () => {
-    setLoading(true);
+    setLoading(true)
     getJurusan()
-      .then((response) => {
-        let arrayTemp: any = [];
+      .then(response => {
+        let arrayTemp: any = []
         response.data.getJurusan.map(
           (value: { id: number; namaJurusan: string }) => {
             const objectData = {
               value: value.id,
               label: value.namaJurusan,
-            };
-            arrayTemp.push(objectData);
-          }
-        );
-        setDataJurusan(arrayTemp);
+            }
+            arrayTemp.push(objectData)
+          },
+        )
+        setDataJurusan(arrayTemp)
       })
-      .then((response) => {
-        setLoading(false);
+      .then(response => {
+        setLoading(false)
       })
-      .catch((error) => {
-        console.error(error.message);
-        setLoading(false);
-      });
-  };
+      .catch(error => {
+        console.error(error.message)
+        setLoading(false)
+      })
+  }
 
   useEffect(() => {
-    getJurusanData();
-  }, []);
-
+    getJurusanData()
+  }, [])
 
   const handleOk = () => {
-    setConfirmLoading(true);
-    if (action === "tambah") {
+    setConfirmLoading(true)
+    if (action === 'tambah') {
       tambahKelas(dataKelasInput)
         .then((response: any) => {
-          getData();
-          setDataKelasInput({} as IDataKelasModal);
-          setConfirmLoading(false);
+          getData()
+          setDataKelasInput({} as IDataKelasModal)
+          setConfirmLoading(false)
         })
-        .then((response) => {
-          setOpen(false);
-          message.success("sukses Tambah Kelas");
+        .then(response => {
+          setOpen(false)
+          message.success('sukses Tambah Kelas')
         })
         .catch((error: any) => {
-          message.error(error.message);
-          setOpen(false);
-        });
-    } else if (action === "edit") {
+          message.error(error.message)
+          setOpen(false)
+        })
+    } else if (action === 'edit') {
       dataKelasUpdate(dataKelasInput)
         .then((response: any) => {
-          getData();
-          setDataKelasInput({} as IDataKelasModal);
-          setConfirmLoading(false);
+          getData()
+          setDataKelasInput({} as IDataKelasModal)
+          setConfirmLoading(false)
         })
-        .then((response) => {
-          setOpen(false);
-          message.success("sukses Tambah Kelas");
+        .then(response => {
+          setOpen(false)
+          message.success('sukses Tambah Kelas')
         })
         .catch((error: any) => {
-          message.error(error.message);
-          setOpen(false);
-        });
+          message.error(error.message)
+          setOpen(false)
+        })
     } else {
-      setConfirmLoading(false);
-      setOpen(false);
+      setConfirmLoading(false)
+      setOpen(false)
     }
-  };
+  }
 
   const handleCancel = () => {
-    setDataKelasInput({} as IDataKelasModal);
-    setOpen(false);
-  };
+    setDataKelasInput({} as IDataKelasModal)
+    setOpen(false)
+  }
 
   const handleJurusan = (value: number) => {
-    setDataKelasInput({ ...dataKelasInput, jurusanId: value });
-  };
+    setDataKelasInput({ ...dataKelasInput, jurusanId: value })
+  }
 
   return (
     <Modal
       title={
-        action === "detail"
-          ? "Detail Kelas"
-          : action === "edit"
-          ? "Edit Kelas"
-          : "Tambah Kelas"
+        action === 'detail'
+          ? 'Detail Kelas'
+          : action === 'edit'
+          ? 'Edit Kelas'
+          : 'Tambah Kelas'
       }
       open={open}
       onOk={handleOk}
-      okButtonProps={{ className: "bg-blue-500" }}
+      okButtonProps={{ className: 'bg-blue-500' }}
       confirmLoading={confirmLoading}
-      onCancel={handleCancel}
-    >
+      onCancel={handleCancel}>
       <Spin spinning={loading}>
         <div className="my-8">
           <div className="my-4 flex items-center">
@@ -131,10 +124,10 @@ export function ModalTambahKelas({
               <Input
                 placeholder="Nama Kelas"
                 name="namaKelas"
-                disabled={action === "detail" ? true : false}
+                disabled={action === 'detail' ? true : false}
                 value={dataKelasInput.namaKelas}
                 prefix={<SiGoogleclassroom />}
-                onChange={(e) => handleChange(e)}
+                onChange={e => handleChange(e)}
                 className="ml-2 w-60"
                 required
               />
@@ -148,7 +141,7 @@ export function ModalTambahKelas({
                 placeholder="Pilih Kelas"
                 optionFilterProp="children"
                 filterOption={(input, option) =>
-                  (option?.label ?? "")
+                  (option?.label ?? '')
                     .toLowerCase()
                     .includes(input.toLowerCase())
                 }
@@ -162,5 +155,5 @@ export function ModalTambahKelas({
         </div>
       </Spin>
     </Modal>
-  );
+  )
 }
