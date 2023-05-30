@@ -9,6 +9,7 @@ import { ModalTambahSiswa } from '../components/ModalTambahSiswa'
 import { getDataSiswa, dataSiswaDelete } from '@/helper/apiHelper/dataSiswa'
 import { IDataSiswaModal } from '@/interface/ui/state/dataSiswaModal'
 import { Isiswa } from '@/interface/ui/state/dataSiswaTable'
+import { checkAgama } from '@/helper/util/agama'
 
 type DataIndex = keyof Isiswa
 
@@ -46,7 +47,26 @@ export const DataSiswa = () => {
     setLoading(true)
     await getDataSiswa()
       .then(response => {
-        setDataSiswa(response.data.dataSiswaData)
+        const arrayTemp: Isiswa[] = []; // Define and initialize arrayTemp
+        response.data.dataSiswaData?.map((datas: any) => {
+          const object1: Isiswa = {
+            id: datas?.id,
+            nama: datas?.nama,
+            nim: datas?.nim,
+            tanggalMasuk: datas?.tanggalMasuk,
+            tanggalLahir: datas?.tanggalLahir,
+            alamat: datas?.alamat,
+            kelas: datas?.kelas,
+            jenisKelamin: datas?.jenisKelamin,
+            jenisKelaminDisplay: datas?.jenisKelamin === 1 ? "laki-laki" : "perempuan",
+            agama: datas?.agama,
+            agamaDisplay: checkAgama(datas?.agama),
+          };
+         arrayTemp.push(object1);
+        });
+
+        //Assign the mapped array to the state
+        setDataSiswa(arrayTemp)
       })
       .then(() => {
         setLoading(false)
@@ -221,20 +241,20 @@ export const DataSiswa = () => {
     },
     {
       title: 'Jenis Kelamin',
-      dataIndex: 'jenisKelamin',
-      key: 'jenisKelamin',
+      dataIndex: 'jenisKelaminDisplay',
+      key: 'jenisKelaminDisplay',
       width: '15%',
-      ...getColumnSearchProps('jenisKelamin'),
+      ...getColumnSearchProps('jenisKelaminDisplay'),
       sorter: (a, b) =>
         a.jenisKelamin.toString().localeCompare(b.jenisKelamin.toString()),
       sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Agama',
-      dataIndex: 'agama',
-      key: 'agama',
+      dataIndex: 'agamaDisplay',
+      key: 'agamaDisplay',
       width: '15%',
-      ...getColumnSearchProps('agama'),
+      ...getColumnSearchProps('agamaDisplay'),
       sorter: (a, b) => a.agama.toString().localeCompare(b.agama.toString()),
       sortDirections: ['descend', 'ascend'],
     },
