@@ -1,8 +1,7 @@
 import {PrismaClient} from '@prisma/client'
 import { encodeData, decodeData, key } from '@/helper/util/saltPassword';
 import type { NextApiRequest, NextApiResponse } from 'next'
-import * as bcrypt from 'bcrypt'
-
+const bcrypt = require('bcrypt')
 const prisma = new PrismaClient();
 
 
