@@ -46,7 +46,7 @@ model DataSiswa {
   kelas             Kelas               @relation(fields: [kelasId], references: [id])
   kelasId           Int
   jenisKelamin      Int
-  agama             String
+  agama             Int
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @updatedAt
   isDeleted         Boolean             @default(false)
