@@ -11,13 +11,13 @@ interface DataType {
     totalbayar: number;
 }
 
-interface ModalSppProps {
+interface IModalSpp {
     open: boolean;
     action: string;
     setOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-export function ModalSpp({ action, open, setOpen }: ModalSppProps) {
+export function ModalSpp({ action, open, setOpen }: IModalSpp) {
     const [DataPembayaran, setDataPembayaran] = useState<DataType>({} as DataType);
     const [confirmLoading, setConfirmLoading] = useState(false);
 
