@@ -242,8 +242,6 @@ export function ModalSpp({ action, open, setOpen }: ModalSppProps) {
     console.log('search:', value)
   }
 
-  ////////////////////////////////////////////////////////////////////////
-
   const columns: ColumnsType<DataType> = [
     {
       title: 'Id Siswa',

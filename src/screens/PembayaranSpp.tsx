@@ -14,7 +14,6 @@ interface DataType {
   tunggakan: number
   totalbayar: number
 }
-
 type DataIndex = keyof DataType
 
 const data: DataType[] = [
