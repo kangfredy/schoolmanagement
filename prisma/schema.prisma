@@ -73,7 +73,7 @@ model HistoryPembayaranSpp {
   jatuhTempo        DateTime
   jumlah            Int
   sudahDibayar      Boolean       @default(false)
-  tanggalPembayaran DateTime      @default(now())
+  tanggalPembayaran DateTime?
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
   isDeleted         Boolean       @default(false)
