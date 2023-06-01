@@ -11,64 +11,83 @@ import { ModalSpp } from '../components/ModalSpp'
 interface DataType {
   siswaId: number
   nama: string
+  kelas: string
+  jurusan: string
   tunggakan: number
   totalbayar: number
 }
-
 type DataIndex = keyof DataType
 
 const data: DataType[] = [
   {
     siswaId: 1,
     nama: 'Dani Vicky Mahendra',
+    kelas: 'XII-1',
+    jurusan: 'IPA',
     tunggakan: 50000,
     totalbayar: 450000,
   },
   {
     siswaId: 2,
     nama: 'Eka Rizky Pratama',
+    kelas: 'XII-2',
+    jurusan: 'IPA',
     tunggakan: 75000,
     totalbayar: 525000,
   },
   {
     siswaId: 3,
     nama: 'Fani Nurul Aini',
+    kelas: 'XII-1',
+    jurusan: 'IPS',
     tunggakan: 100000,
     totalbayar: 600000,
   },
   {
     siswaId: 4,
     nama: 'Gina Lestari Putri',
+    kelas: 'XII-3',
+    jurusan: 'IPS',
     tunggakan: 125000,
     totalbayar: 675000,
   },
   {
     siswaId: 5,
     nama: 'Hadi Prasetyo',
+    kelas: 'XII-3',
+    jurusan: 'IPA',
     tunggakan: 150000,
     totalbayar: 750000,
   },
   {
     siswaId: 6,
     nama: 'Indra Setiawan',
+    kelas: 'XII-2',
+    jurusan: 'IPA',
     tunggakan: 175000,
     totalbayar: 825000,
   },
   {
     siswaId: 7,
     nama: 'Jeni Sari',
+    kelas: 'XII-2',
+    jurusan: 'IPA',
     tunggakan: 200000,
     totalbayar: 900000,
   },
   {
     siswaId: 8,
     nama: 'Kiki Rahmawati',
+    kelas: 'XII-3',
+    jurusan: 'IPS',
     tunggakan: 225000,
     totalbayar: 975000,
   },
   {
     siswaId: 9,
     nama: 'Lina Wati',
+    kelas: 'XII-1',
+    jurusan: 'IPS',
     tunggakan: 250000,
     totalbayar: 1050000,
   },
@@ -233,6 +252,24 @@ export const PembayaranSpp = () => {
       sortDirections: ['descend', 'ascend'],
     },
     {
+      title: 'Kelas',
+      dataIndex: 'kelas',
+      key: 'kelas',
+      width: '20%',
+      ...getColumnSearchProps('kelas'),
+      sorter: (a, b) => a.kelas.localeCompare(b.kelas),
+      sortDirections: ['descend', 'ascend'],
+    },
+    {
+      title: 'Jurusan',
+      dataIndex: 'jurusan',
+      key: 'jurusan',
+      width: '20%',
+      ...getColumnSearchProps('jurusan'),
+      sorter: (a, b) => a.jurusan.localeCompare(b.jurusan),
+      sortDirections: ['descend', 'ascend'],
+    },
+    {
       title: 'Tunggakan',
       dataIndex: 'tunggakan',
       key: 'tunggakan',
@@ -260,27 +297,8 @@ export const PembayaranSpp = () => {
             size="middle"
             className="bg-blue-500"
             onClick={() => showModal('edit')}>
-            Edit Pembayaran
+            Pembayaran
           </Button>
-          <Button
-            type="primary"
-            size="middle"
-            className="bg-blue-500"
-            onClick={() => showModal('detail')}>
-            Detail Pembayaran
-          </Button>
-          <Popconfirm
-            title="Delete the task"
-            description="Are you sure to delete this task?"
-            onConfirm={handleConfirmDelete}
-            onCancel={handleCancelDelete}
-            okText="Yes"
-            okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
-            cancelText="No">
-            <Button danger type="primary" size="middle" className="bg-blue-500">
-              Delete
-            </Button>
-          </Popconfirm>
         </Space>
       ),
     },
@@ -293,13 +311,13 @@ export const PembayaranSpp = () => {
           <h2 className="text-xl font-bold text-black">Pembayaran SPP</h2>
         </div>
         <div className="flex items-center">
-          <Button
+          {/* <Button
             type="primary"
             size="middle"
             className="bg-blue-500"
             onClick={() => showModal('tambah')}>
             Tambah Pembayaran
-          </Button>
+          </Button> */}
           <ModalSpp action={actions} open={open} setOpen={setOpen} />
         </div>
       </div>

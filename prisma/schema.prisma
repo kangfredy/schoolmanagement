@@ -19,6 +19,12 @@ model User {
   updatedAt DateTime @updatedAt
   isDeleted Boolean  @default(false)
 }
+model Jurusan {
+  id          Int     @id @default(autoincrement())
+  namaJurusan String  @db.VarChar(32)
+  isDeleted   Boolean @default(false)
+  Kelas       Kelas[]
+}
 
 model Kelas {
   id        Int         @id @default(autoincrement())
@@ -29,12 +35,6 @@ model Kelas {
   dataSiswa DataSiswa[]
 }
 
-model Jurusan {
-  id          Int     @id @default(autoincrement())
-  namaJurusan String  @db.VarChar(32)
-  isDeleted   Boolean @default(false)
-  Kelas       Kelas[]
-}
 
 model DataSiswa {
   id                Int                 @id @default(autoincrement())
@@ -59,8 +59,8 @@ model PembayaranSpp {
   siswa                DataSiswa              @relation(fields: [siswaId], references: [id])
   siswaId              Int
   tunggakan            Int
-  TotalBayar           Int
-  HistoryPembayaranSpp HistoryPembayaranSpp[]
+  totalBayar           Int
+  historyPembayaranSpp HistoryPembayaranSpp[]
   createdAt            DateTime               @default(now())
   updatedAt            DateTime               @updatedAt
   isDeleted            Boolean                @default(false)
@@ -90,9 +90,9 @@ model PembayaranSeragam {
   id                       Int                        @id @default(autoincrement())
   siswa                    DataSiswa                  @relation(fields: [siswaId], references: [id])
   siswaId                  Int
-  TotalBayar               Int
-  Tunggakan                Int
-  HistoryPembayaranSeragam HistoryPembayaranSeragam[]
+  totalBayar               Int
+  tunggakan                Int
+  historyPembayaranSeragam HistoryPembayaranSeragam[]
   createdAt                DateTime                   @default(now())
   updatedAt                DateTime                   @updatedAt
   isDeleted                Boolean                    @default(false)

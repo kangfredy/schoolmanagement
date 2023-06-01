@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "NODE_ENV=production node server.js",
-    "lint": "next lint"
+    "lint": "next lint",
+    "migrate": "prisma db push --schema=./prisma/schema.prisma && node src/seeder/user.mjs && node src/seeder/jurusan.mjs && node src/seeder/kelas.mjs && node src/seeder/siswa.mjs && node src/seeder/pembayaranSpp.mjs"
   },
   "dependencies": {
     "@hookstate/core": "^4.0.1",
