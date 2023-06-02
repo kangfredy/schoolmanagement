@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import {
   Input,
   Modal,
@@ -11,8 +12,17 @@ import {
 import type { ColumnType, ColumnsType } from 'antd/es/table'
 import type { FilterConfirmProps } from 'antd/es/table/interface'
 import { SearchOutlined, UserOutlined, IdcardOutlined } from '@ant-design/icons'
-import { Dispatch, SetStateAction, useState, useEffect, useRef } from 'react'
+import { Dispatch, SetStateAction, useRef } from 'react'
 import Highlighter from 'react-highlight-words'
+import {
+  dataPembayaranSppUpdate,
+  tambahPembayaranSpp,
+} from '@/helper/apiHelper/pembayaranSpp'
+// import { getDataKelas } from '@/helper/apiHelper/kelas'
+import { ISelect } from '@/interface/ui/component/dropdown'
+import { IDataSppModal } from '@/interface/ui/state/dataSppModal'
+import { ModalTambahSppProps } from '@/interface/ui/props/ModalTambahSpp'
+
 interface DataType {
   siswaId: number
   jumlah: number
@@ -97,15 +107,16 @@ const data: DataType[] = [
   },
 ]
 
-interface ModalSppProps {
-  open: boolean
-  action: string
-  setOpen: Dispatch<SetStateAction<boolean>>
-}
-
-export function ModalSpp({ action, open, setOpen }: ModalSppProps) {
-  const [DataPembayaran, setDataPembayaran] = useState<DataType>({} as DataType)
+export function ModalSpp({
+  action,
+  open,
+  setOpen,
+  getData,
+  setDataSppInput,
+  dataSppInput,
+}: ModalTambahSppProps) {
   const [confirmLoading, setConfirmLoading] = useState(false)
+  const [DataPembayaran, setDataPembayaran] = useState<DataType>({} as DataType)
   const [searchText, setSearchText] = useState('')
   const [searchedColumn, setSearchedColumn] = useState('')
   const searchInput = useRef<InputRef>(null)

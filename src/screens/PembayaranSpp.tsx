@@ -1,97 +1,16 @@
 import { SearchOutlined } from '@ant-design/icons'
-import { InputRef, Modal, Popconfirm, message } from 'antd'
+import { InputRef, Modal, Popconfirm, message, Spin } from 'antd'
 import { Button, Input, Space, Table } from 'antd'
 import type { ColumnType, ColumnsType } from 'antd/es/table'
 import type { FilterConfirmProps } from 'antd/es/table/interface'
 import React, { useEffect, useRef, useState } from 'react'
 import Highlighter from 'react-highlight-words'
 import { ModalSpp } from '../components/ModalSpp'
-// import { getPembayaranSpp } from "@/helper/apiHelper/getPembayaranSpp";
+import { getPembayaranSpp } from '@/helper/apiHelper/pembayaranSpp'
+import { IDataSppModal } from '@/interface/ui/state/dataSppModal'
+import { ISpp } from '@/interface/ui/state/dataSppTable'
 
-interface DataType {
-  siswaId: number
-  nama: string
-  kelas: string
-  jurusan: string
-  tunggakan: number
-  totalbayar: number
-}
-type DataIndex = keyof DataType
-
-const data: DataType[] = [
-  {
-    siswaId: 1,
-    nama: 'Dani Vicky Mahendra',
-    kelas: 'XII-1',
-    jurusan: 'IPA',
-    tunggakan: 50000,
-    totalbayar: 450000,
-  },
-  {
-    siswaId: 2,
-    nama: 'Eka Rizky Pratama',
-    kelas: 'XII-2',
-    jurusan: 'IPA',
-    tunggakan: 75000,
-    totalbayar: 525000,
-  },
-  {
-    siswaId: 3,
-    nama: 'Fani Nurul Aini',
-    kelas: 'XII-1',
-    jurusan: 'IPS',
-    tunggakan: 100000,
-    totalbayar: 600000,
-  },
-  {
-    siswaId: 4,
-    nama: 'Gina Lestari Putri',
-    kelas: 'XII-3',
-    jurusan: 'IPS',
-    tunggakan: 125000,
-    totalbayar: 675000,
-  },
-  {
-    siswaId: 5,
-    nama: 'Hadi Prasetyo',
-    kelas: 'XII-3',
-    jurusan: 'IPA',
-    tunggakan: 150000,
-    totalbayar: 750000,
-  },
-  {
-    siswaId: 6,
-    nama: 'Indra Setiawan',
-    kelas: 'XII-2',
-    jurusan: 'IPA',
-    tunggakan: 175000,
-    totalbayar: 825000,
-  },
-  {
-    siswaId: 7,
-    nama: 'Jeni Sari',
-    kelas: 'XII-2',
-    jurusan: 'IPA',
-    tunggakan: 200000,
-    totalbayar: 900000,
-  },
-  {
-    siswaId: 8,
-    nama: 'Kiki Rahmawati',
-    kelas: 'XII-3',
-    jurusan: 'IPS',
-    tunggakan: 225000,
-    totalbayar: 975000,
-  },
-  {
-    siswaId: 9,
-    nama: 'Lina Wati',
-    kelas: 'XII-1',
-    jurusan: 'IPS',
-    tunggakan: 250000,
-    totalbayar: 1050000,
-  },
-]
+type DataIndex = keyof ISpp
 
 export const PembayaranSpp = () => {
   const [searchText, setSearchText] = useState('')
@@ -99,20 +18,57 @@ export const PembayaranSpp = () => {
   const searchInput = useRef<InputRef>(null)
   const [open, setOpen] = useState(false)
   const [actions, setActions] = useState('')
+  const [dataSpp, setDataSpp] = useState<ISpp[]>([])
+  const [loading, setLoading] = useState<boolean>(false)
+  const [dataSppInput, setDataSppInput] = useState<IDataSppModal>(
+    {} as IDataSppModal,
+  )
 
-  const showModal = (action: string) => {
+  const showModal = (action: string, data: ISpp) => {
+    let dataInput = {
+      id: data?.id,
+      siswaId: data?.siswaId,
+      tunggakan: data?.tunggakan,
+      totalBayar: data?.totalBayar,
+      siswa: data?.siswa,
+      kelas: data?.siswa.kelas,
+      jurusan: data?.siswa?.kelas.jurusan,
+    }
+    setDataSppInput(dataInput)
     setActions(action)
     setOpen(true)
   }
 
-  // useEffect(() => {
-  //     getPembayaranSpp()
-  //         .then((response) => {
-  //             console.log(response.data.PembayaranSppData);
-  //             setPembayaranSpp(response.data.PembayaranSppData);
-  //         })
-  //         .catch((error) => console.log(error));
-  // }, []);
+  const initiateData = async () => {
+    setLoading(true)
+    await getPembayaranSpp()
+      .then(response => {
+        const arrayTemp: ISpp[] = [] // Define and initialize arrayTemp
+        response.data.getPembayaranSpp?.map((datas: any) => {
+          const object1: ISpp = {
+            id: datas?.id,
+            siswaId: datas?.siswaId,
+            tunggakan: datas?.tunggakan,
+            totalBayar: datas?.totalBayar,
+            siswa: datas?.siswa,
+          }
+          arrayTemp.push(object1)
+        })
+
+        //Assign the mapped array to the state
+        setDataSpp(arrayTemp)
+      })
+      .then(() => {
+        setLoading(false)
+      })
+      .catch(error => {
+        setLoading(false)
+      })
+  }
+
+  useEffect(() => {
+    initiateData()
+  }, [])
 
   const handleSearch = (
     selectedKeys: string[],
@@ -139,14 +95,7 @@ export const PembayaranSpp = () => {
     message.success('Click on Yes')
   }
 
-  const handleCancelDelete = (e: any) => {
-    console.log(e)
-    message.error('Click on No')
-  }
-
-  const getColumnSearchProps = (
-    dataIndex: DataIndex,
-  ): ColumnType<DataType> => ({
+  const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<ISpp> => ({
     filterDropdown: ({
       setSelectedKeys,
       selectedKeys,
@@ -232,41 +181,45 @@ export const PembayaranSpp = () => {
       ),
   })
 
-  const columns: ColumnsType<DataType> = [
+  const columns: ColumnsType<ISpp> = [
     {
-      title: 'Id Siswa',
-      dataIndex: 'siswaId',
-      key: 'siswaId',
+      title: 'NIM',
+      dataIndex: ['siswa', 'nim'],
+      key: 'nim',
       width: '13%',
-      ...getColumnSearchProps('siswaId'),
-      sorter: (a, b) => a.siswaId - b.siswaId,
+      ...getColumnSearchProps('siswa'),
+      sorter: (a, b) => a.siswa.nim.localeCompare(b.siswa.nim),
       sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Nama',
-      dataIndex: 'nama',
+      dataIndex: ['siswa', 'nama'],
       key: 'nama',
       width: '40%',
-      ...getColumnSearchProps('nama'),
-      sorter: (a, b) => a.nama.localeCompare(b.nama),
+      ...getColumnSearchProps('siswa'),
+      sorter: (a, b) => a.siswa.nama.localeCompare(b.siswa.nama),
       sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Kelas',
-      dataIndex: 'kelas',
+      dataIndex: ['siswa', 'kelas', 'namaKelas'],
       key: 'kelas',
       width: '20%',
-      ...getColumnSearchProps('kelas'),
-      sorter: (a, b) => a.kelas.localeCompare(b.kelas),
+      ...getColumnSearchProps('siswa'),
+      sorter: (a, b) =>
+        a.siswa.kelas.namaKelas.localeCompare(b.siswa.kelas.namaKelas),
       sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Jurusan',
-      dataIndex: 'jurusan',
+      dataIndex: ['siswa', 'kelas', 'jurusan', 'namaJurusan'],
       key: 'jurusan',
       width: '20%',
-      ...getColumnSearchProps('jurusan'),
-      sorter: (a, b) => a.jurusan.localeCompare(b.jurusan),
+      ...getColumnSearchProps('siswa'),
+      sorter: (a, b) =>
+        a.siswa.kelas.jurusan.namaJurusan.localeCompare(
+          b.siswa.kelas.jurusan.namaJurusan,
+        ),
       sortDirections: ['descend', 'ascend'],
     },
     {
@@ -280,11 +233,11 @@ export const PembayaranSpp = () => {
     },
     {
       title: 'Total Pembayaran',
-      dataIndex: 'totalbayar',
-      key: 'totalbayar',
+      dataIndex: 'totalBayar',
+      key: 'totalBayar',
       width: '20%',
-      ...getColumnSearchProps('totalbayar'),
-      sorter: (a, b) => a.totalbayar - b.totalbayar,
+      ...getColumnSearchProps('totalBayar'),
+      sorter: (a, b) => a.totalBayar - b.totalBayar,
       sortDirections: ['descend', 'ascend'],
     },
     {
@@ -296,7 +249,7 @@ export const PembayaranSpp = () => {
             type="primary"
             size="middle"
             className="bg-blue-500"
-            onClick={() => showModal('edit')}>
+            onClick={() => showModal('edit', record)}>
             Pembayaran
           </Button>
         </Space>
@@ -305,28 +258,37 @@ export const PembayaranSpp = () => {
   ]
 
   return (
-    <div className="rounded-md bg-white p-2 h-[100%] overflow-scroll">
-      <div className="my-4 flex items-center justify-between px-4">
-        <div className="flex items-center">
-          <h2 className="text-xl font-bold text-black">Pembayaran SPP</h2>
-        </div>
-        <div className="flex items-center">
-          {/* <Button
+    <Spin tip="Loading Data" spinning={loading}>
+      <div className="rounded-md bg-white p-2 h-[100%] overflow-scroll">
+        <div className="my-4 flex items-center justify-between px-4">
+          <div className="flex items-center">
+            <h2 className="text-xl font-bold text-black">Pembayaran SPP</h2>
+          </div>
+          <div className="flex items-center">
+            {/* <Button
             type="primary"
             size="middle"
             className="bg-blue-500"
             onClick={() => showModal('tambah')}>
             Tambah Pembayaran
           </Button> */}
-          <ModalSpp action={actions} open={open} setOpen={setOpen} />
+            <ModalSpp
+              getData={initiateData}
+              action={actions}
+              open={open}
+              setOpen={setOpen}
+              dataSppInput={dataSppInput}
+              setDataSppInput={setDataSppInput}
+            />
+          </div>
         </div>
+        <Table
+          columns={columns}
+          dataSource={dataSpp}
+          scroll={{ x: 400 }}
+          className="h-[100%]"
+        />
       </div>
-      <Table
-        columns={columns}
-        dataSource={data}
-        scroll={{ x: 400 }}
-        className="h-[100%]"
-      />
-    </div>
+    </Spin>
   )
 }
