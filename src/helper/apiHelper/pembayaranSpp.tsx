@@ -27,6 +27,15 @@ export const tambahPembayaranSpp = (payload: any) => {
   })
 }
 
+export const pembayaranSppGenerate = (idSiswa: number) => {
+  return new Promise<any>((resolve, reject) => {
+    axios
+      .get('/api/pembayaranSpp/pembayaranSppGenerate?idSiswa=' + idSiswa)
+      .then(response => resolve(response))
+      .catch(error => reject(error))
+  })
+}
+
 export const dataPembayaranSppDelete = (payload: any) => {
   return new Promise<any>((resolve, reject) => {
     axios

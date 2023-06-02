@@ -17,7 +17,7 @@ interface DataType {
   siswaId: number
   jumlah: number
   jatuhTempo: string
-  sudahDibayar: number
+  sudahDibayar: string
   totalBayar: number
 }
 
@@ -28,14 +28,14 @@ const data: DataType[] = [
     siswaId: 1,
     jumlah: 500000,
     jatuhTempo: '2023-06-15',
-    sudahDibayar: 250000,
+    sudahDibayar: 'SUDAH',
     totalBayar: 500000,
   },
   {
     siswaId: 2,
     jumlah: 750000,
     jatuhTempo: '2023-06-20',
-    sudahDibayar: 500000,
+    sudahDibayar: 'SUDAH',
     totalBayar: 750000,
   },
   // Additional 8 rows of mock data
@@ -43,56 +43,56 @@ const data: DataType[] = [
     siswaId: 3,
     jumlah: 300000,
     jatuhTempo: '2023-06-25',
-    sudahDibayar: 150000,
+    sudahDibayar: 'BELUM',
     totalBayar: 300000,
   },
   {
     siswaId: 4,
     jumlah: 450000,
     jatuhTempo: '2023-06-30',
-    sudahDibayar: 225000,
+    sudahDibayar: 'BELUM',
     totalBayar: 450000,
   },
   {
     siswaId: 5,
     jumlah: 600000,
     jatuhTempo: '2023-07-05',
-    sudahDibayar: 300000,
+    sudahDibayar: 'SUDAH',
     totalBayar: 600000,
   },
   {
     siswaId: 6,
     jumlah: 700000,
     jatuhTempo: '2023-07-10',
-    sudahDibayar: 350000,
+    sudahDibayar: 'BELUM',
     totalBayar: 700000,
   },
   {
     siswaId: 7,
     jumlah: 550000,
     jatuhTempo: '2023-07-15',
-    sudahDibayar: 275000,
+    sudahDibayar: 'SUDAH',
     totalBayar: 550000,
   },
   {
     siswaId: 8,
     jumlah: 400000,
     jatuhTempo: '2023-07-20',
-    sudahDibayar: 200000,
+    sudahDibayar: 'BELUM',
     totalBayar: 400000,
   },
   {
     siswaId: 9,
     jumlah: 650000,
     jatuhTempo: '2023-07-25',
-    sudahDibayar: 325000,
+    sudahDibayar: 'SUDAH',
     totalBayar: 650000,
   },
   {
     siswaId: 10,
     jumlah: 800000,
     jatuhTempo: '2023-07-30',
-    sudahDibayar: 400000,
+    sudahDibayar: 'SUDAH',
     totalBayar: 800000,
   },
 ]
@@ -276,7 +276,7 @@ export function ModalSpp({ action, open, setOpen }: ModalSppProps) {
       key: 'sudahDibayar',
       width: '20%',
       ...getColumnSearchProps('sudahDibayar'),
-      sorter: (a, b) => a.sudahDibayar - b.sudahDibayar,
+      sorter: (a, b) => a.sudahDibayar.localeCompare(b.sudahDibayar),
       sortDirections: ['descend', 'ascend'],
     },
     {
@@ -303,7 +303,19 @@ export function ModalSpp({ action, open, setOpen }: ModalSppProps) {
       <div className="flex flex-col">
         <div className="w-[50%] flex my-2">
           <div className="w-[50%]">ID</div>
-          <div className="w-[50%]">ALSDMKASSD</div>
+          <Select
+            defaultValue="12345"
+            style={{ width: 120 }}
+            allowClear
+            options={[
+              { value: '12345', label: '12345' },
+              { value: '23456', label: '23456' },
+              { value: '34567', label: '34567' },
+              { value: '45678', label: '45678' },
+              { value: '56789', label: '56789' },
+              { value: '67890', label: '67890' },
+            ]}
+          />
         </div>
         <div className="w-[50%] flex my-2">
           <div className="w-[50%]">Tanggal Pembayaran</div>
