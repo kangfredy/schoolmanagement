@@ -10,6 +10,7 @@ import {
   Space,
 } from 'antd'
 import { dataSiswaUpdate, tambahSiswa } from '@/helper/apiHelper/dataSiswa'
+import { pembayaranSppGenerate } from '@/helper/apiHelper/pembayaranSpp'
 import { getDataKelas } from '@/helper/apiHelper/kelas'
 import { ISelect } from '@/interface/ui/component/dropdown'
 import { IDataSiswaModal } from '@/interface/ui/state/dataSiswaModal'
@@ -69,16 +70,29 @@ export function ModalTambahSiswa({
   const handleOk = () => {
     setConfirmLoading(true)
     if (action === 'tambah') {
-      console.log('UNTUK TAMBAH', dataSiswaInput)
+      // console.log('UNTUK TAMBAH', dataSiswaInput)
       tambahSiswa(dataSiswaInput)
         .then((response: any) => {
           getData()
           setDataSiswaInput({} as IDataSiswaModal)
           setConfirmLoading(false)
+          return response
         })
         .then(response => {
           setOpen(false)
           message.success('Sukses Tambah Siswa')
+
+          console.log('RESPONSE DATA', response)
+
+          const generatedSiswaId = response.data.tambahSiswaData.id
+
+          pembayaranSppGenerate(generatedSiswaId)
+            .then((response: any) => {
+              console.log('pembayaranSppGenerate', response)
+            })
+            .catch((error: any) => {
+              message.error(error.message)
+            })
         })
         .catch((error: any) => {
           message.error(error.message)
