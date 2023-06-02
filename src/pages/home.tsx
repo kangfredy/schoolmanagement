@@ -18,7 +18,7 @@ import Image from 'next/image'
 import { DataSiswa } from '@/screens/DataSiswa'
 import { PembayaranSpp } from '@/screens/PembayaranSpp'
 import { DataBayarPerin } from '@/screens/PembayaranPerin'
-import { DataBayarSeragam } from '@/screens/PembayaranSeragam'
+import { PembayaranSeragam } from '@/screens/PembayaranSeragam'
 import { DataKelas } from '@/screens/DataKelas'
 import { DataJurusan } from '@/screens/DataJurusan'
 
@@ -93,7 +93,7 @@ export const Home = () => {
       componentToRender = <PembayaranSpp />
       break
     case '5':
-      componentToRender = <DataBayarSeragam />
+      componentToRender = <PembayaranSeragam />
       break
     case '6':
       componentToRender = <DataBayarPerin />
