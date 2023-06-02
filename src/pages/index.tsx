@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import { useContext, useState } from "react";
 import { Alert, message } from "antd";
 import axios from "axios";
+import { THEME_COLOR } from "@/helper/util/theme";
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -43,15 +45,27 @@ export default function Login() {
   return (
     <>
       {contextHolder}
-      <div className="w-screen h-screen bg-purple-800 flex  items-center justify-center">
-        <div className="lg:w-[25%] md:w-[30%] sm:w-[60%] xs:w-[60%] h-[50%] bg-white rounded-xl drop-shadow-xl">
+      <div className={`w-screen h-screen bg-[#325D55] flex flex-col  items-center justify-center overflow-auto`}>
+      <div>
+          <Image src="/assets/images/PGRILogo.png"
+              alt={''}
+              width={150}
+              height={150} />
+        </div>
+        <div>
+          <Image src="/assets/images/Logo.png"
+              alt={''}
+              width={400}
+              height={400} />
+        </div>
+        <div className="lg:w-[25%] md:w-[30%] sm:w-[60%] xs:w-[60%] h-[45%] bg-white rounded-xl drop-shadow-xl">
           <div className="w-[100%] h-[100%] flex flex-col items-center justify-center gap-2">
-            <div className="text-xl font-extrabold flex justify-center mb-10 text-purple-500	">
+            <div className="text-xl font-extrabold flex justify-center mb-10 text-[#325D55]	">
               Login
             </div>
 
             <input
-              className="mt-15 w-[80%] focus:outline-indigo-500 h-[10%] rounded-md border-2 px-5 py-2 text-[black]"
+              className="mt-15 w-[80%] focus:outline-[#A1BFA0] h-[10%] rounded-md border-2 px-5 py-2 text-[black]"
               placeholder="username"
               onChange={(event) => {
                 setUsername(event.target.value);
@@ -64,9 +78,15 @@ export default function Login() {
               onChange={(event) => {
                 setPassword(event.target.value);
               }}
+              onKeyDown={(event)=> {
+                console.log(event.key)
+                if(event.key === "Enter"){
+                  handleLogin()
+                }
+              }}
             />
             <button
-              className="mt-5 w-[80%] lg:h-[10%] md:h-[15%] xs:h-[50px] sm:h-[50px] bg-purple-500 text-[white] rounded-xl"
+              className="mt-5 w-[80%] lg:h-[10%] md:h-[15%] xs:h-[50px] sm:h-[50px] bg-[#325D55] text-[white] rounded-xl"
               onClick={() => handleLogin()}
             >
               Login

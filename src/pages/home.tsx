@@ -110,7 +110,7 @@ export const Home = () => {
         </div>
         <Menu
           theme="dark"
-          mode="inline"
+          mode="vertical"
           defaultSelectedKeys={['1']}
           items={menuList.map((value, index) => ({
             key: String(index + 1),
