@@ -10,6 +10,7 @@ import { getDataSiswa, dataSiswaDelete } from '@/helper/apiHelper/dataSiswa'
 import { IDataSiswaModal } from '@/interface/ui/state/dataSiswaModal'
 import { Isiswa } from '@/interface/ui/state/dataSiswaTable'
 import { checkAgama } from '@/helper/util/agama'
+import { ModalDetailSiswa } from '@/components/ModalDetailSiswa'
 
 type DataIndex = keyof Isiswa
 
@@ -20,34 +21,43 @@ export const DataSiswa = () => {
   const [open, setOpen] = useState(false)
   const [actions, setActions] = useState('')
   const [dataSiswa, setDataSiswa] = useState<Isiswa[]>([])
+  const [dataSiswaSelected, setDataSiswaSelected] = useState<Isiswa>(
+    {} as Isiswa,
+  )
   const [loading, setLoading] = useState<boolean>(false)
   const [dataSiswaInput, setDataSiswaInput] = useState<IDataSiswaModal>(
     {} as IDataSiswaModal,
   )
   const [confirmLoading, setConfirmLoading] = useState(false)
+  const [openDetail, setOpenDetail] = useState(false)
 
   const showModal = (action: string, data: Isiswa) => {
-    let dataInput = {
-      id: data?.id,
-      nama: data?.nama,
-      nim: data?.nim,
-      tanggalMasuk: data?.tanggalMasuk,
-      tanggalLahir: data?.tanggalLahir,
-      alamat: data?.alamat,
-      kelasId: data?.kelas?.id,
-      jenisKelamin: data?.jenisKelamin,
-      agama: data?.agama,
+    if (action == 'detail') {
+      setDataSiswaSelected(data)
+      setOpenDetail(true)
+    } else {
+      let dataInput = {
+        id: data?.id,
+        nama: data?.nama,
+        nim: data?.nim,
+        tanggalMasuk: data?.tanggalMasuk,
+        tanggalLahir: data?.tanggalLahir,
+        alamat: data?.alamat,
+        kelasId: data?.kelas?.id,
+        jenisKelamin: data?.jenisKelamin,
+        agama: data?.agama,
+      }
+      setDataSiswaInput(dataInput)
+      setActions(action)
+      setOpen(true)
     }
-    setDataSiswaInput(dataInput)
-    setActions(action)
-    setOpen(true)
   }
 
   const initiateData = async () => {
     setLoading(true)
     await getDataSiswa()
       .then(response => {
-        const arrayTemp: Isiswa[] = []; // Define and initialize arrayTemp
+        const arrayTemp: Isiswa[] = [] // Define and initialize arrayTemp
         response.data.dataSiswaData?.map((datas: any) => {
           const object1: Isiswa = {
             id: datas?.id,
@@ -58,12 +68,13 @@ export const DataSiswa = () => {
             alamat: datas?.alamat,
             kelas: datas?.kelas,
             jenisKelamin: datas?.jenisKelamin,
-            jenisKelaminDisplay: datas?.jenisKelamin === 1 ? "laki-laki" : "perempuan",
+            jenisKelaminDisplay:
+              datas?.jenisKelamin === 1 ? 'laki-laki' : 'perempuan',
             agama: datas?.agama,
             agamaDisplay: checkAgama(datas?.agama),
-          };
-         arrayTemp.push(object1);
-        });
+          }
+          arrayTemp.push(object1)
+        })
 
         //Assign the mapped array to the state
         setDataSiswa(arrayTemp)
@@ -264,6 +275,13 @@ export const DataSiswa = () => {
       render: (_, record) => (
         <Space size="middle" split>
           <Button
+            type="default"
+            size="middle"
+            onClick={() => showModal('detail', record)}
+            className="bg-[#A8C698] hover:bg-[#325D55] text-white focus:text-white active:text-white">
+            Detail
+          </Button>
+          <Button
             type="primary"
             size="middle"
             className="bg-blue-500"
@@ -289,6 +307,11 @@ export const DataSiswa = () => {
 
   return (
     <Spin tip="Loading Data" spinning={loading}>
+      <ModalDetailSiswa
+        isOpen={openDetail}
+        setIsOpen={setOpenDetail}
+        DataSiswa={dataSiswaSelected}
+      />
       <div className="rounded-md bg-white p-2 h-[100%] overflow-scroll">
         <div className="my-4 flex items-center justify-between px-4">
           <div className="flex items-center">
