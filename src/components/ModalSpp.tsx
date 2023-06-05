@@ -15,97 +15,24 @@ import { SearchOutlined, UserOutlined, IdcardOutlined } from '@ant-design/icons'
 import { Dispatch, SetStateAction, useRef } from 'react'
 import Highlighter from 'react-highlight-words'
 import {
-  dataPembayaranSppUpdate,
-  tambahPembayaranSpp,
-} from '@/helper/apiHelper/pembayaranSpp'
-// import { getDataKelas } from '@/helper/apiHelper/kelas'
+  historyPembayaranSppByPembayaranSppId,
+  dataHistoryPembayaranSppUpdate,
+} from '@/helper/apiHelper/historyPembayaranSpp'
 import { ISelect } from '@/interface/ui/component/dropdown'
 import { IDataSppModal } from '@/interface/ui/state/dataSppModal'
 import { ModalTambahSppProps } from '@/interface/ui/props/ModalTambahSpp'
+import { IDataHistorySppModal } from '@/interface/ui/state/dataHistorySppModal'
+import { IHistorySpp } from '@/interface/ui/state/dataHistorySppTable'
+import moment from 'moment'
 
-interface DataType {
-  siswaId: number
-  jumlah: number
-  jatuhTempo: string
-  sudahDibayar: string
-  totalBayar: number
-}
+const currentDate = new Date().toISOString()
+console.log('currentDate', currentDate)
+const formatedCurrentDate = moment(currentDate).format('DD MMMM YYYY')
 
-type DataIndex = keyof DataType
+const SPP_BULANAN: number = 200000
+const SPP_BULANAN_FORMAT: string = SPP_BULANAN.toLocaleString('en-US')
 
-const data: DataType[] = [
-  {
-    siswaId: 1,
-    jumlah: 500000,
-    jatuhTempo: '2023-06-15',
-    sudahDibayar: 'SUDAH',
-    totalBayar: 500000,
-  },
-  {
-    siswaId: 2,
-    jumlah: 750000,
-    jatuhTempo: '2023-06-20',
-    sudahDibayar: 'SUDAH',
-    totalBayar: 750000,
-  },
-  // Additional 8 rows of mock data
-  {
-    siswaId: 3,
-    jumlah: 300000,
-    jatuhTempo: '2023-06-25',
-    sudahDibayar: 'BELUM',
-    totalBayar: 300000,
-  },
-  {
-    siswaId: 4,
-    jumlah: 450000,
-    jatuhTempo: '2023-06-30',
-    sudahDibayar: 'BELUM',
-    totalBayar: 450000,
-  },
-  {
-    siswaId: 5,
-    jumlah: 600000,
-    jatuhTempo: '2023-07-05',
-    sudahDibayar: 'SUDAH',
-    totalBayar: 600000,
-  },
-  {
-    siswaId: 6,
-    jumlah: 700000,
-    jatuhTempo: '2023-07-10',
-    sudahDibayar: 'BELUM',
-    totalBayar: 700000,
-  },
-  {
-    siswaId: 7,
-    jumlah: 550000,
-    jatuhTempo: '2023-07-15',
-    sudahDibayar: 'SUDAH',
-    totalBayar: 550000,
-  },
-  {
-    siswaId: 8,
-    jumlah: 400000,
-    jatuhTempo: '2023-07-20',
-    sudahDibayar: 'BELUM',
-    totalBayar: 400000,
-  },
-  {
-    siswaId: 9,
-    jumlah: 650000,
-    jatuhTempo: '2023-07-25',
-    sudahDibayar: 'SUDAH',
-    totalBayar: 650000,
-  },
-  {
-    siswaId: 10,
-    jumlah: 800000,
-    jatuhTempo: '2023-07-30',
-    sudahDibayar: 'SUDAH',
-    totalBayar: 800000,
-  },
-]
+type DataIndex = keyof IHistorySpp
 
 export function ModalSpp({
   action,
@@ -114,12 +41,20 @@ export function ModalSpp({
   getData,
   setDataSppInput,
   dataSppInput,
+  setDataHistorySpp,
+  dataHistorySpp,
+  dataHistorySppSelect,
+  setDataHistorySppSelect,
+  getHistoryPembayaranSppByPembayaranSppId,
 }: ModalTambahSppProps) {
   const [confirmLoading, setConfirmLoading] = useState(false)
-  const [DataPembayaran, setDataPembayaran] = useState<DataType>({} as DataType)
-  const [searchText, setSearchText] = useState('')
   const [searchedColumn, setSearchedColumn] = useState('')
+  const [searchText, setSearchText] = useState('')
   const searchInput = useRef<InputRef>(null)
+  const [loading, setLoading] = useState<boolean>(false)
+  const [idHistory, setIdHistory] = useState<number | undefined>(undefined)
+
+  // useEffect(() => {}, [])
 
   const handleSearch = (
     selectedKeys: string[],
@@ -140,15 +75,9 @@ export function ModalSpp({
     confirm()
   }
 
-  const handleChange = (e: { target: { name: string; value: any } }) =>
-    setDataPembayaran(prevState => ({
-      ...prevState,
-      [e.target.name]: e.target.value,
-    }))
-
   const getColumnSearchProps = (
     dataIndex: DataIndex,
-  ): ColumnType<DataType> => ({
+  ): ColumnType<IHistorySpp> => ({
     filterDropdown: ({
       setSelectedKeys,
       selectedKeys,
@@ -234,33 +163,14 @@ export function ModalSpp({
       ),
   })
 
-  const handleOk = () => {
-    setConfirmLoading(true)
-    setTimeout(() => {
-      setOpen(false)
-      setConfirmLoading(false)
-    }, 2000)
-  }
-
-  const handleCancel = () => {
-    console.log('Clicked cancel button')
-    setOpen(false)
-  }
-  const handleKelas = (value: number) => {
-    setDataPembayaran(prevState => ({ ...prevState, kelasId: value }))
-  }
-  const onSearchKelas = (value: string) => {
-    console.log('search:', value)
-  }
-
-  const columns: ColumnsType<DataType> = [
+  const columns: ColumnsType<IHistorySpp> = [
     {
-      title: 'Id Siswa',
-      dataIndex: 'siswaId',
-      key: 'siswaId',
+      title: 'Id',
+      dataIndex: 'id',
+      key: 'id',
       width: '13%',
-      ...getColumnSearchProps('siswaId'),
-      sorter: (a, b) => a.siswaId - b.siswaId,
+      ...getColumnSearchProps('id'),
+      sorter: (a, b) => a.id - b.id,
       sortDirections: ['descend', 'ascend'],
     },
     {
@@ -280,6 +190,7 @@ export function ModalSpp({
       ...getColumnSearchProps('jatuhTempo'),
       sorter: (a, b) => a.jatuhTempo.localeCompare(b.jatuhTempo),
       sortDirections: ['descend', 'ascend'],
+      render: jatuhTempo => moment(jatuhTempo).format('DD-MM-YYYY'),
     },
     {
       title: 'Sudah Dibayar',
@@ -287,25 +198,75 @@ export function ModalSpp({
       key: 'sudahDibayar',
       width: '20%',
       ...getColumnSearchProps('sudahDibayar'),
-      sorter: (a, b) => a.sudahDibayar.localeCompare(b.sudahDibayar),
+      sorter: (a, b) => (a.sudahDibayar ? 1 : -1) - (b.sudahDibayar ? 1 : -1),
       sortDirections: ['descend', 'ascend'],
+      render: sudahDibayar => (sudahDibayar ? 'Yes' : 'No'),
     },
     {
-      title: 'Total Pembayaran',
-      dataIndex: 'totalBayar',
-      key: 'totalBayar',
-      width: '30%',
-      ...getColumnSearchProps('totalBayar'),
-      sorter: (a, b) => a.totalBayar - b.totalBayar,
+      title: 'Tanggal Pembayaran',
+      dataIndex: 'tanggalPembayaran',
+      key: 'tanggalPembayaran',
+      width: '20%',
+      ...getColumnSearchProps('tanggalPembayaran'),
+      sorter: (a, b) => a.tanggalPembayaran.localeCompare(b.tanggalPembayaran),
       sortDirections: ['descend', 'ascend'],
+      render: tanggalPembayaran =>
+        tanggalPembayaran
+          ? moment(tanggalPembayaran).format('DD-MM-YYYY')
+          : 'BELUM',
     },
   ]
+
+  const handleCancel = () => {
+    console.log('Clicked cancel button')
+    setIdHistory(undefined)
+    setOpen(false)
+  }
+
+  const handleHistorySppSelect = (value: number) => {
+    console.log('ID HISTORY :', value)
+    setIdHistory(value)
+  }
+
+  const handleBayar = () => {
+    console.log('ID HISTORY BAYAR:', idHistory)
+
+    const currentData = dataHistorySpp.find(obj => obj.id === idHistory)
+    if (currentData && currentData.sudahDibayar !== undefined) {
+      currentData.sudahDibayar = true
+    }
+
+    if (currentData && currentData.tanggalPembayaran !== undefined) {
+      currentData.tanggalPembayaran = currentDate
+    }
+
+    console.log('BAYAR DATA', currentData)
+
+    let currentPembayaranSppId: number
+    if (currentData && currentData.pembayaranSppId !== undefined) {
+      currentPembayaranSppId = currentData.pembayaranSppId
+    }
+
+    dataHistoryPembayaranSppUpdate(currentData)
+      .then((response: any) => {
+        // getData()
+        getHistoryPembayaranSppByPembayaranSppId(currentPembayaranSppId)
+        setConfirmLoading(false)
+      })
+      .then(response => {
+        // setOpen(false)
+        setOpen(true)
+      })
+      .catch((error: any) => {
+        // setOpen(false)
+        setOpen(true)
+      })
+  }
 
   return (
     <Modal
       title="PEMBAYARAN SPP"
       open={open}
-      onOk={handleOk}
       okButtonProps={{ className: 'bg-blue-500' }}
       confirmLoading={confirmLoading}
       width="80%"
@@ -315,36 +276,40 @@ export function ModalSpp({
         <div className="w-[50%] flex my-2">
           <div className="w-[50%]">ID</div>
           <Select
-            defaultValue="12345"
-            style={{ width: 120 }}
-            allowClear
-            options={[
-              { value: '12345', label: '12345' },
-              { value: '23456', label: '23456' },
-              { value: '34567', label: '34567' },
-              { value: '45678', label: '45678' },
-              { value: '56789', label: '56789' },
-              { value: '67890', label: '67890' },
-            ]}
+            showSearch
+            placeholder="Pilih HISTORY ID"
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+            }
+            onChange={handleHistorySppSelect}
+            options={dataHistorySppSelect}
+            className="ml-2 w-60"
+            value={idHistory}
           />
         </div>
         <div className="w-[50%] flex my-2">
           <div className="w-[50%]">Tanggal Pembayaran</div>
-          <div className="w-[50%]">12 Juni 2020</div>
+          <div className="w-[50%]">{formatedCurrentDate}</div>
         </div>
         <div className="w-[50%] flex my-2">
           <div className="w-[50%]">Jumlah Di Bayar</div>
-          <div className="w-[50%]">Rp 100,000</div>
+          <div className="w-[50%]">Rp {SPP_BULANAN_FORMAT}</div>
         </div>
       </div>
       <div className="flex justify-end my-5">
-        <Button type="primary" size="large" className="bg-red-500">
+        <Button
+          type="primary"
+          size="large"
+          className="bg-red-500"
+          onClick={handleBayar}
+          loading={confirmLoading}>
           BAYAR
         </Button>
       </div>
       <Table
         columns={columns}
-        dataSource={data}
+        dataSource={dataHistorySpp}
         scroll={{ x: 400 }}
         className="h-[100%]"
       />

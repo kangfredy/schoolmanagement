@@ -9,6 +9,20 @@ export const getHistoryPembayaranSpp = () => {
   })
 }
 
+export const historyPembayaranSppByPembayaranSppId = (
+  pembayaranSppId: number,
+) => {
+  return new Promise<any>((resolve, reject) => {
+    axios
+      .get(
+        '/api/historyPembayaranSpp/historyPembayaranSppByPembayaranSppId?pembayaranSppId=' +
+          pembayaranSppId,
+      )
+      .then(response => resolve(response))
+      .catch(error => reject(error))
+  })
+}
+
 export const tambahHistoryPembayaranSpp = (payload: any) => {
   return new Promise<any>((resolve, reject) => {
     axios

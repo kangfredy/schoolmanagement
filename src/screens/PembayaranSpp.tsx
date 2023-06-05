@@ -9,6 +9,12 @@ import { ModalSpp } from '../components/ModalSpp'
 import { getPembayaranSpp } from '@/helper/apiHelper/pembayaranSpp'
 import { IDataSppModal } from '@/interface/ui/state/dataSppModal'
 import { ISpp } from '@/interface/ui/state/dataSppTable'
+import {
+  historyPembayaranSppByPembayaranSppId,
+  dataHistoryPembayaranSppUpdate,
+} from '@/helper/apiHelper/historyPembayaranSpp'
+import { IHistorySpp } from '@/interface/ui/state/dataHistorySppTable'
+import { ISelect } from '@/interface/ui/component/dropdown'
 
 type DataIndex = keyof ISpp
 
@@ -23,8 +29,70 @@ export const PembayaranSpp = () => {
   const [dataSppInput, setDataSppInput] = useState<IDataSppModal>(
     {} as IDataSppModal,
   )
+  const [dataHistorySpp, setDataHistorySpp] = useState<IHistorySpp[]>([])
+  const [dataHistorySppSelect, setDataHistorySppSelect] = useState<ISelect[]>(
+    [] as ISelect[],
+  )
 
-  const showModal = (action: string, data: ISpp) => {
+  // const getHistorySppById = (id: number) => {
+  //   historyPembayaranSppByPembayaranSppId(1)
+  //     .then(response => {
+  //       console.log(
+  //         'ID',
+  //         response.data.getHistoryPembayaranSppById[0].pembayaranSppId,
+  //       )
+  //       console.log('historyPembayaranSppByPembayaranSppId ', response)
+  //       const arrayDataTemp: IHistorySpp[] = []
+  //       const arraySelectTemp: any[] = []
+
+  //       response.data.getHistoryPembayaranSppById?.map((datas: any) => {
+  //         const object1: IHistorySpp = {
+  //           id: datas?.id,
+  //           pembayaranSppId: datas?.pembayaranSppId,
+  //           jatuhTempo: datas?.jatuhTempo,
+  //           jumlah: datas?.jumlah,
+  //           sudahDibayar: datas?.sudahDibayar,
+  //           tanggalPembayaran: datas?.tanggalPembayaran,
+  //           pembayaranSpp: datas?.pembayaranSpp,
+  //         }
+  //         arrayDataTemp.push(object1)
+
+  //         const object2: any = {
+  //           value: datas.id,
+  //           label: datas.id,
+  //         }
+  //         arraySelectTemp.push(object2)
+  //       })
+
+  //       //Assign the mapped array to the state
+  //       setDataHistorySpp(arrayDataTemp)
+  //       setDataHistorySppSelect(arraySelectTemp)
+  //     })
+  //     .then(response => {
+  //       setLoading(false)
+  //     })
+  //     .catch(error => {
+  //       console.error(error.message)
+  //       setLoading(false)
+  //     })
+  // }
+
+  // const showModal = (action: string, data: ISpp) => {
+  //   let dataInput = {
+  //     id: data?.id,
+  //     siswaId: data?.siswaId,
+  //     tunggakan: data?.tunggakan,
+  //     totalBayar: data?.totalBayar,
+  //     siswa: data?.siswa,
+  //     kelas: data?.siswa.kelas,
+  //     jurusan: data?.siswa?.kelas.jurusan,
+  //   }
+  //   setDataSppInput(dataInput)
+  //   setActions(action)
+  //   setOpen(true)
+  // }
+
+  const showModal = (data: ISpp) => {
     let dataInput = {
       id: data?.id,
       siswaId: data?.siswaId,
@@ -34,9 +102,55 @@ export const PembayaranSpp = () => {
       kelas: data?.siswa.kelas,
       jurusan: data?.siswa?.kelas.jurusan,
     }
+
     setDataSppInput(dataInput)
-    setActions(action)
-    setOpen(true)
+
+    getHistoryPembayaranSppByPembayaranSppId(data?.id)
+  }
+
+  const getHistoryPembayaranSppByPembayaranSppId = (id: number) => {
+    historyPembayaranSppByPembayaranSppId(id)
+      .then(response => {
+        console.log(
+          'ID',
+          response.data.getHistoryPembayaranSppById[0].pembayaranSppId,
+        )
+        console.log('historyPembayaranSppByPembayaranSppId ', response)
+        const arrayDataTemp: IHistorySpp[] = []
+        const arraySelectTemp: any[] = []
+
+        response.data.getHistoryPembayaranSppById?.map((datas: any) => {
+          const object1: IHistorySpp = {
+            id: datas?.id,
+            pembayaranSppId: datas?.pembayaranSppId,
+            jatuhTempo: datas?.jatuhTempo,
+            jumlah: datas?.jumlah,
+            sudahDibayar: datas?.sudahDibayar,
+            tanggalPembayaran: datas?.tanggalPembayaran,
+            pembayaranSpp: datas?.pembayaranSpp,
+          }
+          arrayDataTemp.push(object1)
+
+          const object2: any = {
+            value: datas.id,
+            label: datas.id,
+          }
+          arraySelectTemp.push(object2)
+        })
+
+        //Assign the mapped array to the state
+        setDataHistorySpp(arrayDataTemp)
+        setDataHistorySppSelect(arraySelectTemp)
+
+        setOpen(true)
+      })
+      .then(response => {
+        setLoading(false)
+      })
+      .catch(error => {
+        console.error(error.message)
+        setLoading(false)
+      })
   }
 
   const initiateData = async () => {
@@ -249,7 +363,7 @@ export const PembayaranSpp = () => {
             type="primary"
             size="middle"
             className="bg-blue-500"
-            onClick={() => showModal('edit', record)}>
+            onClick={() => showModal(record)}>
             Pembayaran
           </Button>
         </Space>
@@ -258,37 +372,47 @@ export const PembayaranSpp = () => {
   ]
 
   return (
-    <Spin tip="Loading Data" spinning={loading}>
-      <div className="rounded-md bg-white p-2 h-[100%] overflow-scroll">
-        <div className="my-4 flex items-center justify-between px-4">
-          <div className="flex items-center">
-            <h2 className="text-xl font-bold text-black">Pembayaran SPP</h2>
-          </div>
-          <div className="flex items-center">
-            {/* <Button
+    <>
+      <ModalSpp
+        getData={initiateData}
+        action={actions}
+        open={open}
+        setOpen={setOpen}
+        dataSppInput={dataSppInput}
+        setDataSppInput={setDataSppInput}
+        dataHistorySpp={dataHistorySpp}
+        setDataHistorySpp={setDataHistorySpp}
+        dataHistorySppSelect={dataHistorySppSelect}
+        setDataHistorySppSelect={setDataHistorySppSelect}
+        getHistoryPembayaranSppByPembayaranSppId={
+          getHistoryPembayaranSppByPembayaranSppId
+        }
+      />
+
+      <Spin tip="Loading Data" spinning={loading}>
+        <div className="rounded-md bg-white p-2 h-[100%] overflow-scroll">
+          <div className="my-4 flex items-center justify-between px-4">
+            <div className="flex items-center">
+              <h2 className="text-xl font-bold text-black">Pembayaran SPP</h2>
+            </div>
+            <div className="flex items-center">
+              {/* <Button
             type="primary"
             size="middle"
             className="bg-blue-500"
             onClick={() => showModal('tambah')}>
             Tambah Pembayaran
           </Button> */}
-            <ModalSpp
-              getData={initiateData}
-              action={actions}
-              open={open}
-              setOpen={setOpen}
-              dataSppInput={dataSppInput}
-              setDataSppInput={setDataSppInput}
-            />
+            </div>
           </div>
+          <Table
+            columns={columns}
+            dataSource={dataSpp}
+            scroll={{ x: 400 }}
+            className="h-[100%]"
+          />
         </div>
-        <Table
-          columns={columns}
-          dataSource={dataSpp}
-          scroll={{ x: 400 }}
-          className="h-[100%]"
-        />
-      </div>
-    </Spin>
+      </Spin>
+    </>
   )
 }
