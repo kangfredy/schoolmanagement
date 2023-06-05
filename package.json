@@ -10,6 +10,7 @@
     "migrate": "prisma db push --schema=./prisma/schema.prisma && node src/seeder/user.mjs && node src/seeder/jurusan.mjs && node src/seeder/kelas.mjs && node src/seeder/siswa.mjs && node src/seeder/pembayaranSpp.mjs"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.1.4",
     "@hookstate/core": "^4.0.1",
     "@prisma/client": "^4.14.1",
     "@types/node": "20.2.1",

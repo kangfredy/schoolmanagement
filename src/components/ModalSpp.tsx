@@ -8,6 +8,7 @@ import {
   Table,
   InputRef,
   Popconfirm,
+  Tag,
 } from 'antd'
 import type { ColumnType, ColumnsType } from 'antd/es/table'
 import type { FilterConfirmProps } from 'antd/es/table/interface'
@@ -200,7 +201,12 @@ export function ModalSpp({
       ...getColumnSearchProps('sudahDibayar'),
       sorter: (a, b) => (a.sudahDibayar ? 1 : -1) - (b.sudahDibayar ? 1 : -1),
       sortDirections: ['descend', 'ascend'],
-      render: sudahDibayar => (sudahDibayar ? 'Yes' : 'No'),
+      render: sudahDibayar =>
+        sudahDibayar ? (
+          <Tag color="#87d068">Sudah</Tag>
+        ) : (
+          <Tag color="#f50">Belum</Tag>
+        ),
     },
     {
       title: 'Tanggal Pembayaran',
@@ -213,7 +219,7 @@ export function ModalSpp({
       render: tanggalPembayaran =>
         tanggalPembayaran
           ? moment(tanggalPembayaran).format('DD-MM-YYYY')
-          : 'BELUM',
+          : '-',
     },
   ]
 

@@ -6,5 +6,6 @@ export interface IFormInput {
   icons?: ReactNode
   isDisabled?: boolean
   values?: any
-  onChange?: (e: any) => void
+  isArea?: boolean
+  onChange: (e: any) => void
 }
