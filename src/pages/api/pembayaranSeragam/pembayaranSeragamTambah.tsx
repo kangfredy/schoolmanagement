@@ -10,8 +10,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // Create Data Baru
       const tambahPembayaranSeragam = await prisma.pembayaranSeragam.create({data: {
         siswaId: siswaId,
-        Tunggakan: Tunggakan,
-        TotalBayar: TotalBayar
+        tunggakan: Tunggakan,
+        totalBayar: TotalBayar
       }})
   
       // Return a success or failed message

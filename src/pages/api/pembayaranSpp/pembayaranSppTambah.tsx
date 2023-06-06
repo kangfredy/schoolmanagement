@@ -11,7 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const tambahPembayaranSpp = await prisma.pembayaranSpp.create({data: {
         siswaId: siswaId,
         tunggakan: tunggakan,
-        TotalBayar: TotalBayar
+        totalBayar: TotalBayar
       }})
   
       // Return a success or failed message

@@ -122,6 +122,8 @@ export const TableSeragamHistory = (props: ITableSPPHistoryProps) => {
       ),
   })
 
+  
+
   const columns: ColumnsType<IdataSeragamHistory> = [
     {
       title: 'Nomor',

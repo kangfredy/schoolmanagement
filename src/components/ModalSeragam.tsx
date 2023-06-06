@@ -116,6 +116,7 @@ const dataSeragam: ISeragam[] = [
 interface IDetailSeragam {
   nomor: number
   seragam: string
+  harga: number
   jumlahYangDibayar: number
   tanggalDibayar: string
   sudahDibayar: boolean
@@ -130,6 +131,7 @@ const data: IDetailSeragam[] = [
     jumlahYangDibayar: 250000,
     tanggalDibayar: '2023-06-15',
     sudahDibayar: true,
+    harga: 80000
   },
   {
     nomor: 2,
@@ -137,6 +139,7 @@ const data: IDetailSeragam[] = [
     jumlahYangDibayar: 150000,
     tanggalDibayar: '2023-06-16',
     sudahDibayar: false,
+    harga: 80000
   },
   {
     nomor: 3,
@@ -144,6 +147,7 @@ const data: IDetailSeragam[] = [
     jumlahYangDibayar: 200000,
     tanggalDibayar: '2023-06-17',
     sudahDibayar: true,
+    harga: 80000
   },
   {
     nomor: 4,
@@ -151,6 +155,7 @@ const data: IDetailSeragam[] = [
     jumlahYangDibayar: 250000,
     tanggalDibayar: '2023-06-18',
     sudahDibayar: false,
+    harga: 80000
   },
   {
     nomor: 5,
@@ -158,6 +163,7 @@ const data: IDetailSeragam[] = [
     jumlahYangDibayar: 150000,
     tanggalDibayar: '2023-06-19',
     sudahDibayar: true,
+    harga: 80000
   },
   {
     nomor: 6,
@@ -165,6 +171,7 @@ const data: IDetailSeragam[] = [
     jumlahYangDibayar: 200000,
     tanggalDibayar: '2023-06-20',
     sudahDibayar: false,
+    harga: 80000
   },
   {
     nomor: 7,
@@ -172,6 +179,7 @@ const data: IDetailSeragam[] = [
     jumlahYangDibayar: 250000,
     tanggalDibayar: '2023-06-21',
     sudahDibayar: true,
+    harga: 80000
   },
   {
     nomor: 8,
@@ -179,6 +187,7 @@ const data: IDetailSeragam[] = [
     jumlahYangDibayar: 150000,
     tanggalDibayar: '2023-06-22',
     sudahDibayar: false,
+    harga: 80000
   },
   {
     nomor: 9,
@@ -186,6 +195,7 @@ const data: IDetailSeragam[] = [
     jumlahYangDibayar: 200000,
     tanggalDibayar: '2023-06-23',
     sudahDibayar: true,
+    harga: 80000
   },
   {
     nomor: 10,
@@ -193,6 +203,7 @@ const data: IDetailSeragam[] = [
     jumlahYangDibayar: 250000,
     tanggalDibayar: '2023-06-24',
     sudahDibayar: false,
+    harga: 80000
   },
 ]
 
@@ -353,14 +364,14 @@ export function ModalSeragam({ action, open, setOpen }: ModalSeragamProps) {
     message.error('Click on No')
   }
 
-  const columnsSeragam: ColumnsType<IDetailSeragam> = [
+  const columnsSeragam: any = [
     {
       title: 'Nomor',
       dataIndex: 'nomor',
       key: 'nomor',
       width: '13%',
       ...getColumnSearchProps('nomor'),
-      sorter: (a, b) => a.nomor - b.nomor,
+      sorter: (a: { nomor: number }, b: { nomor: number }) => a.nomor - b.nomor,
       sortDirections: ['descend', 'ascend'],
     },
     {
@@ -369,7 +380,7 @@ export function ModalSeragam({ action, open, setOpen }: ModalSeragamProps) {
       key: 'seragam',
       width: '20%',
       ...getColumnSearchProps('seragam'),
-      sorter: (a, b) => a.seragam.localeCompare(b.seragam),
+      sorter: (a: { seragam: string }, b: { seragam: any }) => a.seragam.localeCompare(b.seragam),
       sortDirections: ['descend', 'ascend'],
     },
     {
@@ -378,13 +389,13 @@ export function ModalSeragam({ action, open, setOpen }: ModalSeragamProps) {
       key: 'harga',
       width: '23%',
       ...getColumnSearchProps('harga'),
-      sorter: (a, b) => a.harga - b.harga,
+      sorter: (a: { harga: number }, b: { harga: number }) => a.harga - b.harga,
       sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Action',
       key: 'action',
-      render: (_, record) => (
+      render: (_: any, record: any) => (
         <Space size="small" split>
           <Popconfirm
             title="Hapus Data?"
