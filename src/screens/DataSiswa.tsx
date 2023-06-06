@@ -51,6 +51,7 @@ export const DataSiswa = () => {
       setActions(action)
       setOpen(true)
     }
+    console.log(data)
   }
 
   const initiateData = async () => {

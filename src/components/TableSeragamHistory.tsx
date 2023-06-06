@@ -1,16 +1,16 @@
 import { ITableSPPHistoryProps } from '@/interface/ui/props/TableSPPHistory'
 import { Button, Input, InputRef, Space, Table, Tag } from 'antd'
 import { SearchOutlined, UserOutlined, IdcardOutlined } from '@ant-design/icons'
-import { IdataSppHistory } from '@/interface/ui/state/dataSPPHistory'
+import { IdataSeragamHistory } from '@/interface/ui/state/dataSeragamHistory'
 import { ColumnType, ColumnsType } from 'antd/es/table'
 import { useRef, useState } from 'react'
 import { FilterConfirmProps } from 'antd/es/table/interface'
 import Highlighter from 'react-highlight-words'
 import moment from 'moment'
+import { IHistorySpp } from '@/interface/ui/state/dataHistorySppTable'
 
-type DataIndex = keyof IdataSppHistory
-
-export const TableSPPHistory = (props: ITableSPPHistoryProps) => {
+type DataIndex = keyof IdataSeragamHistory
+export const TableSeragamHistory = (props: ITableSPPHistoryProps) => {
   const [searchText, setSearchText] = useState('')
   const [searchedColumn, setSearchedColumn] = useState('')
   const searchInput = useRef<InputRef>(null)
@@ -36,7 +36,7 @@ export const TableSPPHistory = (props: ITableSPPHistoryProps) => {
 
   const getColumnSearchProps = (
     dataIndex: DataIndex,
-  ): ColumnType<IdataSppHistory> => ({
+  ): ColumnType<IdataSeragamHistory> => ({
     filterDropdown: ({
       setSelectedKeys,
       selectedKeys,
@@ -122,25 +122,25 @@ export const TableSPPHistory = (props: ITableSPPHistoryProps) => {
       ),
   })
 
-  const columns: ColumnsType<IdataSppHistory> = [
+  const columns: ColumnsType<IdataSeragamHistory> = [
     {
-      title: 'Jumlah',
-      dataIndex: 'jumlah',
-      key: 'jumlah',
+      title: 'Nomor',
+      dataIndex: 'nomor',
+      key: 'nomor',
       width: '20%',
-      ...getColumnSearchProps('jumlah'),
-      sorter: (a, b) => a.jumlah - b.jumlah,
+      ...getColumnSearchProps('nomor'),
+      sorter: (a, b) => a.nomor - b.nomor,
       sortDirections: ['descend', 'ascend'],
     },
     {
-      title: 'Jatuh Tempo',
-      dataIndex: 'jatuhTempo',
-      key: 'jatuhTempo',
+      title: 'Seragam',
+      dataIndex: 'seragam',
+      key: 'seragam',
       width: '23%',
-      ...getColumnSearchProps('jatuhTempo'),
-      sorter: (a, b) => a.jatuhTempo.localeCompare(b.jatuhTempo),
+      ...getColumnSearchProps('seragam'),
+      sorter: (a, b) => a.seragam.localeCompare(b.seragam),
       sortDirections: ['descend', 'ascend'],
-      render: jatuhTempo => moment(jatuhTempo).format('DD-MM-YYYY'),
+      render: seragam => moment(seragam).format('DD-MM-YYYY'),
     },
     {
       title: 'Sudah Dibayar',

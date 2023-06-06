@@ -286,7 +286,9 @@ export function ModalSpp({
             placeholder="Pilih HISTORY ID"
             optionFilterProp="children"
             filterOption={(input, option) =>
-              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              (option?.label.toString() ?? '')
+                .toLowerCase()
+                .includes(input.toLowerCase())
             }
             onChange={handleHistorySppSelect}
             options={dataHistorySppSelect}

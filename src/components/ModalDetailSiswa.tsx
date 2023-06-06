@@ -13,6 +13,7 @@ import { IdataSppHistory } from '@/interface/ui/state/dataSPPHistory'
 import { SetStateAction, useEffect, useState } from 'react'
 import { historyPembayaranSppByPembayaranSppId } from '@/helper/apiHelper/historyPembayaranSpp'
 import { TableSPPHistory } from './TableSppHistory'
+import { TableSeragamHistory } from './TableSeragamHistory'
 
 export const ModalDetailSiswa = (props: IModalDetailSiswaProps) => {
   const [historySPP, setHistorySPP] = useState<IdataSppHistory[]>(
@@ -82,7 +83,7 @@ export const ModalDetailSiswa = (props: IModalDetailSiswaProps) => {
             <div className="text-xl my-5">History Pembayaran SPP</div>
             <TableSPPHistory Data={historySPP} />
             <div className="text-xl my-5">History Pembayaran Seragam</div>
-            <Table />
+            <TableSeragamHistory Data={historySPP} />
           </div>
         </div>
       </Modal>
