@@ -33,6 +33,8 @@ import {
   dataSeragamUpdate,
   dataSeragamDelete,
 } from '@/helper/apiHelper/seragam'
+import { ModalTambahSeragamBaru } from '../components/ModalTambahSeragamBaru'
+
 import moment from 'moment'
 
 type DataIndexHistory = keyof IHistorySeragam
@@ -58,6 +60,10 @@ export function ModalSeragam({
   const [harga, setHarga] = useState<number>(0)
   const [namaSeragam, setNamaSeragam] = useState('')
   const [loading, setLoading] = useState<boolean>(false)
+  const [dataSeragamInput, setDataSeragamInput] = useState<IDataSeragamnModal>(
+    {} as IDataSeragamnModal,
+  )
+  const [openTambah, setOpenTambah] = useState(false)
 
   // const [DataPembayaran, setDataPembayaran] = useState<IDetailSeragam>(
   //   {} as IDetailSeragam,
@@ -286,6 +292,8 @@ export function ModalSeragam({
 
   const handleCancel = () => {
     console.log('Clicked cancel button')
+    setHarga(0)
+    setNamaSeragam('')
     setOpen(false)
   }
   // const handleKelas = (value: number) => {
@@ -299,7 +307,7 @@ export function ModalSeragam({
     setLoading(true)
     await dataSeragamDelete({ id: clickedData.id })
       .then(response => {
-        message.success('Click on Yes')
+        message.success('Seragam Berhasil Terhapus')
         getData()
       })
       .then(() => {
@@ -314,6 +322,16 @@ export function ModalSeragam({
   const handleSeragamCancelDelete = (e: any) => {
     console.log(e)
     // message.error('Click on No')
+  }
+
+  const showModalTambahSeragamBaru = (data: ISeragam) => {
+    let dataInput = {
+      id: data?.id,
+      nama: data?.nama,
+      harga: data?.harga,
+    }
+    setDataSeragamInput(dataInput)
+    setOpenTambah(true)
   }
 
   const columnsSeragam: ColumnsType<ISeragam> = [
@@ -349,6 +367,13 @@ export function ModalSeragam({
       key: 'action',
       render: (_: any, record: any) => (
         <Space size="small" split>
+          <Button
+            type="primary"
+            size="middle"
+            className="bg-blue-500"
+            onClick={() => showModalTambahSeragamBaru(record)}>
+            Edit
+          </Button>
           <Popconfirm
             title="Hapus Data?"
             description="Apakah benar ingin menghapus data ini?"
@@ -499,6 +524,9 @@ export function ModalSeragam({
     tambahSeragam(newSeragam)
       .then((response: any) => {
         getData()
+        setHarga(0)
+        setNamaSeragam('')
+        message.success('Sukses Tambah Seragam')
       })
       .catch((error: any) => {
         message.error(error.message)
@@ -516,6 +544,7 @@ export function ModalSeragam({
           prefix={<RiShirtLine />}
           onChange={e => handleSeragamInput(e)}
           className="w-60 my-1"
+          value={namaSeragam}
           required
         />
         <Input
@@ -524,6 +553,7 @@ export function ModalSeragam({
           prefix={<RiShirtLine />}
           onChange={e => handleHargaInput(e)}
           className="w-60 mt-2 mb-3"
+          value={harga !== 0 ? harga : ''}
           required
         />
         <Button
@@ -540,6 +570,13 @@ export function ModalSeragam({
             dataSource={dataSeragam}
             scroll={{ x: 400 }}
             className="h-[100%]"
+          />
+          <ModalTambahSeragamBaru
+            getData={getData}
+            open={openTambah}
+            setOpen={setOpenTambah}
+            dataSeragamInput={dataSeragamInput}
+            setDataSeragamInput={setDataSeragamInput}
           />
         </Spin>
       </div>
