@@ -9,6 +9,20 @@ export const getHistoryPembayaranSeragam = () => {
   })
 }
 
+export const historyPembayaranSeragamByPembayaranSeragamId = (
+  pembayaranSeragamId: number,
+) => {
+  return new Promise<any>((resolve, reject) => {
+    axios
+      .get(
+        '/api/historyPembayaranSeragam/historyPembayaranSeragamByPembayaranSeragamId?pembayaranSeragamId=' +
+          pembayaranSeragamId,
+      )
+      .then(response => resolve(response))
+      .catch(error => reject(error))
+  })
+}
+
 export const tambahHistoryPembayaranSeragam = (payload: any) => {
   return new Promise<any>((resolve, reject) => {
     axios

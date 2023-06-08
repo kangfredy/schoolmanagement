@@ -6,109 +6,18 @@ import type { FilterConfirmProps } from 'antd/es/table/interface'
 import React, { useEffect, useRef, useState } from 'react'
 import Highlighter from 'react-highlight-words'
 import { ModalSeragam } from '../components/ModalSeragam'
-// import { getPembayaranSeragam } from "@/helper/apiHelper/getPembayaranSeragam";
+import { getPembayaranSeragam } from '@/helper/apiHelper/pembayaranSeragam'
+import { IDataPembayaranSeragamModal } from '@/interface/ui/state/dataPembayaranSeragamModal'
+import { IPembayaranSeragam } from '@/interface/ui/state/dataPembayaranSeragamTable'
+import {
+  historyPembayaranSeragamByPembayaranSeragamId,
+  dataHistoryPembayaranSeragamUpdate,
+} from '@/helper/apiHelper/historyPembayaranSeragam'
+import { IHistorySeragam } from '@/interface/ui/state/dataHistorySeragamTable'
+import { getDataSeragam } from '@/helper/apiHelper/seragam'
+import { ISeragam } from '@/interface/ui/state/dataSeragamModal'
 
-interface DataType {
-  siswaId: number
-  nama: string
-  jurusan: string
-  kelas: string
-  tunggakan: number
-  totalbayar: number
-}
-
-type DataIndex = keyof DataType
-
-const data: DataType[] = [
-  {
-    siswaId: 3001,
-    nama: 'Dani Vicky Mahendra Nikmahtul Reinhard',
-    jurusan: 'TKJ',
-    kelas: 'X TKJ 2',
-    totalbayar: 400000,
-    tunggakan: 100000,
-  },
-  {
-    siswaId: 2,
-    nama: 'Rina Sari Dewi',
-    jurusan: 'TKJ',
-    kelas: 'X TKJ 2',
-    totalbayar: 400000,
-    tunggakan: 100000,
-  },
-
-  {
-    siswaId: 3,
-    nama: 'Adi Pratama Putra',
-    jurusan: 'RPL',
-    kelas: 'X RPL 3',
-    totalbayar: 500000,
-    tunggakan: 0,
-  },
-
-  {
-    siswaId: 4,
-    nama: 'Lia Nur Fitriani',
-    jurusan: 'MM',
-    kelas: 'X MM 1',
-    totalbayar: 450000,
-    tunggakan: 50000,
-  },
-
-  {
-    siswaId: 5,
-    nama: 'Budi Setiawan',
-    jurusan: 'TKJ',
-    kelas: 'X TKJ 1',
-    totalbayar: 350000,
-    tunggakan: 150000,
-  },
-
-  {
-    siswaId: 6,
-    nama: 'Eka Rahmawati',
-    jurusan: 'MM',
-    kelas: 'X MM 2',
-    totalbayar: 400000,
-    tunggakan: 100000,
-  },
-
-  {
-    siswaId: 7,
-    nama: 'Fajar Nugraha',
-    jurusan: 'RPL',
-    kelas: 'X RPL 2',
-    totalbayar: 500000,
-    tunggakan: 0,
-  },
-
-  {
-    siswaId: 8,
-    nama: 'Gita Ayu Lestari',
-    jurusan: 'TKJ',
-    kelas: 'X TKJ 3',
-    totalbayar: 450000,
-    tunggakan: 50000,
-  },
-
-  {
-    siswaId: 9,
-    nama: 'Hadi Prasetyo',
-    jurusan: 'MM',
-    kelas: 'X MM 3',
-    totalbayar: 350000,
-    tunggakan: 150000,
-  },
-
-  {
-    siswaId: 10,
-    nama: 'Intan Permata Sari',
-    jurusan: 'RPL',
-    kelas: 'X RPL 1',
-    totalbayar: 400000,
-    tunggakan: 100000,
-  },
-]
+type DataIndex = keyof IPembayaranSeragam
 
 export const PembayaranSeragam = () => {
   const [searchText, setSearchText] = useState('')
@@ -116,20 +25,131 @@ export const PembayaranSeragam = () => {
   const searchInput = useRef<InputRef>(null)
   const [open, setOpen] = useState(false)
   const [actions, setActions] = useState('')
+  const [loading, setLoading] = useState<boolean>(false)
+  const [dataPembayaranSeragam, setDataPembayaranSeragam] = useState<
+    IPembayaranSeragam[]
+  >([])
+  const [dataPembayaranSeragamInput, setDataPembayaranSeragamInput] =
+    useState<IPembayaranSeragam>({} as IPembayaranSeragam)
+  const [dataHistorySeragam, setDataHistorySeragam] = useState<
+    IHistorySeragam[]
+  >([])
+  const [dataSeragam, setDataSeragam] = useState<ISeragam[]>([])
 
-  const showModal = (action: string) => {
-    setActions(action)
-    setOpen(true)
+  const showModal = (action: string, data: IPembayaranSeragam) => {
+    console.log('TYPE OF DATA', typeof data)
+    if (action === 'detail') {
+      let dataInput = {
+        id: data?.id,
+        siswaId: data?.siswaId,
+        tunggakan: data?.tunggakan,
+        totalBayar: data?.totalBayar,
+        siswa: data?.siswa,
+        kelas: data?.siswa.kelas,
+        jurusan: data?.siswa?.kelas.jurusan,
+      }
+
+      setDataPembayaranSeragamInput(dataInput)
+      getHistoryPembayaranSeragamByPembayaranSeragamId(data?.id, action)
+    } else {
+      setActions(action)
+      setOpen(true)
+    }
   }
 
-  // useEffect(() => {
-  //     getPembayaranSeragam()
-  //         .then((response) => {
-  //             console.log(response.data.PembayaranSeragamData);
-  //             setPembayaranSeragam(response.data.PembayaranSeragamData);
-  //         })
-  //         .catch((error) => console.log(error));
-  // }, []);
+  const getHistoryPembayaranSeragamByPembayaranSeragamId = (
+    id: number,
+    action: string,
+  ) => {
+    historyPembayaranSeragamByPembayaranSeragamId(id)
+      .then(response => {
+        console.log(
+          'ID',
+          response.data.getHistoryPembayaranSeragamById[0].pembayaranSeragamId,
+        )
+        console.log('historyPembayaranSppByPembayaranSppId ', response)
+        const arrayDataTemp: IHistorySeragam[] = []
+
+        response.data.getHistoryPembayaranSeragamById?.map((datas: any) => {
+          const object1: IHistorySeragam = {
+            id: datas?.id,
+            pembayaranSeragamId: datas?.pembayaranSeragamId,
+            jumlahDiBayar: datas?.jumlahDiBayar,
+            sudahDibayar: datas?.sudahDibayar,
+            tanggalPembayaran: datas?.tanggalPembayaran,
+            seragamId: datas?.seragamId,
+            pembayaranSeragam: datas?.pembayaranSeragam,
+            seragam: datas?.seragam,
+          }
+          arrayDataTemp.push(object1)
+        })
+
+        //Assign the mapped array to the state
+        setDataHistorySeragam(arrayDataTemp)
+      })
+      .then(response => {
+        setLoading(false)
+        setActions(action)
+        setOpen(true)
+      })
+      .catch(error => {
+        console.error(error.message)
+        setLoading(false)
+      })
+  }
+
+  const initiateData = async () => {
+    setLoading(true)
+    await getPembayaranSeragam()
+      .then(response => {
+        const arrayTemp: IPembayaranSeragam[] = []
+        response.data.getPembayaranSeragam?.map((datas: any) => {
+          const object1: IPembayaranSeragam = {
+            id: datas?.id,
+            siswaId: datas?.siswaId,
+            tunggakan: datas?.tunggakan,
+            totalBayar: datas?.totalBayar,
+            siswa: datas?.siswa,
+          }
+          arrayTemp.push(object1)
+        })
+
+        //Assign the mapped array to the state
+        setDataPembayaranSeragam(arrayTemp)
+      })
+      .then(() => {
+        getDataSeragam()
+          .then(response => {
+            console.log('DATA SERAGAM RESPONSE', response)
+            const arrayTemp: ISeragam[] = []
+            response.data.getSeragam?.map((datas: any) => {
+              const object1: ISeragam = {
+                id: datas?.id,
+                nama: datas?.nama,
+                harga: datas?.harga,
+              }
+              arrayTemp.push(object1)
+            })
+
+            //Assign the mapped array to the state
+            console.log('DATA SERAGAM FOR TABLE', arrayTemp)
+            setDataSeragam(arrayTemp)
+          })
+          .then(() => {
+            setLoading(false)
+          })
+          .catch(error => {
+            setLoading(false)
+          })
+      })
+      .catch(error => {
+        setLoading(false)
+      })
+  }
+
+  useEffect(() => {
+    initiateData()
+  }, [])
 
   const handleSearch = (
     selectedKeys: string[],
@@ -156,14 +176,9 @@ export const PembayaranSeragam = () => {
     message.success('Click on Yes')
   }
 
-  const handleCancelDelete = (e: any) => {
-    console.log(e)
-    message.error('Click on No')
-  }
-
   const getColumnSearchProps = (
     dataIndex: DataIndex,
-  ): ColumnType<DataType> => ({
+  ): ColumnType<IPembayaranSeragam> => ({
     filterDropdown: ({
       setSelectedKeys,
       selectedKeys,
@@ -249,50 +264,45 @@ export const PembayaranSeragam = () => {
       ),
   })
 
-  const columns: ColumnsType<DataType> = [
+  const columns: ColumnsType<IPembayaranSeragam> = [
     {
-      title: 'NIS',
-      dataIndex: 'siswaId',
-      key: 'siswaId',
-      width: '5%',
-      ...getColumnSearchProps('siswaId'),
-      sorter: (a, b) => a.siswaId - b.siswaId,
+      title: 'NIM',
+      dataIndex: ['siswa', 'nim'],
+      key: 'nim',
+      width: '13%',
+      ...getColumnSearchProps('siswa'),
+      sorter: (a, b) => a.siswa.nim.localeCompare(b.siswa.nim),
       sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Nama',
-      dataIndex: 'nama',
+      dataIndex: ['siswa', 'nama'],
       key: 'nama',
       width: '40%',
-      ...getColumnSearchProps('nama'),
-      sorter: (a, b) => a.nama.localeCompare(b.nama),
-      sortDirections: ['descend', 'ascend'],
-    },
-    {
-      title: 'Jurusan',
-      dataIndex: 'jurusan',
-      key: 'jurusan',
-      width: '5%',
-      ...getColumnSearchProps('jurusan'),
-      sorter: (a, b) => a.jurusan.localeCompare(b.jurusan),
+      ...getColumnSearchProps('siswa'),
+      sorter: (a, b) => a.siswa.nama.localeCompare(b.siswa.nama),
       sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Kelas',
-      dataIndex: 'kelas',
+      dataIndex: ['siswa', 'kelas', 'namaKelas'],
       key: 'kelas',
-      width: '10%',
-      ...getColumnSearchProps('kelas'),
-      sorter: (a, b) => a.kelas.localeCompare(b.kelas),
+      width: '20%',
+      ...getColumnSearchProps('siswa'),
+      sorter: (a, b) =>
+        a.siswa.kelas.namaKelas.localeCompare(b.siswa.kelas.namaKelas),
       sortDirections: ['descend', 'ascend'],
     },
     {
-      title: 'Total Bayar',
-      dataIndex: 'totalbayar',
-      key: 'totalbayar',
+      title: 'Jurusan',
+      dataIndex: ['siswa', 'kelas', 'jurusan', 'namaJurusan'],
+      key: 'jurusan',
       width: '20%',
-      ...getColumnSearchProps('totalbayar'),
-      sorter: (a, b) => a.totalbayar - b.totalbayar,
+      ...getColumnSearchProps('siswa'),
+      sorter: (a, b) =>
+        a.siswa.kelas.jurusan.namaJurusan.localeCompare(
+          b.siswa.kelas.jurusan.namaJurusan,
+        ),
       sortDirections: ['descend', 'ascend'],
     },
     {
@@ -305,6 +315,15 @@ export const PembayaranSeragam = () => {
       sortDirections: ['descend', 'ascend'],
     },
     {
+      title: 'Total Pembayaran',
+      dataIndex: 'totalBayar',
+      key: 'totalBayar',
+      width: '20%',
+      ...getColumnSearchProps('totalBayar'),
+      sorter: (a, b) => a.totalBayar - b.totalBayar,
+      sortDirections: ['descend', 'ascend'],
+    },
+    {
       title: 'Action',
       key: 'action',
       render: (_, record) => (
@@ -313,21 +332,9 @@ export const PembayaranSeragam = () => {
             type="primary"
             size="middle"
             className="bg-blue-500"
-            onClick={() => showModal('detail')}>
+            onClick={() => showModal('detail', record)}>
             Detail
           </Button>
-          <Popconfirm
-            title="Hapus Data?"
-            description="Apakah benar ingin menghapus data ini?"
-            onConfirm={handleConfirmDelete}
-            onCancel={handleCancelDelete}
-            okText="Yes"
-            okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
-            cancelText="No">
-            <Button danger type="primary" size="middle" className="bg-blue-500">
-              Delete
-            </Button>
-          </Popconfirm>
         </Space>
       ),
     },
@@ -344,15 +351,29 @@ export const PembayaranSeragam = () => {
             type="primary"
             size="middle"
             className="bg-blue-500"
-            onClick={() => showModal('tambah')}>
+            onClick={() => showModal('tambah', {} as IPembayaranSeragam)}>
             Tambah Seragam
           </Button>
-          <ModalSeragam action={actions} open={open} setOpen={setOpen} />
+          <ModalSeragam
+            getData={initiateData}
+            action={actions}
+            open={open}
+            setOpen={setOpen}
+            dataPembayaranSeragamInput={dataPembayaranSeragamInput}
+            setDataPembayaranSeragamInput={setDataPembayaranSeragamInput}
+            dataHistorySeragam={dataHistorySeragam}
+            setDataHistorySeragam={setDataHistorySeragam}
+            dataSeragam={dataSeragam}
+            setDataSeragam={setDataSeragam}
+            getHistoryPembayaranSeragamByPembayaranSeragamId={
+              getHistoryPembayaranSeragamByPembayaranSeragamId
+            }
+          />
         </div>
       </div>
       <Table
         columns={columns}
-        dataSource={data}
+        dataSource={dataPembayaranSeragam}
         scroll={{ x: 400 }}
         className="h-[100%]"
       />
