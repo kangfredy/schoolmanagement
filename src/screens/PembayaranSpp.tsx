@@ -26,9 +26,7 @@ export const PembayaranSpp = () => {
   const [actions, setActions] = useState('')
   const [dataSpp, setDataSpp] = useState<ISpp[]>([])
   const [loading, setLoading] = useState<boolean>(false)
-  const [dataSppInput, setDataSppInput] = useState<IDataSppModal>(
-    {} as IDataSppModal,
-  )
+  const [dataSppInput, setDataSppInput] = useState<ISpp>({} as ISpp)
   const [dataHistorySpp, setDataHistorySpp] = useState<IHistorySpp[]>([])
   const [dataHistorySppSelect, setDataHistorySppSelect] = useState<ISelect[]>(
     [] as ISelect[],

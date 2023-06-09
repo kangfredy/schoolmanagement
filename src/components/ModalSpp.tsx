@@ -3,12 +3,13 @@ import {
   Input,
   Modal,
   Button,
-  Select,
+  Spin,
   Space,
   Table,
   InputRef,
   Popconfirm,
   Tag,
+  message,
 } from 'antd'
 import type { ColumnType, ColumnsType } from 'antd/es/table'
 import type { FilterConfirmProps } from 'antd/es/table/interface'
@@ -53,7 +54,6 @@ export function ModalSpp({
   const [searchText, setSearchText] = useState('')
   const searchInput = useRef<InputRef>(null)
   const [loading, setLoading] = useState<boolean>(false)
-  const [idHistory, setIdHistory] = useState<number | undefined>(undefined)
 
   // useEffect(() => {}, [])
 
@@ -164,6 +164,46 @@ export function ModalSpp({
       ),
   })
 
+  const handleConfirmBayarHistorySpp = (currentData: IHistorySpp) => {
+    console.log('DATA TO CONFIRM', currentData)
+
+    //Untuk dilepar ke api
+    const currentDate = new Date().toISOString()
+    if (currentData && currentData.sudahDibayar !== undefined) {
+      currentData.sudahDibayar = true
+    }
+
+    if (currentData && currentData.tanggalPembayaran !== undefined) {
+      currentData.tanggalPembayaran = currentDate
+    }
+
+    console.log('BAYAR DATA', currentData)
+
+    let currentPembayaranSppId: number
+    if (currentData && currentData.pembayaranSppId !== undefined) {
+      currentPembayaranSppId = currentData.pembayaranSppId
+      console.log('currentPembayaranSeragamId', currentPembayaranSppId)
+    }
+
+    dataHistoryPembayaranSppUpdate(currentData)
+      .then((response: any) => {
+        // getData()
+        getHistoryPembayaranSppByPembayaranSppId(currentPembayaranSppId)
+        setConfirmLoading(false)
+        message.success('Pembayaran Sukses')
+      })
+      .then(response => {
+        // setOpen(false)
+        setOpen(true)
+      })
+      .catch((error: any) => {
+        // setOpen(false)
+        setOpen(true)
+      })
+  }
+
+  const handleCancelBayarHistorySpp = () => {}
+
   const columns: ColumnsType<IHistorySpp> = [
     {
       title: 'Id',
@@ -221,52 +261,37 @@ export function ModalSpp({
           ? moment(tanggalPembayaran).format('DD-MM-YYYY')
           : '-',
     },
+    {
+      title: 'Action',
+      key: 'action',
+      render: (_: any, record: any) => (
+        <Space size="small" split>
+          {!record.sudahDibayar && (
+            <Popconfirm
+              title={`Pembayaran No ${record.id} ?`}
+              description={`Anda Yakin ingin Konfirmasi Pembayaran No ${record.id} ?`}
+              onConfirm={e => handleConfirmBayarHistorySpp(record)}
+              onCancel={handleCancelBayarHistorySpp}
+              okText="Yes"
+              okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
+              cancelText="No">
+              <Button type="primary" size="middle" className="bg-blue-500">
+                BAYAR
+              </Button>
+            </Popconfirm>
+          )}
+        </Space>
+      ),
+    },
   ]
 
   const handleCancel = () => {
     console.log('Clicked cancel button')
-    setIdHistory(undefined)
     setOpen(false)
   }
 
-  const handleHistorySppSelect = (value: number) => {
-    console.log('ID HISTORY :', value)
-    setIdHistory(value)
-  }
-
-  const handleBayar = () => {
-    console.log('ID HISTORY BAYAR:', idHistory)
-
-    const currentData = dataHistorySpp.find(obj => obj.id === idHistory)
-    if (currentData && currentData.sudahDibayar !== undefined) {
-      currentData.sudahDibayar = true
-    }
-
-    if (currentData && currentData.tanggalPembayaran !== undefined) {
-      currentData.tanggalPembayaran = currentDate
-    }
-
-    console.log('BAYAR DATA', currentData)
-
-    let currentPembayaranSppId: number
-    if (currentData && currentData.pembayaranSppId !== undefined) {
-      currentPembayaranSppId = currentData.pembayaranSppId
-    }
-
-    dataHistoryPembayaranSppUpdate(currentData)
-      .then((response: any) => {
-        // getData()
-        getHistoryPembayaranSppByPembayaranSppId(currentPembayaranSppId)
-        setConfirmLoading(false)
-      })
-      .then(response => {
-        // setOpen(false)
-        setOpen(true)
-      })
-      .catch((error: any) => {
-        // setOpen(false)
-        setOpen(true)
-      })
+  const handlePrint = () => {
+    console.log('PRINT CLICKED')
   }
 
   return (
@@ -279,40 +304,41 @@ export function ModalSpp({
       footer={null}
       onCancel={handleCancel}>
       <div className="flex flex-col">
-        <div className="w-[50%] flex my-2">
-          <div className="w-[50%]">ID</div>
-          <Select
-            showSearch
-            placeholder="Pilih HISTORY ID"
-            optionFilterProp="children"
-            filterOption={(input, option) =>
-              (option?.label.toString() ?? '')
-                .toLowerCase()
-                .includes(input.toLowerCase())
-            }
-            onChange={handleHistorySppSelect}
-            options={dataHistorySppSelect}
-            className="ml-2 w-60"
-            value={idHistory}
-          />
-        </div>
-        <div className="w-[50%] flex my-2">
-          <div className="w-[50%]">Tanggal Pembayaran</div>
-          <div className="w-[50%]">{formatedCurrentDate}</div>
-        </div>
-        <div className="w-[50%] flex my-2">
-          <div className="w-[50%]">Jumlah Di Bayar</div>
-          <div className="w-[50%]">Rp {SPP_BULANAN_FORMAT}</div>
-        </div>
+        {dataSppInput ? (
+          <>
+            <div className="w-[50%] flex my-2">
+              <div className="w-[50%]">NIS</div>
+              <div className="w-[50%]">{dataSppInput?.siswa?.nim}</div>
+            </div>
+            <div className="w-[50%] flex my-2">
+              <div className="w-[50%]">Nama</div>
+              <div className="w-[50%]">{dataSppInput?.siswa?.nama}</div>
+            </div>
+            <div className="w-[50%] flex my-2">
+              <div className="w-[50%]">Kelas</div>
+              <div className="w-[50%]">
+                {dataSppInput?.siswa?.kelas?.namaKelas}
+              </div>
+            </div>
+            <div className="w-[50%] flex my-2">
+              <div className="w-[50%]">Jurusan</div>
+              <div className="w-[50%]">
+                {dataSppInput?.siswa?.kelas?.jurusan?.namaJurusan}
+              </div>
+            </div>
+          </>
+        ) : (
+          <Spin size="large" />
+        )}
       </div>
       <div className="flex justify-end my-5">
         <Button
           type="primary"
           size="large"
           className="bg-red-500"
-          onClick={handleBayar}
+          onClick={handlePrint}
           loading={confirmLoading}>
-          BAYAR
+          PRINT
         </Button>
       </div>
       <Table
