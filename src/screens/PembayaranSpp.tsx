@@ -109,10 +109,10 @@ export const PembayaranSpp = () => {
   const getHistoryPembayaranSppByPembayaranSppId = (id: number) => {
     historyPembayaranSppByPembayaranSppId(id)
       .then(response => {
-        console.log(
-          'ID',
-          response.data.getHistoryPembayaranSppById[0].pembayaranSppId,
-        )
+        // console.log(
+        //   'ID',
+        //   response.data.getHistoryPembayaranSppById[0].pembayaranSppId,
+        // )
         console.log('historyPembayaranSppByPembayaranSppId ', response)
         const arrayDataTemp: IHistorySpp[] = []
         const arraySelectTemp: any[] = []
