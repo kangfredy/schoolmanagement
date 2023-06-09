@@ -105,7 +105,7 @@ model HistoryPembayaranSeragam {
   pembayaranSeragamId Int
   jumlahDiBayar       Int
   sudahDibayar        Boolean           @default(false)
-  tanggalPembayaran   DateTime          @default(now())
+  tanggalPembayaran   DateTime?
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
   isDeleted           Boolean           @default(false)

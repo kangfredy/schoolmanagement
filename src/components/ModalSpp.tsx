@@ -26,6 +26,8 @@ import { ModalTambahSppProps } from '@/interface/ui/props/ModalTambahSpp'
 import { IDataHistorySppModal } from '@/interface/ui/state/dataHistorySppModal'
 import { IHistorySpp } from '@/interface/ui/state/dataHistorySppTable'
 import moment from 'moment'
+import { convertDate } from '@/helper/util/time'
+import { convertMoney } from '@/helper/util/money'
 
 const currentDate = new Date().toISOString()
 console.log('currentDate', currentDate)
@@ -222,6 +224,7 @@ export function ModalSpp({
       ...getColumnSearchProps('jumlah'),
       sorter: (a, b) => a.jumlah - b.jumlah,
       sortDirections: ['descend', 'ascend'],
+      render: jumlah => convertMoney(jumlah),
     },
     {
       title: 'Jatuh Tempo',
@@ -231,7 +234,7 @@ export function ModalSpp({
       ...getColumnSearchProps('jatuhTempo'),
       sorter: (a, b) => a.jatuhTempo.localeCompare(b.jatuhTempo),
       sortDirections: ['descend', 'ascend'],
-      render: jatuhTempo => moment(jatuhTempo).format('DD-MM-YYYY'),
+      render: jatuhTempo => convertDate(jatuhTempo),
     },
     {
       title: 'Sudah Dibayar',
@@ -256,10 +259,7 @@ export function ModalSpp({
       ...getColumnSearchProps('tanggalPembayaran'),
       sorter: (a, b) => a.tanggalPembayaran.localeCompare(b.tanggalPembayaran),
       sortDirections: ['descend', 'ascend'],
-      render: tanggalPembayaran =>
-        tanggalPembayaran
-          ? moment(tanggalPembayaran).format('DD-MM-YYYY')
-          : '-',
+      render: tanggalPembayaran => convertDate(tanggalPembayaran),
     },
     {
       title: 'Action',
