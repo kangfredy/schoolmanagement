@@ -116,7 +116,7 @@ export const DataSiswa = () => {
     setLoading(true)
     await dataSiswaDelete({ id: clickedData.id })
       .then(response => {
-        message.success('Click on Yes')
+        message.success('Sukses Delete Siswa')
         initiateData()
       })
       .then(() => {
@@ -290,9 +290,9 @@ export const DataSiswa = () => {
             Edit Siswa
           </Button>
 
-          <Popconfirm
-            title="Delete the task"
-            description="Are you sure to delete this task?"
+          {/* <Popconfirm
+            title="Konfirmasi Delete"
+            description="Anda Yakin Ingin Menghapus Data Ini?"
             onConfirm={e => handleConfirmDelete(record)}
             okText="Yes"
             okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
@@ -300,7 +300,7 @@ export const DataSiswa = () => {
             <Button danger type="primary" size="middle" className="bg-blue-500">
               Delete
             </Button>
-          </Popconfirm>
+          </Popconfirm> */}
         </Space>
       ),
     },

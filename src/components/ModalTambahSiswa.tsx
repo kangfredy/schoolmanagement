@@ -108,7 +108,7 @@ export function ModalTambahSiswa({
         })
         .then(response => {
           setOpen(false)
-          message.success('Sukses Udate Siswa')
+          message.success('Sukses Edit Siswa')
         })
         .catch((error: any) => {
           message.error(error.message)

@@ -1,14 +1,13 @@
-import {  Input, Modal, Spin, message } from "antd";
-import {  useEffect, useState } from "react";
-import { Select, Space } from "antd";
-import { dataJurusanUpdate, tambahJurusan } from "@/helper/apiHelper/jurusan";
-import { SiGoogleclassroom } from "react-icons/si";
-import { getJurusan } from "@/helper/apiHelper/jurusan";
-import { ISelect } from "@/interface/ui/component/dropdown";
-import { IDataJurusanModal } from "@/interface/ui/state/dataJurusanModal";
-import { ModalTambahJurusanProps } from "@/interface/ui/props/ModalTambahJurusan";
-import { MdWarehouse } from "react-icons/md";
-
+import { Input, Modal, Spin, message } from 'antd'
+import { useEffect, useState } from 'react'
+import { Select, Space } from 'antd'
+import { dataJurusanUpdate, tambahJurusan } from '@/helper/apiHelper/jurusan'
+import { SiGoogleclassroom } from 'react-icons/si'
+import { getJurusan } from '@/helper/apiHelper/jurusan'
+import { ISelect } from '@/interface/ui/component/dropdown'
+import { IDataJurusanModal } from '@/interface/ui/state/dataJurusanModal'
+import { ModalTambahJurusanProps } from '@/interface/ui/props/ModalTambahJurusan'
+import { MdWarehouse } from 'react-icons/md'
 
 export function ModalTambahJurusan({
   action,
@@ -18,108 +17,102 @@ export function ModalTambahJurusan({
   setDataJurusanInput,
   dataJurusanInput,
 }: ModalTambahJurusanProps) {
-
- 
-  const [confirmLoading, setConfirmLoading] = useState(false);
-  const [dataJurusan, setDataJurusan] = useState<ISelect[]>(
-    [] as ISelect[]
-  );
-  const [loading, setLoading] = useState<boolean>(false);
+  const [confirmLoading, setConfirmLoading] = useState(false)
+  const [dataJurusan, setDataJurusan] = useState<ISelect[]>([] as ISelect[])
+  const [loading, setLoading] = useState<boolean>(false)
 
   const handleChange = (e: { target: { name: string; value: any } }) =>
     setDataJurusanInput((prevState: any) => ({
       ...prevState,
       [e.target.name]: e.target.value,
-    }));
+    }))
 
   const getJurusanData = () => {
-    setLoading(true);
+    setLoading(true)
     getJurusan()
-      .then((response) => {
-        let arrayTemp: any = [];
+      .then(response => {
+        let arrayTemp: any = []
         response.data.getJurusan.map(
           (value: { id: number; namaJurusan: string }) => {
             const objectData = {
               value: value.id,
               label: value.namaJurusan,
-            };
-            arrayTemp.push(objectData);
-          }
-        );
-        setDataJurusan(arrayTemp);
+            }
+            arrayTemp.push(objectData)
+          },
+        )
+        setDataJurusan(arrayTemp)
       })
-      .then((response) => {
-        setLoading(false);
+      .then(response => {
+        setLoading(false)
       })
-      .catch((error) => {
-        console.error(error.message);
-        setLoading(false);
-      });
-  };
+      .catch(error => {
+        console.error(error.message)
+        setLoading(false)
+      })
+  }
 
   useEffect(() => {
-    getJurusanData();
-  }, []);
-
+    getJurusanData()
+  }, [])
 
   const handleOk = () => {
-    setConfirmLoading(true);
-    if (action === "tambah") {
+    setConfirmLoading(true)
+    if (action === 'tambah') {
       tambahJurusan(dataJurusanInput)
         .then((response: any) => {
-          getData();
-          setDataJurusanInput({} as IDataJurusanModal);
-          setConfirmLoading(false);
+          getData()
+          setDataJurusanInput({} as IDataJurusanModal)
+          setConfirmLoading(false)
         })
         .then((response: any) => {
-          setOpen(false);
-          message.success("sukses Tambah Jurusan");
+          setOpen(false)
+          message.success('Sukses Tambah Jurusan')
         })
         .catch((error: any) => {
-          message.error(error.message);
-          setOpen(false);
-        });
-    } else if (action === "edit") {
+          message.error(error.message)
+          setOpen(false)
+        })
+    } else if (action === 'edit') {
       dataJurusanUpdate(dataJurusanInput)
         .then((response: any) => {
-          getData();
-          setDataJurusanInput({} as IDataJurusanModal);
-          setConfirmLoading(false);
+          getData()
+          setDataJurusanInput({} as IDataJurusanModal)
+          setConfirmLoading(false)
         })
         .then((response: any) => {
-          setOpen(false);
-          message.success("sukses Tambah Jurusan");
+          setOpen(false)
+          message.success('Sukses Edit Jurusan')
         })
         .catch((error: any) => {
-          message.error(error.message);
-          setOpen(false);
-        });
+          message.error(error.message)
+          setOpen(false)
+        })
     } else {
-      setConfirmLoading(false);
-      setOpen(false);
+      setConfirmLoading(false)
+      setOpen(false)
     }
-  };
+  }
 
   const handleCancel = () => {
-    setDataJurusanInput({} as IDataJurusanModal);
-    setOpen(false);
-  };
+    setDataJurusanInput({} as IDataJurusanModal)
+    setOpen(false)
+  }
 
   return (
     <Modal
       title={
-        action === "detail"
-          ? "Detail Jurusan"
-          : action === "edit"
-          ? "Edit Jurusan"
-          : "Tambah Jurusan"
+        action === 'detail'
+          ? 'Detail Jurusan'
+          : action === 'edit'
+          ? 'Edit Jurusan'
+          : 'Tambah Jurusan'
       }
       open={open}
       onOk={handleOk}
-      okButtonProps={{ className: "bg-blue-500" }}
+      okButtonProps={{ className: 'bg-blue-500' }}
       confirmLoading={confirmLoading}
-      onCancel={handleCancel}
-    >
+      onCancel={handleCancel}>
       <Spin spinning={loading}>
         <div className="my-8">
           <div className="my-4 flex items-center">
@@ -128,10 +121,10 @@ export function ModalTambahJurusan({
               <Input
                 placeholder="Nama Jurusan"
                 name="namaJurusan"
-                disabled={action === "detail" ? true : false}
+                disabled={action === 'detail' ? true : false}
                 value={dataJurusanInput.namaJurusan}
                 prefix={<MdWarehouse />}
-                onChange={(e) => handleChange(e)}
+                onChange={e => handleChange(e)}
                 className="ml-2 w-60"
                 required
               />
@@ -140,5 +133,5 @@ export function ModalTambahJurusan({
         </div>
       </Spin>
     </Modal>
-  );
+  )
 }
