@@ -18,6 +18,7 @@ import { SearchOutlined, UserOutlined, IdcardOutlined } from '@ant-design/icons'
 import { Dispatch, SetStateAction, useState, useEffect, useRef } from 'react'
 import Highlighter from 'react-highlight-words'
 import { convertDate } from '@/helper/util/time'
+import { convertMoney } from '@/helper/util/money'
 import { RiShirtLine } from 'react-icons/ri'
 import { IoIosResize } from 'react-icons/io'
 import { dataHistoryPembayaranSeragamUpdate } from '@/helper/apiHelper/historyPembayaranSeragam'
@@ -34,7 +35,6 @@ import {
   dataSeragamDelete,
 } from '@/helper/apiHelper/seragam'
 import { ModalTambahSeragamBaru } from '../components/ModalTambahSeragamBaru'
-
 import moment from 'moment'
 
 type DataIndexHistory = keyof IHistorySeragam
@@ -320,7 +320,7 @@ export function ModalSeragam({
   }
 
   const handleSeragamCancelDelete = (e: any) => {
-    console.log(e)
+    // console.log(e)
     // message.error('Click on No')
   }
 
@@ -361,6 +361,7 @@ export function ModalSeragam({
       ...getSeragamColumnSearchProps('harga'),
       sorter: (a, b) => a.harga - b.harga,
       sortDirections: ['descend', 'ascend'],
+      render: harga => convertMoney(harga),
     },
     {
       title: 'Action',
@@ -391,6 +392,48 @@ export function ModalSeragam({
     },
   ]
 
+  const handleConfirmBayarHistorySeragam = (currentData: IHistorySeragam) => {
+    console.log('DATA TO CONFIRM', currentData)
+
+    //Untuk dilepar ke api
+    const currentDate = new Date().toISOString()
+    if (currentData && currentData.sudahDibayar !== undefined) {
+      currentData.sudahDibayar = true
+    }
+
+    if (currentData && currentData.tanggalPembayaran !== undefined) {
+      currentData.tanggalPembayaran = currentDate
+    }
+
+    console.log('BAYAR DATA', currentData)
+
+    let currentPembayaranSeragamId: number
+    if (currentData && currentData.pembayaranSeragamId !== undefined) {
+      currentPembayaranSeragamId = currentData.pembayaranSeragamId
+      console.log('currentPembayaranSeragamId', currentPembayaranSeragamId)
+    }
+
+    dataHistoryPembayaranSeragamUpdate(currentData)
+      .then((response: any) => {
+        // getData()
+        getHistoryPembayaranSeragamByPembayaranSeragamId(
+          currentPembayaranSeragamId,
+          action,
+        )
+        setConfirmLoading(false)
+      })
+      .then(response => {
+        // setOpen(false)
+        setOpen(true)
+      })
+      .catch((error: any) => {
+        // setOpen(false)
+        setOpen(true)
+      })
+  }
+
+  const handleCancelBayarHistorySeragam = () => {}
+
   const columnsHistorySeragam: ColumnsType<IHistorySeragam> = [
     {
       title: 'Nomor',
@@ -418,6 +461,7 @@ export function ModalSeragam({
       ...getHistorySeragamColumnSearchProps('jumlahDiBayar'),
       sorter: (a, b) => a.jumlahDiBayar - b.jumlahDiBayar,
       sortDirections: ['descend', 'ascend'],
+      render: jumlahDiBayar => convertMoney(jumlahDiBayar),
     },
     {
       title: 'Tanggal Pembayaran',
@@ -427,6 +471,7 @@ export function ModalSeragam({
       ...getHistorySeragamColumnSearchProps('tanggalPembayaran'),
       sorter: (a, b) => a.tanggalPembayaran.localeCompare(b.tanggalPembayaran),
       sortDirections: ['descend', 'ascend'],
+      render: tanggalPembayaran => convertDate(tanggalPembayaran),
     },
     {
       title: 'Sudah Dibayar',
@@ -443,56 +488,67 @@ export function ModalSeragam({
         </>
       ),
     },
+    {
+      title: 'Action',
+      key: 'action',
+      render: (_: any, record: any) => (
+        <Space size="small" split>
+          {!record.sudahDibayar && (
+            <Popconfirm
+              title={`Pembayaran No ${record.id} ?`}
+              description={`Anda Yakin ingin Konfirmasi Pembayaran No ${record.id} ?`}
+              onConfirm={e => handleConfirmBayarHistorySeragam(record)}
+              onCancel={handleCancelBayarHistorySeragam}
+              okText="Yes"
+              okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
+              cancelText="No">
+              <Button type="primary" size="middle" className="bg-blue-500">
+                BAYAR
+              </Button>
+            </Popconfirm>
+          )}
+        </Space>
+      ),
+    },
   ]
 
   const headerDetailSeragam = (
     <>
       <div className="flex flex-col">
-        <div className="w-[50%] flex my-2">
-          <div className="w-[50%]">ID</div>
-          <div className="w-[50%]">112</div>
-        </div>
-        <div className="w-[50%] flex my-2">
-          <div className="w-[50%]">Seragam</div>
-          {/* <Select
-            className="w-60"
-            showSearch
-            placeholder="Pilih seragam"
-            optionFilterProp="children"
-            filterOption={(input, option) =>
-              (option?.label ?? '').includes(input)
-            }
-            filterSort={(optionA, optionB) =>
-              (optionA?.label ?? '')
-                .toLowerCase()
-                .localeCompare((optionB?.label ?? '').toLowerCase())
-            }
-            options={seragam}
-          /> */}
-        </div>
-        <div className="w-[50%] flex my-2">
-          <div className="w-[50%]">Tanggal Pembayaran</div>
-          <div className="w-[50%]">
-            {new Intl.DateTimeFormat('en-US').format(Date.now())}
-          </div>
-        </div>
-        <div className="w-[50%] flex my-2">
-          <div className="w-[50%]">Total Pembayaran</div>
-          <div className="w-[50%]">
-            {/* <Input
-              placeholder="Rp. 250.000"
-              name="seragam"
-              prefix={<RiShirtLine />}
-              onChange={e => handleChange(e)}
-              className="w-60"
-              required
-            /> */}
-          </div>
-        </div>
+        {dataPembayaranSeragamInput ? (
+          <>
+            <div className="w-[50%] flex my-2">
+              <div className="w-[50%]">NIS</div>
+              <div className="w-[50%]">
+                {dataPembayaranSeragamInput?.siswa?.nim}
+              </div>
+            </div>
+            <div className="w-[50%] flex my-2">
+              <div className="w-[50%]">Nama</div>
+              <div className="w-[50%]">
+                {dataPembayaranSeragamInput?.siswa?.nama}
+              </div>
+            </div>
+            <div className="w-[50%] flex my-2">
+              <div className="w-[50%]">Kelas</div>
+              <div className="w-[50%]">
+                {dataPembayaranSeragamInput?.siswa?.kelas?.namaKelas}
+              </div>
+            </div>
+            <div className="w-[50%] flex my-2">
+              <div className="w-[50%]">Jurusan</div>
+              <div className="w-[50%]">
+                {dataPembayaranSeragamInput?.siswa?.kelas?.jurusan?.namaJurusan}
+              </div>
+            </div>
+          </>
+        ) : (
+          <Spin size="large" />
+        )}
       </div>
       <div className="flex justify-end my-5 w-[97%]">
         <Button type="primary" size="large" className="bg-blue-500">
-          BAYAR
+          PRINT
         </Button>
       </div>
       <Table
