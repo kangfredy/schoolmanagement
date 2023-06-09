@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Input, Modal, Spin, message } from 'antd'
 import { useEffect, useState } from 'react'
 import { Select, Space } from 'antd'
