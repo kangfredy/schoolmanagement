@@ -1,8 +1,7 @@
 export interface IDataHistorySeragamModal {
-  id: number
+  id?: number
   pembayaranSeragamId: number
-  jumlahDiBayar: number
-  sudahDibayar: boolean
-  tanggalPembayaran: string
+  sudahDibayar?: boolean
+  tanggalPembayaran?: string
   seragamId: number
 }

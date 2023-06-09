@@ -11,7 +11,6 @@ export default async function handler(
     const {
       id,
       pembayaranSeragamId,
-      jumlahDiBayar,
       seragamId,
       tanggalPembayaran,
       sudahDibayar,
@@ -26,7 +25,6 @@ export default async function handler(
         data: {
           pembayaranSeragamId: pembayaranSeragamId,
           seragamId: seragamId,
-          jumlahDiBayar: jumlahDiBayar,
           tanggalPembayaran: tanggalPembayaran,
           sudahDibayar: sudahDibayar,
         },

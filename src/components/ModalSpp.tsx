@@ -184,7 +184,7 @@ export function ModalSpp({
     let currentPembayaranSppId: number
     if (currentData && currentData.pembayaranSppId !== undefined) {
       currentPembayaranSppId = currentData.pembayaranSppId
-      console.log('currentPembayaranSeragamId', currentPembayaranSppId)
+      console.log('currentPembayaranSppId', currentPembayaranSppId)
     }
 
     dataHistoryPembayaranSppUpdate(currentData)

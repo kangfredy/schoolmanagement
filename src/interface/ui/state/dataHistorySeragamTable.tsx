@@ -1,7 +1,6 @@
 export interface IHistorySeragam {
   id: number
   pembayaranSeragamId: number
-  jumlahDiBayar: number
   sudahDibayar: boolean
   tanggalPembayaran: string
   seragamId: number
@@ -12,6 +11,7 @@ export interface IHistorySeragam {
 export interface ISeragam {
   id: number
   nama: string
+  harga: number
 }
 
 export interface IPembayaranSeragam {

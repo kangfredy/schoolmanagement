@@ -35,7 +35,8 @@ import {
   dataSeragamDelete,
 } from '@/helper/apiHelper/seragam'
 import { ModalTambahSeragamBaru } from '../components/ModalTambahSeragamBaru'
-import moment from 'moment'
+import { ModalTambahHistorySeragam } from '../components/ModalTambahHistorySeragam'
+import { ISelect } from '@/interface/ui/component/dropdown'
 
 type DataIndexHistory = keyof IHistorySeragam
 type DataIndexSeragam = keyof ISeragam
@@ -64,6 +65,8 @@ export function ModalSeragam({
     {} as IDataSeragamnModal,
   )
   const [openTambah, setOpenTambah] = useState(false)
+  const [openHistoryTambah, setOpenHistoryTambah] = useState(false)
+  const [dataJurusan, setDataJurusan] = useState<ISelect[]>([] as ISelect[])
 
   // const [DataPembayaran, setDataPembayaran] = useState<IDetailSeragam>(
   //   {} as IDetailSeragam,
@@ -334,6 +337,10 @@ export function ModalSeragam({
     setOpenTambah(true)
   }
 
+  const showModalTambahHistoryPembayaranSeragam = () => {
+    setOpenHistoryTambah(true)
+  }
+
   const columnsSeragam: ColumnsType<ISeragam> = [
     {
       title: 'Nomor',
@@ -455,13 +462,13 @@ export function ModalSeragam({
     },
     {
       title: 'Jumlah Dibayar',
-      dataIndex: 'jumlahDiBayar',
-      key: 'jumlahDiBayar',
+      dataIndex: ['seragam', 'harga'],
+      key: 'seragam',
       width: '23%',
-      ...getHistorySeragamColumnSearchProps('jumlahDiBayar'),
-      sorter: (a, b) => a.jumlahDiBayar - b.jumlahDiBayar,
+      ...getHistorySeragamColumnSearchProps('seragam'),
+      sorter: (a, b) => a.seragam.harga - b.seragam.harga,
       sortDirections: ['descend', 'ascend'],
-      render: jumlahDiBayar => convertMoney(jumlahDiBayar),
+      render: harga => convertMoney(harga),
     },
     {
       title: 'Tanggal Pembayaran',
@@ -547,7 +554,14 @@ export function ModalSeragam({
         )}
       </div>
       <div className="flex justify-end my-5 w-[97%]">
-        <Button type="primary" size="large" className="bg-blue-500">
+        <Button
+          type="primary"
+          size="large"
+          className="bg-blue-500"
+          onClick={() => showModalTambahHistoryPembayaranSeragam()}>
+          TAMBAH
+        </Button>
+        <Button type="primary" size="large" className="bg-blue-500 ml-2">
           PRINT
         </Button>
       </div>
@@ -556,6 +570,19 @@ export function ModalSeragam({
         dataSource={dataHistorySeragam}
         scroll={{ x: 400 }}
         className="h-[100%]"
+      />
+      <ModalTambahHistorySeragam
+        getData={getData}
+        action={action}
+        open={openHistoryTambah}
+        setOpen={setOpenHistoryTambah}
+        dataSeragam={dataSeragam}
+        setDataSeragam={setDataSeragam}
+        setDataPembayaranSeragamInput={setDataPembayaranSeragamInput}
+        dataPembayaranSeragamInput={dataPembayaranSeragamInput}
+        getHistoryPembayaranSeragamByPembayaranSeragamId={
+          getHistoryPembayaranSeragamByPembayaranSeragamId
+        }
       />
     </>
   )
