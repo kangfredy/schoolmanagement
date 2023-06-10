@@ -11,6 +11,10 @@ import { IDataSiswaModal } from '@/interface/ui/state/dataSiswaModal'
 import { Isiswa } from '@/interface/ui/state/dataSiswaTable'
 import { checkAgama } from '@/helper/util/agama'
 import { ModalDetailSiswa } from '@/components/ModalDetailSiswa'
+import { historyPembayaranSppBySiswaId } from '@/helper/apiHelper/historyPembayaranSpp'
+import { historyPembayaranSeragamBySiswaId } from '@/helper/apiHelper/historyPembayaranSeragam'
+import { IHistorySpp } from '@/interface/ui/state/dataHistorySppTable'
+import { IHistorySeragam } from '@/interface/ui/state/dataHistorySeragamTable'
 
 type DataIndex = keyof Isiswa
 
@@ -30,9 +34,76 @@ export const DataSiswa = () => {
   )
   const [confirmLoading, setConfirmLoading] = useState(false)
   const [openDetail, setOpenDetail] = useState(false)
+  const [dataHistorySpp, setDataHistorySpp] = useState<IHistorySpp[]>([])
+  const [dataHistorySeragam, setDataHistorySeragam] = useState<
+    IHistorySeragam[]
+  >([])
+
+  const getHistoryPembayaranSppBySiswaId = (siswaId: number) => {
+    console.log('getHistoryPembayaranSppBySiswaId SISWA ID', siswaId)
+
+    historyPembayaranSppBySiswaId(siswaId)
+      .then(response => {
+        // console.log('getHistoryPembayaranSppBySiswaId RESPONSE ', response)
+
+        const arrayHistorySppTemp: IHistorySpp[] = []
+
+        response.data.getHistoryPembayaranSppBySiswaId?.map((datas: any) => {
+          const objectHistorySpp: IHistorySpp = {
+            id: datas?.id,
+            pembayaranSppId: datas?.pembayaranSppId,
+            jatuhTempo: datas?.jatuhTempo,
+            jumlah: datas?.jumlah,
+            sudahDibayar: datas?.sudahDibayar,
+            tanggalPembayaran: datas?.tanggalPembayaran,
+            pembayaranSpp: datas?.pembayaranSpp,
+          }
+          arrayHistorySppTemp.push(objectHistorySpp)
+        })
+
+        //Assign the mapped array to the state
+        setDataHistorySpp(arrayHistorySppTemp)
+      })
+      .then(() => {
+        historyPembayaranSeragamBySiswaId(siswaId)
+          .then(response => {
+            console.log('historyPembayaranSeragamBySiswaId RESPONSE ', response)
+
+            const arrayHistorySeragamTemp: IHistorySeragam[] = []
+
+            response.data.getHistoryPembayaranSeragamBySiswaId?.map(
+              (datas: any) => {
+                const objectHistorySeragam: IHistorySeragam = {
+                  id: datas?.id,
+                  pembayaranSeragamId: datas?.pembayaranSeragamId,
+                  seragamId: datas?.seragamId,
+                  sudahDibayar: datas?.sudahDibayar,
+                  tanggalPembayaran: datas?.tanggalPembayaran,
+                  pembayaranSeragam: datas?.pembayaranSeragam,
+                  seragam: datas?.seragam,
+                }
+                arrayHistorySeragamTemp.push(objectHistorySeragam)
+              },
+            )
+
+            //Assign the mapped array to the state
+            setDataHistorySeragam(arrayHistorySeragamTemp)
+          })
+          .then(response => {})
+          .catch(error => {
+            console.error(error.message)
+            // setLoading(false)
+          })
+      })
+      .catch(error => {
+        console.error(error.message)
+        // setLoading(false)
+      })
+  }
 
   const showModal = (action: string, data: Isiswa) => {
     if (action == 'detail') {
+      getHistoryPembayaranSppBySiswaId(data.id)
       setDataSiswaSelected(data)
       setOpenDetail(true)
     } else {
@@ -116,7 +187,7 @@ export const DataSiswa = () => {
     setLoading(true)
     await dataSiswaDelete({ id: clickedData.id })
       .then(response => {
-        message.success('Click on Yes')
+        message.success('Sukses Delete Siswa')
         initiateData()
       })
       .then(() => {
@@ -290,9 +361,9 @@ export const DataSiswa = () => {
             Edit Siswa
           </Button>
 
-          <Popconfirm
-            title="Delete the task"
-            description="Are you sure to delete this task?"
+          {/* <Popconfirm
+            title="Konfirmasi Delete"
+            description="Anda Yakin Ingin Menghapus Data Ini?"
             onConfirm={e => handleConfirmDelete(record)}
             okText="Yes"
             okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
@@ -300,7 +371,7 @@ export const DataSiswa = () => {
             <Button danger type="primary" size="middle" className="bg-blue-500">
               Delete
             </Button>
-          </Popconfirm>
+          </Popconfirm> */}
         </Space>
       ),
     },
@@ -309,9 +380,14 @@ export const DataSiswa = () => {
   return (
     <Spin tip="Loading Data" spinning={loading}>
       <ModalDetailSiswa
-        isOpen={openDetail}
-        setIsOpen={setOpenDetail}
+        open={openDetail}
+        setOpen={setOpenDetail}
         DataSiswa={dataSiswaSelected}
+        setDataHistorySpp={setDataHistorySpp}
+        dataHistorySpp={dataHistorySpp}
+        setDataHistorySeragam={setDataHistorySeragam}
+        dataHistorySeragam={dataHistorySeragam}
+        getHistoryPembayaranSppBySiswaId={getHistoryPembayaranSppBySiswaId}
       />
       <div className="rounded-md bg-white p-2 h-[100%] overflow-scroll">
         <div className="my-4 flex items-center justify-between px-4">

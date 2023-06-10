@@ -12,7 +12,7 @@ export default async function handler(
   const { idSiswa }: any = req.query
   const jumlahspp: any = process.env.SPP_BULANAN
   if (req.method === 'GET') {
-    const generate = await prisma.pembayaranSpp.create({
+    const generatePembayaranSpp = await prisma.pembayaranSpp.create({
       data: {
         siswaId: parseInt(idSiswa),
         tunggakan: jumlahspp * 12,
@@ -29,13 +29,21 @@ export default async function handler(
       const currentDate = new Date(startDate.getFullYear(), currentMonth, 1)
       await prisma.historyPembayaranSpp.create({
         data: {
-          pembayaranSppId: generate.id,
+          pembayaranSppId: generatePembayaranSpp.id,
           jatuhTempo: currentDate,
           jumlah: parseInt(jumlahspp),
           sudahDibayar: false,
         },
       })
     }
+
+    await prisma.pembayaranSeragam.create({
+      data: {
+        siswaId: parseInt(idSiswa),
+        tunggakan: 0,
+        totalBayar: 0,
+      },
+    })
     res.status(200).json({ message: 'Generate successful' })
   } else {
     res.status(405).json({ message: 'metthod not allowed' })

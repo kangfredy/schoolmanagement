@@ -103,9 +103,8 @@ model HistoryPembayaranSeragam {
   id                  Int               @id @default(autoincrement())
   pembayaranSeragam   PembayaranSeragam @relation(fields: [pembayaranSeragamId], references: [id])
   pembayaranSeragamId Int
-  jumlahDiBayar       Int
   sudahDibayar        Boolean           @default(false)
-  tanggalPembayaran   DateTime          @default(now())
+  tanggalPembayaran   DateTime?
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
   isDeleted           Boolean           @default(false)

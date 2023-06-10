@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from 'react'
-import { IDataSppModal } from '../state/dataSppModal'
+import { ISpp } from '@/interface/ui/state/dataSppTable'
 import { IHistorySpp } from '../state/dataHistorySppTable'
 import { ISelect } from '@/interface/ui/component/dropdown'
 
@@ -8,8 +8,8 @@ export interface ModalTambahSppProps {
   action: string
   setOpen: Dispatch<SetStateAction<boolean>>
   getData: () => any
-  setDataSppInput: Dispatch<SetStateAction<IDataSppModal>>
-  dataSppInput: IDataSppModal
+  setDataSppInput: Dispatch<SetStateAction<ISpp>>
+  dataSppInput: ISpp
   setDataHistorySpp: Dispatch<SetStateAction<IHistorySpp[]>>
   dataHistorySpp: IHistorySpp[]
   setDataHistorySppSelect: Dispatch<SetStateAction<ISelect[]>>

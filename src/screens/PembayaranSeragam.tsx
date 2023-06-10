@@ -50,6 +50,7 @@ export const PembayaranSeragam = () => {
       }
 
       setDataPembayaranSeragamInput(dataInput)
+      console.log('dataInput', dataInput)
       getHistoryPembayaranSeragamByPembayaranSeragamId(data?.id, action)
     } else {
       setActions(action)
@@ -63,10 +64,6 @@ export const PembayaranSeragam = () => {
   ) => {
     historyPembayaranSeragamByPembayaranSeragamId(id)
       .then(response => {
-        console.log(
-          'ID',
-          response.data.getHistoryPembayaranSeragamById[0].pembayaranSeragamId,
-        )
         console.log('historyPembayaranSppByPembayaranSppId ', response)
         const arrayDataTemp: IHistorySeragam[] = []
 
@@ -74,7 +71,6 @@ export const PembayaranSeragam = () => {
           const object1: IHistorySeragam = {
             id: datas?.id,
             pembayaranSeragamId: datas?.pembayaranSeragamId,
-            jumlahDiBayar: datas?.jumlahDiBayar,
             sudahDibayar: datas?.sudahDibayar,
             tanggalPembayaran: datas?.tanggalPembayaran,
             seragamId: datas?.seragamId,
@@ -90,11 +86,14 @@ export const PembayaranSeragam = () => {
       .then(response => {
         setLoading(false)
         setActions(action)
+      })
+      .finally(() => {
         setOpen(true)
       })
       .catch(error => {
         console.error(error.message)
         setLoading(false)
+        setOpen(false)
       })
   }
 

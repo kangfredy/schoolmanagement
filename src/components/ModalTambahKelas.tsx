@@ -66,7 +66,7 @@ export function ModalTambahKelas({
         })
         .then(response => {
           setOpen(false)
-          message.success('sukses Tambah Kelas')
+          message.success('Sukses Tambah Kelas')
         })
         .catch((error: any) => {
           message.error(error.message)
@@ -81,7 +81,7 @@ export function ModalTambahKelas({
         })
         .then(response => {
           setOpen(false)
-          message.success('sukses Tambah Kelas')
+          message.success('Sukses Edit Kelas')
         })
         .catch((error: any) => {
           message.error(error.message)

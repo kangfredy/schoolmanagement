@@ -26,9 +26,7 @@ export const PembayaranSpp = () => {
   const [actions, setActions] = useState('')
   const [dataSpp, setDataSpp] = useState<ISpp[]>([])
   const [loading, setLoading] = useState<boolean>(false)
-  const [dataSppInput, setDataSppInput] = useState<IDataSppModal>(
-    {} as IDataSppModal,
-  )
+  const [dataSppInput, setDataSppInput] = useState<ISpp>({} as ISpp)
   const [dataHistorySpp, setDataHistorySpp] = useState<IHistorySpp[]>([])
   const [dataHistorySppSelect, setDataHistorySppSelect] = useState<ISelect[]>(
     [] as ISelect[],
@@ -111,10 +109,10 @@ export const PembayaranSpp = () => {
   const getHistoryPembayaranSppByPembayaranSppId = (id: number) => {
     historyPembayaranSppByPembayaranSppId(id)
       .then(response => {
-        console.log(
-          'ID',
-          response.data.getHistoryPembayaranSppById[0].pembayaranSppId,
-        )
+        // console.log(
+        //   'ID',
+        //   response.data.getHistoryPembayaranSppById[0].pembayaranSppId,
+        // )
         console.log('historyPembayaranSppByPembayaranSppId ', response)
         const arrayDataTemp: IHistorySpp[] = []
         const arraySelectTemp: any[] = []
