@@ -23,6 +23,18 @@ export const historyPembayaranSppByPembayaranSppId = (
   })
 }
 
+export const historyPembayaranSppBySiswaId = (siswaId: number) => {
+  return new Promise<any>((resolve, reject) => {
+    axios
+      .get(
+        '/api/historyPembayaranSpp/historyPembayaranSppBySiswaId?siswaId=' +
+          siswaId,
+      )
+      .then(response => resolve(response))
+      .catch(error => reject(error))
+  })
+}
+
 export const tambahHistoryPembayaranSpp = (payload: any) => {
   return new Promise<any>((resolve, reject) => {
     axios
