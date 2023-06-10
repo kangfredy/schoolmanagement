@@ -13,14 +13,35 @@ CREATE TABLE `User` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `Jurusan` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `namaJurusan` VARCHAR(32) NOT NULL,
+    `isDeleted` BOOLEAN NOT NULL DEFAULT false,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Kelas` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `namaKelas` VARCHAR(32) NOT NULL,
+    `isDeleted` BOOLEAN NOT NULL DEFAULT false,
+    `jurusanId` INTEGER NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `DataSiswa` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `nim` VARCHAR(100) NOT NULL,
     `nama` VARCHAR(191) NOT NULL,
     `alamat` VARCHAR(191) NOT NULL,
     `tanggalMasuk` DATETIME(3) NOT NULL,
-    `kelas` VARCHAR(10) NOT NULL,
+    `tanggalLahir` DATETIME(3) NOT NULL,
+    `kelasId` INTEGER NOT NULL,
     `jenisKelamin` INTEGER NOT NULL,
-    `agama` VARCHAR(191) NOT NULL,
+    `agama` INTEGER NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
     `isDeleted` BOOLEAN NOT NULL DEFAULT false,
@@ -33,7 +54,7 @@ CREATE TABLE `PembayaranSpp` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `siswaId` INTEGER NOT NULL,
     `tunggakan` INTEGER NOT NULL,
-    `TotalBayar` INTEGER NOT NULL,
+    `totalBayar` INTEGER NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
     `isDeleted` BOOLEAN NOT NULL DEFAULT false,
@@ -48,7 +69,7 @@ CREATE TABLE `HistoryPembayaranSpp` (
     `jatuhTempo` DATETIME(3) NOT NULL,
     `jumlah` INTEGER NOT NULL,
     `sudahDibayar` BOOLEAN NOT NULL DEFAULT false,
-    `tanggalPembayaran` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `tanggalPembayaran` DATETIME(3) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
     `isDeleted` BOOLEAN NOT NULL DEFAULT false,
@@ -60,6 +81,8 @@ CREATE TABLE `HistoryPembayaranSpp` (
 CREATE TABLE `Seragam` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `nama` VARCHAR(191) NOT NULL,
+    `isDeleted` BOOLEAN NOT NULL DEFAULT false,
+    `harga` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -68,8 +91,8 @@ CREATE TABLE `Seragam` (
 CREATE TABLE `PembayaranSeragam` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `siswaId` INTEGER NOT NULL,
-    `TotalBayar` INTEGER NOT NULL,
-    `Tunggakan` INTEGER NOT NULL,
+    `totalBayar` INTEGER NOT NULL,
+    `tunggakan` INTEGER NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
     `isDeleted` BOOLEAN NOT NULL DEFAULT false,
@@ -82,6 +105,7 @@ CREATE TABLE `HistoryPembayaranSeragam` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `pembayaranSeragamId` INTEGER NOT NULL,
     `jumlahDiBayar` INTEGER NOT NULL,
+    `sudahDibayar` BOOLEAN NOT NULL DEFAULT false,
     `tanggalPembayaran` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
@@ -90,6 +114,12 @@ CREATE TABLE `HistoryPembayaranSeragam` (
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE `Kelas` ADD CONSTRAINT `Kelas_jurusanId_fkey` FOREIGN KEY (`jurusanId`) REFERENCES `Jurusan`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `DataSiswa` ADD CONSTRAINT `DataSiswa_kelasId_fkey` FOREIGN KEY (`kelasId`) REFERENCES `Kelas`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `PembayaranSpp` ADD CONSTRAINT `PembayaranSpp_siswaId_fkey` FOREIGN KEY (`siswaId`) REFERENCES `DataSiswa`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
