@@ -1,7 +1,8 @@
 import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import { useContext, useState } from 'react'
-import { Alert, message } from 'antd'
+import { Alert, message, Button, Spin } from 'antd'
+import { LoadingOutlined } from '@ant-design/icons'
 import axios from 'axios'
 import { THEME_COLOR } from '@/helper/util/theme'
 
@@ -11,9 +12,11 @@ export default function Login() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [messageApi, contextHolder] = message.useMessage()
+  const [loading, setLoading] = useState(false)
 
   const handleLogin = async () => {
     try {
+      setLoading(true)
       axios
         .post('/api/login', { username, password })
         .then(response => {
@@ -28,10 +31,12 @@ export default function Login() {
               role: response.data.user.role,
             }),
           )
+          setLoading(false)
           window.location.href = '/home'
         })
         .catch(err => {
           console.log(err)
+          setLoading(false)
           messageApi.open({
             type: 'error',
             content: 'username dan password salah',
@@ -89,11 +94,13 @@ export default function Login() {
                 }
               }}
             />
-            <button
-              className="mt-5 w-[80%] lg:h-[10%] md:h-[15%] xs:h-[50px] sm:h-[50px] bg-[#325D55] text-[white] rounded-xl"
-              onClick={() => handleLogin()}>
+            <Button
+              className="mt-5 w-[80%] lg:h-[10%] md:h-[15%] xs:h-[50px] sm:h-[50px] rounded-xl"
+              style={{ backgroundColor: '#325D55', color: 'white' }}
+              loading={loading}
+              onClick={handleLogin}>
               Login
-            </button>
+            </Button>
           </div>
         </div>
       </div>
