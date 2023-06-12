@@ -7,6 +7,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import Highlighter from 'react-highlight-words'
 import { ModalSpp } from '../components/ModalSpp'
 import { getPembayaranSpp } from '@/helper/apiHelper/pembayaranSpp'
+import { getHistoryPembayaranSpp } from '@/helper/apiHelper/historyPembayaranSpp'
 import { IDataSppModal } from '@/interface/ui/state/dataSppModal'
 import { ISpp } from '@/interface/ui/state/dataSppTable'
 import {
@@ -15,6 +16,7 @@ import {
 } from '@/helper/apiHelper/historyPembayaranSpp'
 import { IHistorySpp } from '@/interface/ui/state/dataHistorySppTable'
 import { ISelect } from '@/interface/ui/component/dropdown'
+import { convertMoney } from '@/helper/util/money'
 
 type DataIndex = keyof ISpp
 
@@ -31,6 +33,7 @@ export const PembayaranSpp = () => {
   const [dataHistorySppSelect, setDataHistorySppSelect] = useState<ISelect[]>(
     [] as ISelect[],
   )
+  const [dataAllHistorySpp, setDataAllHistorySpp] = useState<IHistorySpp[]>([])
 
   // const getHistorySppById = (id: number) => {
   //   historyPembayaranSppByPembayaranSppId(1)
@@ -153,29 +156,42 @@ export const PembayaranSpp = () => {
 
   const initiateData = async () => {
     setLoading(true)
-    await getPembayaranSpp()
-      .then(response => {
-        const arrayTemp: ISpp[] = [] // Define and initialize arrayTemp
-        response.data.getPembayaranSpp?.map((datas: any) => {
-          const object1: ISpp = {
-            id: datas?.id,
-            siswaId: datas?.siswaId,
-            tunggakan: datas?.tunggakan,
-            totalBayar: datas?.totalBayar,
-            siswa: datas?.siswa,
-          }
-          arrayTemp.push(object1)
-        })
+    try {
+      const response1 = await getPembayaranSpp()
+      const arrayTemp1: ISpp[] = []
+      response1.data.getPembayaranSpp?.map((datas: any) => {
+        const object1: ISpp = {
+          id: datas?.id,
+          siswaId: datas?.siswaId,
+          tunggakan: datas?.tunggakan,
+          totalBayar: datas?.totalBayar,
+          siswa: datas?.siswa,
+        }
+        arrayTemp1.push(object1)
+      })
+      setDataSpp(arrayTemp1)
 
-        //Assign the mapped array to the state
-        setDataSpp(arrayTemp)
+      const response2 = await getHistoryPembayaranSpp()
+      const arrayTemp2: IHistorySpp[] = []
+      response2.data.getHistoryPembayaranSpp?.map((datas: any) => {
+        const object2: IHistorySpp = {
+          id: datas?.id,
+          pembayaranSppId: datas?.pembayaranSppId,
+          jatuhTempo: datas?.jatuhTempo,
+          jumlah: datas?.jumlah,
+          sudahDibayar: datas?.sudahDibayar,
+          tanggalPembayaran: datas?.tanggalPembayaran,
+          pembayaranSpp: datas?.pembayaranSpp,
+        }
+        arrayTemp2.push(object2)
       })
-      .then(() => {
-        setLoading(false)
-      })
-      .catch(error => {
-        setLoading(false)
-      })
+      setDataAllHistorySpp(arrayTemp2)
+      // console.log('setDataAllHistorySpp', arrayTemp2)
+
+      setLoading(false)
+    } catch (error) {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -342,6 +358,7 @@ export const PembayaranSpp = () => {
       ...getColumnSearchProps('tunggakan'),
       sorter: (a, b) => a.tunggakan - b.tunggakan,
       sortDirections: ['descend', 'ascend'],
+      render: tunggakan => convertMoney(tunggakan),
     },
     {
       title: 'Total Pembayaran',
@@ -349,8 +366,20 @@ export const PembayaranSpp = () => {
       key: 'totalBayar',
       width: '20%',
       ...getColumnSearchProps('totalBayar'),
-      sorter: (a, b) => a.totalBayar - b.totalBayar,
+      sorter: (a: any, b: any) => a.totalBayar - b.totalBayar,
       sortDirections: ['descend', 'ascend'],
+      render: (tunggakan: any, record: any) => {
+        const filteredData = dataAllHistorySpp.filter(
+          (item: any) => item.pembayaranSppId === record.id,
+        )
+        const totalJumlah = filteredData.reduce((total: number, item: any) => {
+          if (item.sudahDibayar) {
+            return total + item.jumlah
+          }
+          return total
+        }, 0)
+        return convertMoney(totalJumlah)
+      },
     },
     {
       title: 'Action',

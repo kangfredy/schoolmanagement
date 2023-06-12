@@ -167,7 +167,7 @@ export function ModalSpp({
   })
 
   const handleConfirmBayarHistorySpp = (currentData: IHistorySpp) => {
-    console.log('DATA TO CONFIRM', currentData)
+    // console.log('DATA TO CONFIRM', currentData)
 
     //Untuk dilepar ke api
     const currentDate = new Date().toISOString()
@@ -179,7 +179,7 @@ export function ModalSpp({
       currentData.tanggalPembayaran = currentDate
     }
 
-    console.log('BAYAR DATA', currentData)
+    // console.log('BAYAR DATA', currentData)
 
     let currentPembayaranSppId: number
     if (currentData && currentData.pembayaranSppId !== undefined) {
@@ -191,6 +191,7 @@ export function ModalSpp({
       .then((response: any) => {
         // getData()
         getHistoryPembayaranSppByPembayaranSppId(currentPembayaranSppId)
+        getData()
         setConfirmLoading(false)
         message.success('Pembayaran Sukses')
       })
