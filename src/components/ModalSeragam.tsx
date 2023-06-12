@@ -400,7 +400,7 @@ export function ModalSeragam({
   ]
 
   const handleConfirmBayarHistorySeragam = (currentData: IHistorySeragam) => {
-    console.log('DATA TO CONFIRM', currentData)
+    // console.log('DATA TO CONFIRM', currentData)
 
     //Untuk dilepar ke api
     const currentDate = new Date().toISOString()
@@ -412,21 +412,21 @@ export function ModalSeragam({
       currentData.tanggalPembayaran = currentDate
     }
 
-    console.log('BAYAR DATA', currentData)
+    // console.log('BAYAR DATA', currentData)
 
     let currentPembayaranSeragamId: number
     if (currentData && currentData.pembayaranSeragamId !== undefined) {
       currentPembayaranSeragamId = currentData.pembayaranSeragamId
-      console.log('currentPembayaranSeragamId', currentPembayaranSeragamId)
+      // console.log('currentPembayaranSeragamId', currentPembayaranSeragamId)
     }
 
     dataHistoryPembayaranSeragamUpdate(currentData)
       .then((response: any) => {
-        // getData()
         getHistoryPembayaranSeragamByPembayaranSeragamId(
           currentPembayaranSeragamId,
           action,
         )
+        getData()
         setConfirmLoading(false)
       })
       .then(response => {

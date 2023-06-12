@@ -7,6 +7,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import Highlighter from 'react-highlight-words'
 import { ModalSeragam } from '../components/ModalSeragam'
 import { getPembayaranSeragam } from '@/helper/apiHelper/pembayaranSeragam'
+import { getHistoryPembayaranSeragam } from '@/helper/apiHelper/historyPembayaranSeragam'
 import { IDataPembayaranSeragamModal } from '@/interface/ui/state/dataPembayaranSeragamModal'
 import { IPembayaranSeragam } from '@/interface/ui/state/dataPembayaranSeragamTable'
 import {
@@ -16,6 +17,7 @@ import {
 import { IHistorySeragam } from '@/interface/ui/state/dataHistorySeragamTable'
 import { getDataSeragam } from '@/helper/apiHelper/seragam'
 import { ISeragam } from '@/interface/ui/state/dataSeragamModal'
+import { convertMoney } from '@/helper/util/money'
 
 type DataIndex = keyof IPembayaranSeragam
 
@@ -35,6 +37,9 @@ export const PembayaranSeragam = () => {
     IHistorySeragam[]
   >([])
   const [dataSeragam, setDataSeragam] = useState<ISeragam[]>([])
+  const [dataAllHistorySeragam, setDataAllHistorySeragam] = useState<
+    IHistorySeragam[]
+  >([])
 
   const showModal = (action: string, data: IPembayaranSeragam) => {
     console.log('TYPE OF DATA', typeof data)
@@ -99,51 +104,55 @@ export const PembayaranSeragam = () => {
 
   const initiateData = async () => {
     setLoading(true)
-    await getPembayaranSeragam()
-      .then(response => {
-        const arrayTemp: IPembayaranSeragam[] = []
-        response.data.getPembayaranSeragam?.map((datas: any) => {
-          const object1: IPembayaranSeragam = {
-            id: datas?.id,
-            siswaId: datas?.siswaId,
-            tunggakan: datas?.tunggakan,
-            totalBayar: datas?.totalBayar,
-            siswa: datas?.siswa,
-          }
-          arrayTemp.push(object1)
-        })
+    try {
+      const response1 = await getPembayaranSeragam()
+      const arrayTemp1: IPembayaranSeragam[] = []
+      response1.data.getPembayaranSeragam?.map((datas: any) => {
+        const object1: IPembayaranSeragam = {
+          id: datas?.id,
+          siswaId: datas?.siswaId,
+          tunggakan: datas?.tunggakan,
+          totalBayar: datas?.totalBayar,
+          siswa: datas?.siswa,
+        }
+        arrayTemp1.push(object1)
+      })
+      setDataPembayaranSeragam(arrayTemp1)
 
-        //Assign the mapped array to the state
-        setDataPembayaranSeragam(arrayTemp)
+      const response2 = await getDataSeragam()
+      const arrayTemp2: ISeragam[] = []
+      response2.data.getSeragam?.map((datas: any) => {
+        const object2: ISeragam = {
+          id: datas?.id,
+          nama: datas?.nama,
+          harga: datas?.harga,
+        }
+        arrayTemp2.push(object2)
       })
-      .then(() => {
-        getDataSeragam()
-          .then(response => {
-            console.log('DATA SERAGAM RESPONSE', response)
-            const arrayTemp: ISeragam[] = []
-            response.data.getSeragam?.map((datas: any) => {
-              const object1: ISeragam = {
-                id: datas?.id,
-                nama: datas?.nama,
-                harga: datas?.harga,
-              }
-              arrayTemp.push(object1)
-            })
+      setDataSeragam(arrayTemp2)
+      // console.log('setDataAllHistorySpp', arrayTemp2)
 
-            //Assign the mapped array to the state
-            console.log('DATA SERAGAM FOR TABLE', arrayTemp)
-            setDataSeragam(arrayTemp)
-          })
-          .then(() => {
-            setLoading(false)
-          })
-          .catch(error => {
-            setLoading(false)
-          })
+      const response3 = await getHistoryPembayaranSeragam()
+      const arrayTemp3: IHistorySeragam[] = []
+      response3.data.getHistoryPembayaranSeragam?.map((datas: any) => {
+        const object3: IHistorySeragam = {
+          id: datas?.id,
+          pembayaranSeragamId: datas?.pembayaranSeragamId,
+          sudahDibayar: datas?.sudahDibayar,
+          tanggalPembayaran: datas?.tanggalPembayaran,
+          seragamId: datas?.seragamId,
+          pembayaranSeragam: datas?.pembayaranSeragam,
+          seragam: datas?.seragam,
+        }
+        arrayTemp3.push(object3)
       })
-      .catch(error => {
-        setLoading(false)
-      })
+      setDataAllHistorySeragam(arrayTemp3)
+      console.log('setDataAllHistorySeragam', arrayTemp3)
+
+      setLoading(false)
+    } catch (error) {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -310,8 +319,17 @@ export const PembayaranSeragam = () => {
       key: 'tunggakan',
       width: '20%',
       ...getColumnSearchProps('tunggakan'),
-      sorter: (a, b) => a.tunggakan - b.tunggakan,
+      sorter: (a: any, b: any) => a.tunggakan - b.tunggakan,
       sortDirections: ['descend', 'ascend'],
+      render: (tunggakan: any, record: any) => {
+        const filteredData = dataAllHistorySeragam.filter(
+          (item: any) => item.pembayaranSeragamId === record.id,
+        )
+        const totalHarga = filteredData.reduce((total: number, item: any) => {
+          return total + item.seragam.harga
+        }, 0)
+        return convertMoney(totalHarga)
+      },
     },
     {
       title: 'Total Pembayaran',
@@ -319,8 +337,23 @@ export const PembayaranSeragam = () => {
       key: 'totalBayar',
       width: '20%',
       ...getColumnSearchProps('totalBayar'),
-      sorter: (a, b) => a.totalBayar - b.totalBayar,
+      sorter: (a: any, b: any) => a.totalBayar - b.totalBayar,
       sortDirections: ['descend', 'ascend'],
+      render: (totalBayar: any, record: any) => {
+        const filteredData = dataAllHistorySeragam.filter(
+          (item: any) => item.pembayaranSeragamId === record.id,
+        )
+        const totalPembayaran = filteredData.reduce(
+          (total: number, item: any) => {
+            if (item.sudahDibayar) {
+              return total + item.seragam.harga
+            }
+            return total
+          },
+          0,
+        )
+        return convertMoney(totalPembayaran)
+      },
     },
     {
       title: 'Action',
