@@ -9,6 +9,7 @@ import { ModalTambahJurusan } from '../components/ModalTambahJurusan'
 import { dataJurusanDelete, getJurusan } from '@/helper/apiHelper/jurusan'
 import { IDataJurusanModal } from '@/interface/ui/state/dataJurusanModal'
 import { IJurusan } from '@/interface/ui/state/dataJurusanModal'
+import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 
 type DataIndex = keyof IJurusan
 
@@ -50,6 +51,14 @@ export const DataJurusan = () => {
 
   useEffect(() => {
     initiateData()
+    const user = getUserInfoWithNullCheck()
+    if (user) {
+      const { id, username, isLogin, role } = user
+      console.log('USER ID', user.id)
+      // Continue processing or using the user information
+    } else {
+      // Handle the case when the user information is not found in localStorage
+    }
   }, [])
 
   const handleSearch = (
