@@ -11,19 +11,31 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  username  String   @unique @db.VarChar(255)
-  password  String   @db.VarChar(255)
-  role      String   @db.VarChar(20)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  isDeleted Boolean  @default(false)
+  id                       Int                        @id @default(autoincrement())
+  username                 String                     @unique @db.VarChar(255)
+  password                 String                     @db.VarChar(255)
+  role                     String                     @db.VarChar(20)
+  createdAt                DateTime                   @default(now())
+  updatedAt                DateTime                   @updatedAt
+  isDeleted                Boolean                    @default(false)
+  Jurusan                  Jurusan[]
+  Kelas                    Kelas[]
+  DataSiswa                DataSiswa[]
+  PembayaranSpp            PembayaranSpp[]
+  HistoryPembayaranSpp     HistoryPembayaranSpp[]
+  Seragam                  Seragam[]
+  PembayaranSeragam        PembayaranSeragam[]
+  HistoryPembayaranSeragam HistoryPembayaranSeragam[]
 }
 
 model Jurusan {
-  id          Int     @id @default(autoincrement())
-  namaJurusan String  @db.VarChar(32)
-  isDeleted   Boolean @default(false)
+  id          Int      @id @default(autoincrement())
+  namaJurusan String   @db.VarChar(32)
+  isDeleted   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  updatedBy   Int
+  user        User     @relation(fields: [updatedBy], references: [id])
   Kelas       Kelas[]
 }
 
@@ -31,6 +43,10 @@ model Kelas {
   id        Int         @id @default(autoincrement())
   namaKelas String      @db.VarChar(32)
   isDeleted Boolean     @default(false)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  updatedBy Int
+  user      User        @relation(fields: [updatedBy], references: [id])
   jurusan   Jurusan     @relation(fields: [jurusanId], references: [id])
   jurusanId Int
   dataSiswa DataSiswa[]
@@ -49,6 +65,8 @@ model DataSiswa {
   agama             Int
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @updatedAt
+  updatedBy         Int
+  user              User                @relation(fields: [updatedBy], references: [id])
   isDeleted         Boolean             @default(false)
   pembayaranSpp     PembayaranSpp[]
   pembayaranSeragam PembayaranSeragam[]
@@ -63,6 +81,8 @@ model PembayaranSpp {
   historyPembayaranSpp HistoryPembayaranSpp[]
   createdAt            DateTime               @default(now())
   updatedAt            DateTime               @updatedAt
+  updatedBy            Int
+  user                 User                   @relation(fields: [updatedBy], references: [id])
   isDeleted            Boolean                @default(false)
 }
 
@@ -76,6 +96,8 @@ model HistoryPembayaranSpp {
   tanggalPembayaran DateTime?
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
+  updatedBy         Int
+  user              User          @relation(fields: [updatedBy], references: [id])
   isDeleted         Boolean       @default(false)
 }
 
@@ -84,6 +106,10 @@ model Seragam {
   nama              String
   isDeleted         Boolean                    @default(false)
   harga             Int
+  createdAt         DateTime                   @default(now())
+  updatedAt         DateTime                   @updatedAt
+  updatedBy         Int
+  user              User                       @relation(fields: [updatedBy], references: [id])
   historyPembayaran HistoryPembayaranSeragam[]
 }
 
@@ -96,6 +122,8 @@ model PembayaranSeragam {
   historyPembayaranSeragam HistoryPembayaranSeragam[]
   createdAt                DateTime                   @default(now())
   updatedAt                DateTime                   @updatedAt
+  updatedBy                Int
+  user                     User                       @relation(fields: [updatedBy], references: [id])
   isDeleted                Boolean                    @default(false)
 }
 
@@ -107,6 +135,8 @@ model HistoryPembayaranSeragam {
   tanggalPembayaran   DateTime?
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
+  updatedBy           Int
+  user                User              @relation(fields: [updatedBy], references: [id])
   isDeleted           Boolean           @default(false)
   seragamId           Int
   seragam             Seragam           @relation(fields: [seragamId], references: [id])

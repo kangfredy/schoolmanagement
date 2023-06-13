@@ -10,6 +10,7 @@ import { dataJurusanDelete, getJurusan } from '@/helper/apiHelper/jurusan'
 import { IDataJurusanModal } from '@/interface/ui/state/dataJurusanModal'
 import { IJurusan } from '@/interface/ui/state/dataJurusanModal'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
+import { convertDateTime } from '@/helper/util/time'
 
 type DataIndex = keyof IJurusan
 
@@ -24,6 +25,8 @@ export const DataJurusan = () => {
   const [dataJurusanInput, setDataJurusanInput] = useState<IDataJurusanModal>(
     {} as IDataJurusanModal,
   )
+  const [userId, setUserId] = useState(0)
+  const [userRole, setUserRole] = useState('')
 
   const showModal = (action: string, data: IJurusan) => {
     let dataInput = {
@@ -53,11 +56,12 @@ export const DataJurusan = () => {
     initiateData()
     const user = getUserInfoWithNullCheck()
     if (user) {
-      const { id, username, isLogin, role } = user
+      setUserId(user.id)
+      setUserRole(user.role)
       console.log('USER ID', user.id)
-      // Continue processing or using the user information
+      console.log('USER ROLE', user.role)
     } else {
-      // Handle the case when the user information is not found in localStorage
+      console.log('LOCALSTORAGE IS EMPTY')
     }
   }, [])
 
@@ -83,7 +87,7 @@ export const DataJurusan = () => {
   //handle Popconfrim
   const handleConfirmDelete = async (clickedData: any) => {
     setLoading(true)
-    await dataJurusanDelete({ id: clickedData.id })
+    await dataJurusanDelete({ id: clickedData.id, updatedBy: userId })
       .then(response => {
         message.success('Sukses Delete Jurusan')
         initiateData()
@@ -185,7 +189,7 @@ export const DataJurusan = () => {
       ),
   })
 
-  const columns: ColumnsType<IJurusan> = [
+  let columns: ColumnsType<IJurusan> = [
     {
       title: 'Id',
       dataIndex: 'id',
@@ -199,10 +203,29 @@ export const DataJurusan = () => {
       title: 'Nama',
       dataIndex: 'namaJurusan',
       key: 'nama',
-      width: '40%',
+      width: '30%',
       ...getColumnSearchProps('namaJurusan'),
       sorter: (a, b) => a.namaJurusan.localeCompare(b.namaJurusan),
       sortDirections: ['descend', 'ascend'],
+    },
+    {
+      title: 'Updated By',
+      dataIndex: ['user', 'username'],
+      key: 'updatedBy',
+      width: '20%',
+      ...getColumnSearchProps('namaJurusan'),
+      sorter: (a, b) => a.user.username.localeCompare(b.user.username),
+      sortDirections: ['descend', 'ascend'],
+    },
+    {
+      title: 'Updated At',
+      dataIndex: 'updatedAt',
+      key: 'updatedAt',
+      width: '40%',
+      ...getColumnSearchProps('namaJurusan'),
+      sorter: (a, b) => a.updatedAt.localeCompare(b.updatedAt),
+      sortDirections: ['descend', 'ascend'],
+      render: updatedAt => convertDateTime(updatedAt),
     },
     {
       title: 'Action',
@@ -216,21 +239,33 @@ export const DataJurusan = () => {
             onClick={() => showModal('edit', record)}>
             Edit Jurusan
           </Button>
-          {/* <Popconfirm
-            title="Konfirmasi Delete"
-            description="Anda Yakin Ingin Menghapus Data Ini?"
-            onConfirm={e => handleConfirmDelete(record)}
-            okText="Yes"
-            okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
-            cancelText="No">
-            <Button danger type="primary" size="middle" className="bg-blue-500">
-              Delete
-            </Button>
-          </Popconfirm> */}
+          {userRole === 'admin' && (
+            <Popconfirm
+              title="Konfirmasi Delete"
+              description="Anda Yakin Ingin Menghapus Data Ini?"
+              onConfirm={e => handleConfirmDelete(record)}
+              okText="Yes"
+              okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
+              cancelText="No">
+              <Button
+                danger
+                type="primary"
+                size="middle"
+                className="bg-blue-500">
+                Delete
+              </Button>
+            </Popconfirm>
+          )}
         </Space>
       ),
     },
   ]
+
+  if (userRole !== 'admin') {
+    // Remove the Updated At column from the columns array if the userRole is not 'admin'
+    columns = columns.filter(column => column.key !== 'updatedBy')
+    columns = columns.filter(column => column.key !== 'updatedAt')
+  }
 
   return (
     <Spin tip="Loading Data" spinning={loading}>
