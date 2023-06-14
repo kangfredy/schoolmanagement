@@ -126,6 +126,8 @@ export const PembayaranSeragam = () => {
           id: datas?.id,
           nama: datas?.nama,
           harga: datas?.harga,
+          updatedAt: datas?.updatedAt,
+          user: datas?.user,
         }
         arrayTemp2.push(object2)
       })

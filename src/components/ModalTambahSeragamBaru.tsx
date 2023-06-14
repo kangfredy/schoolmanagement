@@ -1,13 +1,10 @@
 import { Input, Modal, Spin, message } from 'antd'
 import { useEffect, useState } from 'react'
-import { Select, Space } from 'antd'
-import { dataJurusanUpdate, tambahJurusan } from '@/helper/apiHelper/jurusan'
-import { SiGoogleclassroom } from 'react-icons/si'
-
 import { IDataSeragamnModal } from '@/interface/ui/state/dataSeragamModal'
 import { ModalTambahSeragamBaruProps } from '@/interface/ui/props/ModalTambahSeragamBaru'
 import { dataSeragamUpdate } from '@/helper/apiHelper/seragam'
 import { RiShirtLine } from 'react-icons/ri'
+import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 
 export function ModalTambahSeragamBaru({
   open,
@@ -20,11 +17,15 @@ export function ModalTambahSeragamBaru({
   const [loading, setLoading] = useState<boolean>(false)
 
   const handleChange = (e: { target: { name: string; value: string } }) => {
+    const user = getUserInfoWithNullCheck()
+    const updatedBy = user ? user.id : 0
+
     const { name, value } = e.target
     const updatedValue = name === 'harga' ? Number(value) : value
     setDataSeragamInput((prevState: any) => ({
       ...prevState,
       [name]: updatedValue,
+      updatedBy: updatedBy,
     }))
   }
 

@@ -36,11 +36,11 @@ export function ModalTambahJurusan({
   useEffect(() => {}, [])
 
   const handleOk = () => {
-    if (action === 'tambah') {
-      console.log('dataJurusanInput TAMBAH', dataJurusanInput)
-    } else if (action === 'edit') {
-      console.log('dataJurusanInput UPDATE', dataJurusanInput)
-    }
+    // if (action === 'tambah') {
+    //   console.log('dataJurusanInput TAMBAH', dataJurusanInput)
+    // } else if (action === 'edit') {
+    //   console.log('dataJurusanInput UPDATE', dataJurusanInput)
+    // }
 
     setConfirmLoading(true)
     if (action === 'tambah') {

@@ -32,6 +32,7 @@ export const DataJurusan = () => {
     let dataInput = {
       id: data?.id,
       namaJurusan: data?.namaJurusan,
+      updatedBy: data?.updatedBy,
     }
     setDataJurusanInput(dataInput)
     setActions(action)
@@ -58,8 +59,8 @@ export const DataJurusan = () => {
     if (user) {
       setUserId(user.id)
       setUserRole(user.role)
-      console.log('USER ID', user.id)
-      console.log('USER ROLE', user.role)
+      // console.log('USER ID', user.id)
+      // console.log('USER ROLE', user.role)
     } else {
       console.log('LOCALSTORAGE IS EMPTY')
     }
@@ -213,7 +214,7 @@ export const DataJurusan = () => {
       dataIndex: ['user', 'username'],
       key: 'updatedBy',
       width: '20%',
-      ...getColumnSearchProps('namaJurusan'),
+      ...getColumnSearchProps('user'),
       sorter: (a, b) => a.user.username.localeCompare(b.user.username),
       sortDirections: ['descend', 'ascend'],
     },
@@ -222,7 +223,7 @@ export const DataJurusan = () => {
       dataIndex: 'updatedAt',
       key: 'updatedAt',
       width: '40%',
-      ...getColumnSearchProps('namaJurusan'),
+      ...getColumnSearchProps('updatedAt'),
       sorter: (a, b) => a.updatedAt.localeCompare(b.updatedAt),
       sortDirections: ['descend', 'ascend'],
       render: updatedAt => convertDateTime(updatedAt),

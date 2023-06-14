@@ -37,6 +37,8 @@ import {
 import { ModalTambahSeragamBaru } from '../components/ModalTambahSeragamBaru'
 import { ModalTambahHistorySeragam } from '../components/ModalTambahHistorySeragam'
 import { ISelect } from '@/interface/ui/component/dropdown'
+import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
+import { convertDateTime } from '@/helper/util/time'
 
 type DataIndexHistory = keyof IHistorySeragam
 type DataIndexSeragam = keyof ISeragam
@@ -66,7 +68,20 @@ export function ModalSeragam({
   )
   const [openTambah, setOpenTambah] = useState(false)
   const [openHistoryTambah, setOpenHistoryTambah] = useState(false)
-  const [dataJurusan, setDataJurusan] = useState<ISelect[]>([] as ISelect[])
+  const [userId, setUserId] = useState(0)
+  const [userRole, setUserRole] = useState('')
+
+  useEffect(() => {
+    const user = getUserInfoWithNullCheck()
+    if (user) {
+      setUserId(user.id)
+      setUserRole(user.role)
+      console.log('USER ID dari ModelSeragam', user.id)
+      console.log('USER ROLE dari ModelSeragam', user.role)
+    } else {
+      console.log('LOCALSTORAGE IS EMPTY')
+    }
+  }, [])
 
   // const [DataPembayaran, setDataPembayaran] = useState<IDetailSeragam>(
   //   {} as IDetailSeragam,
@@ -308,7 +323,7 @@ export function ModalSeragam({
 
   const handleSeragamConfirmDelete = async (clickedData: any) => {
     setLoading(true)
-    await dataSeragamDelete({ id: clickedData.id })
+    await dataSeragamDelete({ id: clickedData.id, updatedBy: userId })
       .then(response => {
         message.success('Seragam Berhasil Terhapus')
         getData()
@@ -332,6 +347,7 @@ export function ModalSeragam({
       id: data?.id,
       nama: data?.nama,
       harga: data?.harga,
+      updatedBy: data?.updatedBy,
     }
     setDataSeragamInput(dataInput)
     setOpenTambah(true)
@@ -341,7 +357,7 @@ export function ModalSeragam({
     setOpenHistoryTambah(true)
   }
 
-  const columnsSeragam: ColumnsType<ISeragam> = [
+  let columnsSeragam: ColumnsType<ISeragam> = [
     {
       title: 'Nomor',
       dataIndex: 'id',
@@ -371,6 +387,25 @@ export function ModalSeragam({
       render: harga => convertMoney(harga),
     },
     {
+      title: 'Updated By',
+      dataIndex: ['user', 'username'],
+      key: 'updatedBy',
+      width: '20%',
+      ...getSeragamColumnSearchProps('user'),
+      sorter: (a, b) => a.user.username.localeCompare(b.user.username),
+      sortDirections: ['descend', 'ascend'],
+    },
+    {
+      title: 'Updated At',
+      dataIndex: 'updatedAt',
+      key: 'updatedAt',
+      width: '40%',
+      ...getSeragamColumnSearchProps('updatedAt'),
+      sorter: (a, b) => a.updatedAt.localeCompare(b.updatedAt),
+      sortDirections: ['descend', 'ascend'],
+      render: updatedAt => convertDateTime(updatedAt),
+    },
+    {
       title: 'Action',
       key: 'action',
       render: (_: any, record: any) => (
@@ -382,22 +417,34 @@ export function ModalSeragam({
             onClick={() => showModalTambahSeragamBaru(record)}>
             Edit
           </Button>
-          <Popconfirm
-            title="Hapus Data?"
-            description="Apakah benar ingin menghapus data ini?"
-            onConfirm={e => handleSeragamConfirmDelete(record)}
-            onCancel={handleSeragamCancelDelete}
-            okText="Yes"
-            okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
-            cancelText="No">
-            <Button danger type="primary" size="middle" className="bg-blue-500">
-              Delete
-            </Button>
-          </Popconfirm>
+          {userRole === 'admin' && (
+            <Popconfirm
+              title="Hapus Data?"
+              description="Apakah benar ingin menghapus data ini?"
+              onConfirm={e => handleSeragamConfirmDelete(record)}
+              onCancel={handleSeragamCancelDelete}
+              okText="Yes"
+              okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
+              cancelText="No">
+              <Button
+                danger
+                type="primary"
+                size="middle"
+                className="bg-blue-500">
+                Delete
+              </Button>
+            </Popconfirm>
+          )}
         </Space>
       ),
     },
   ]
+
+  if (userRole !== 'admin') {
+    // Remove the Updated At column from the columns array if the userRole is not 'admin'
+    columnsSeragam = columnsSeragam.filter(column => column.key !== 'updatedBy')
+    columnsSeragam = columnsSeragam.filter(column => column.key !== 'updatedAt')
+  }
 
   const handleConfirmBayarHistorySeragam = (currentData: IHistorySeragam) => {
     // console.log('DATA TO CONFIRM', currentData)
@@ -601,6 +648,7 @@ export function ModalSeragam({
     const newSeragam: IDataSeragamnModal = {
       nama: namaSeragam,
       harga: Number(harga),
+      updatedBy: userId,
     }
     console.log('DATA KE API', newSeragam)
 

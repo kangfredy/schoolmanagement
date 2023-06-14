@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 
 const prisma = new PrismaClient()
 
