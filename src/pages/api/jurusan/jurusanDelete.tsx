@@ -16,7 +16,7 @@ export default async function handler(
         id: id,
       },
       data: {
-        updatedBy: updatedBy,
+        updatedBy: Number(updatedBy),
         isDeleted: {
           set: true,
         },

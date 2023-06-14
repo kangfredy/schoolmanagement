@@ -3,4 +3,6 @@ export interface IDataSppModal {
   siswaId: number
   tunggakan: number
   totalBayar: number
+  updatedAt?: string
+  updatedBy: number
 }

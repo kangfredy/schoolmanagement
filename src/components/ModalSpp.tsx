@@ -28,9 +28,11 @@ import { IHistorySpp } from '@/interface/ui/state/dataHistorySppTable'
 import moment from 'moment'
 import { convertDate } from '@/helper/util/time'
 import { convertMoney } from '@/helper/util/money'
+import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
+import { convertDateTime } from '@/helper/util/time'
 
 const currentDate = new Date().toISOString()
-console.log('currentDate', currentDate)
+// console.log('currentDate', currentDate)
 const formatedCurrentDate = moment(currentDate).format('DD MMMM YYYY')
 
 const SPP_BULANAN: number = 200000
@@ -56,8 +58,20 @@ export function ModalSpp({
   const [searchText, setSearchText] = useState('')
   const searchInput = useRef<InputRef>(null)
   const [loading, setLoading] = useState<boolean>(false)
+  const [userId, setUserId] = useState(0)
+  const [userRole, setUserRole] = useState('')
 
-  // useEffect(() => {}, [])
+  useEffect(() => {
+    const user = getUserInfoWithNullCheck()
+    if (user) {
+      setUserId(user.id)
+      setUserRole(user.role)
+      // console.log('USER ID on ModalSpp', user.id)
+      // console.log('USER ROLE on ModalSpp', user.role)
+    } else {
+      console.log('LOCALSTORAGE IS EMPTY')
+    }
+  }, [])
 
   const handleSearch = (
     selectedKeys: string[],
@@ -168,6 +182,8 @@ export function ModalSpp({
 
   const handleConfirmBayarHistorySpp = (currentData: IHistorySpp) => {
     // console.log('DATA TO CONFIRM', currentData)
+    const user = getUserInfoWithNullCheck()
+    const updatedBy = user ? user.id : 0
 
     //Untuk dilepar ke api
     const currentDate = new Date().toISOString()
@@ -179,12 +195,15 @@ export function ModalSpp({
       currentData.tanggalPembayaran = currentDate
     }
 
+    // Add the updatedBy property to currentData
+    currentData.updatedBy = updatedBy
+
     // console.log('BAYAR DATA', currentData)
 
     let currentPembayaranSppId: number
     if (currentData && currentData.pembayaranSppId !== undefined) {
       currentPembayaranSppId = currentData.pembayaranSppId
-      console.log('currentPembayaranSppId', currentPembayaranSppId)
+      // console.log('currentPembayaranSppId', currentPembayaranSppId)
     }
 
     dataHistoryPembayaranSppUpdate(currentData)
@@ -207,7 +226,7 @@ export function ModalSpp({
 
   const handleCancelBayarHistorySpp = () => {}
 
-  const columns: ColumnsType<IHistorySpp> = [
+  let columns: ColumnsType<IHistorySpp> = [
     {
       title: 'Id',
       dataIndex: 'id',
@@ -263,6 +282,25 @@ export function ModalSpp({
       render: tanggalPembayaran => convertDate(tanggalPembayaran),
     },
     {
+      title: 'Updated By',
+      dataIndex: ['user', 'username'],
+      key: 'updatedBy',
+      width: '20%',
+      ...getColumnSearchProps('user'),
+      sorter: (a, b) => a.user.username.localeCompare(b.user.username),
+      sortDirections: ['descend', 'ascend'],
+    },
+    {
+      title: 'Updated At',
+      dataIndex: 'updatedAt',
+      key: 'updatedAt',
+      width: '40%',
+      ...getColumnSearchProps('updatedAt'),
+      sorter: (a, b) => a.updatedAt.localeCompare(b.updatedAt),
+      sortDirections: ['descend', 'ascend'],
+      render: updatedAt => convertDateTime(updatedAt),
+    },
+    {
       title: 'Action',
       key: 'action',
       render: (_: any, record: any) => (
@@ -286,8 +324,14 @@ export function ModalSpp({
     },
   ]
 
+  if (userRole !== 'admin') {
+    // Remove the Updated At column from the columns array if the userRole is not 'admin'
+    columns = columns.filter(column => column.key !== 'updatedBy')
+    columns = columns.filter(column => column.key !== 'updatedAt')
+  }
+
   const handleCancel = () => {
-    console.log('Clicked cancel button')
+    // console.log('Clicked cancel button')
     setOpen(false)
   }
 

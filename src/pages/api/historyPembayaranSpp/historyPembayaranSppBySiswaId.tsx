@@ -20,6 +20,16 @@ export default async function handler(
         },
         include: {
           pembayaranSpp: true,
+          user: {
+            select: {
+              id: true,
+              username: true,
+              role: true,
+              createdAt: true,
+              updatedAt: true,
+              isDeleted: true,
+            },
+          },
         },
       })
 

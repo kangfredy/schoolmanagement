@@ -15,7 +15,7 @@ export default async function handler(
       data: {
         namaKelas: namaKelas,
         jurusanId: jurusanId,
-        updatedBy: updatedBy,
+        updatedBy: Number(updatedBy),
       },
     })
 

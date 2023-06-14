@@ -6,6 +6,9 @@ export interface IHistorySeragam {
   seragamId: number
   pembayaranSeragam: IPembayaranSeragam
   seragam: ISeragam
+  updatedBy: number
+  updatedAt: string
+  user: Iuser
 }
 
 export interface ISeragam {
@@ -45,4 +48,10 @@ export interface Ikelas {
 export interface Ijurusan {
   id: number
   namaJurusan: string
+}
+
+export interface Iuser {
+  id: number
+  username: string
+  role: string
 }

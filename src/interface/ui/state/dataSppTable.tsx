@@ -4,6 +4,9 @@ export interface ISpp {
   tunggakan: number
   totalBayar: number
   siswa: Isiswa
+  updatedBy: number
+  updatedAt: string
+  user: Iuser
 }
 
 export interface Isiswa {
@@ -29,4 +32,10 @@ export interface Ikelas {
 export interface Ijurusan {
   id: number
   namaJurusan: string
+}
+
+export interface Iuser {
+  id: number
+  username: string
+  role: string
 }

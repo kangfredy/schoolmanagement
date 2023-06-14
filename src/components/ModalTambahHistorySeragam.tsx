@@ -9,6 +9,7 @@ import { tambahHistoryPembayaranSeragam } from '@/helper/apiHelper/historyPembay
 import { RiShirtLine } from 'react-icons/ri'
 import { ISelect } from '@/interface/ui/component/dropdown'
 import { IDataHistorySeragamModal } from '@/interface/ui/state/dataHistorySeragamModal'
+import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 
 export function ModalTambahHistorySeragam({
   open,
@@ -28,6 +29,8 @@ export function ModalTambahHistorySeragam({
   )
   const [seragamId, setSeragamId] = useState(0)
   const [seragamHarga, setSeragamHarga] = useState(0)
+  const [userId, setUserId] = useState(0)
+  const [userRole, setUserRole] = useState('')
 
   const getSelectSeragamData = () => {
     setLoading(true)
@@ -40,11 +43,21 @@ export function ModalTambahHistorySeragam({
       arrayTemp.push(objectData)
     })
     setDataSelectSeragam(arrayTemp)
+    // console.log('setDataSelectSeragam', arrayTemp)
     setLoading(false)
   }
 
   useEffect(() => {
     getSelectSeragamData()
+    const user = getUserInfoWithNullCheck()
+    if (user) {
+      setUserId(user.id)
+      setUserRole(user.role)
+      // console.log('USER ID ModalTambahHistorySeragam', user.id)
+      // console.log('USER ROLE ModalTambahHistorySeragam', user.role)
+    } else {
+      console.log('LOCALSTORAGE IS EMPTY')
+    }
   }, [])
 
   const handleOk = () => {
@@ -53,7 +66,10 @@ export function ModalTambahHistorySeragam({
     const newHistorySeragam: IDataHistorySeragamModal = {
       pembayaranSeragamId: Number(pembayaranSeragamId),
       seragamId: Number(seragamId),
+      updatedBy: userId,
     }
+
+    // console.log('newHistorySeragam', newHistorySeragam)
 
     setConfirmLoading(true)
     tambahHistoryPembayaranSeragam(newHistorySeragam)
@@ -81,7 +97,7 @@ export function ModalTambahHistorySeragam({
   }
 
   const handleSeragamSelect = (value: number) => {
-    console.log('Selected Option:', value)
+    // console.log('Selected Option:', value)
     setSeragamId(value)
   }
 

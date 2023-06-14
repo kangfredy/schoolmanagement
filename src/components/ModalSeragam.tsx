@@ -76,8 +76,8 @@ export function ModalSeragam({
     if (user) {
       setUserId(user.id)
       setUserRole(user.role)
-      console.log('USER ID dari ModelSeragam', user.id)
-      console.log('USER ROLE dari ModelSeragam', user.role)
+      // console.log('USER ID dari ModelSeragam', user.id)
+      // console.log('USER ROLE dari ModelSeragam', user.role)
     } else {
       console.log('LOCALSTORAGE IS EMPTY')
     }
@@ -309,7 +309,7 @@ export function ModalSeragam({
   }
 
   const handleCancel = () => {
-    console.log('Clicked cancel button')
+    // console.log('Clicked cancel button')
     setHarga(0)
     setNamaSeragam('')
     setOpen(false)
@@ -440,14 +440,10 @@ export function ModalSeragam({
     },
   ]
 
-  if (userRole !== 'admin') {
-    // Remove the Updated At column from the columns array if the userRole is not 'admin'
-    columnsSeragam = columnsSeragam.filter(column => column.key !== 'updatedBy')
-    columnsSeragam = columnsSeragam.filter(column => column.key !== 'updatedAt')
-  }
-
   const handleConfirmBayarHistorySeragam = (currentData: IHistorySeragam) => {
     // console.log('DATA TO CONFIRM', currentData)
+    const user = getUserInfoWithNullCheck()
+    const updatedBy = user ? user.id : 0
 
     //Untuk dilepar ke api
     const currentDate = new Date().toISOString()
@@ -458,6 +454,9 @@ export function ModalSeragam({
     if (currentData && currentData.tanggalPembayaran !== undefined) {
       currentData.tanggalPembayaran = currentDate
     }
+
+    // Add the updatedBy property to currentData
+    currentData.updatedBy = updatedBy
 
     // console.log('BAYAR DATA', currentData)
 
@@ -488,7 +487,7 @@ export function ModalSeragam({
 
   const handleCancelBayarHistorySeragam = () => {}
 
-  const columnsHistorySeragam: ColumnsType<IHistorySeragam> = [
+  let columnsHistorySeragam: ColumnsType<IHistorySeragam> = [
     {
       title: 'Nomor',
       dataIndex: 'id',
@@ -543,6 +542,25 @@ export function ModalSeragam({
       ),
     },
     {
+      title: 'Updated By',
+      dataIndex: ['user', 'username'],
+      key: 'updatedBy',
+      width: '20%',
+      ...getHistorySeragamColumnSearchProps('user'),
+      sorter: (a, b) => a.user.username.localeCompare(b.user.username),
+      sortDirections: ['descend', 'ascend'],
+    },
+    {
+      title: 'Updated At',
+      dataIndex: 'updatedAt',
+      key: 'updatedAt',
+      width: '40%',
+      ...getHistorySeragamColumnSearchProps('updatedAt'),
+      sorter: (a, b) => a.updatedAt.localeCompare(b.updatedAt),
+      sortDirections: ['descend', 'ascend'],
+      render: updatedAt => convertDateTime(updatedAt),
+    },
+    {
       title: 'Action',
       key: 'action',
       render: (_: any, record: any) => (
@@ -565,6 +583,18 @@ export function ModalSeragam({
       ),
     },
   ]
+
+  if (userRole !== 'admin') {
+    // Remove the Updated At column from the columns array if the userRole is not 'admin'
+    columnsSeragam = columnsSeragam.filter(column => column.key !== 'updatedBy')
+    columnsSeragam = columnsSeragam.filter(column => column.key !== 'updatedAt')
+    columnsHistorySeragam = columnsHistorySeragam.filter(
+      column => column.key !== 'updatedBy',
+    )
+    columnsHistorySeragam = columnsHistorySeragam.filter(
+      column => column.key !== 'updatedAt',
+    )
+  }
 
   const headerDetailSeragam = (
     <>
@@ -650,7 +680,7 @@ export function ModalSeragam({
       harga: Number(harga),
       updatedBy: userId,
     }
-    console.log('DATA KE API', newSeragam)
+    // console.log('DATA KE API', newSeragam)
 
     tambahSeragam(newSeragam)
       .then((response: any) => {

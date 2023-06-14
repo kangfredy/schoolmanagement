@@ -5,4 +5,6 @@ export interface IDataHistorySppModal {
   jumlah: number
   sudahDibayar: boolean
   tanggalPembayaran: string
+  updatedAt?: string
+  updatedBy: number
 }

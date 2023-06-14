@@ -17,6 +17,7 @@ import { IDataSiswaModal } from '@/interface/ui/state/dataSiswaModal'
 import { ModalTambahSiswaProps } from '@/interface/ui/props/ModalTambahSiswa'
 import { UserOutlined, IdcardOutlined } from '@ant-design/icons'
 import { BiMapAlt } from 'react-icons/bi'
+import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 
 export function ModalTambahSiswa({
   action,
@@ -30,17 +31,22 @@ export function ModalTambahSiswa({
   const [dataKelas, setDataKelas] = useState<ISelect[]>([] as ISelect[])
   const [loading, setLoading] = useState<boolean>(false)
 
-  const handleChange = (e: { target: { name: string; value: any } }) =>
-    setDataSiswaInput(prevState => ({
+  const handleChange = (e: { target: { name: string; value: any } }) => {
+    const user = getUserInfoWithNullCheck()
+    const updatedBy = user ? user.id : 0
+
+    setDataSiswaInput((prevState: any) => ({
       ...prevState,
       [e.target.name]: e.target.value,
+      updatedBy: updatedBy,
     }))
+  }
 
   const getKelasData = () => {
     setLoading(true)
     getDataKelas()
       .then(response => {
-        console.log('KELAS RESPONSE', response)
+        // console.log('KELAS RESPONSE', response)
         let arrayTemp: any = []
         response.data.getKelas.map(
           (value: { id: number; namaKelas: string }) => {
@@ -51,7 +57,7 @@ export function ModalTambahSiswa({
             arrayTemp.push(objectData)
           },
         )
-        console.log('DATA KELAS', arrayTemp)
+        // console.log('DATA KELAS', arrayTemp)
         setDataKelas(arrayTemp)
       })
       .then(response => {
@@ -68,6 +74,12 @@ export function ModalTambahSiswa({
   }, [])
 
   const handleOk = () => {
+    // if (action === 'tambah') {
+    //   console.log('dataSiswaInput TAMBAH', dataSiswaInput)
+    // } else if (action === 'edit') {
+    //   console.log('dataSiswaInput UPDATE', dataSiswaInput)
+    // }
+
     setConfirmLoading(true)
     if (action === 'tambah') {
       // console.log('UNTUK TAMBAH', dataSiswaInput)
@@ -82,13 +94,14 @@ export function ModalTambahSiswa({
           setOpen(false)
           message.success('Sukses Tambah Siswa')
 
-          console.log('RESPONSE DATA', response)
+          // console.log('RESPONSE DATA', response)
 
           const generatedSiswaId = response.data.tambahSiswaData.id
+          const updatedByUserId = response.data.tambahSiswaData.updatedBy
 
-          pembayaranSppGenerate(generatedSiswaId)
+          pembayaranSppGenerate(generatedSiswaId, updatedByUserId)
             .then((response: any) => {
-              console.log('pembayaranSppGenerate', response)
+              // console.log('pembayaranSppGenerate', response)
             })
             .catch((error: any) => {
               message.error(error.message)
@@ -99,7 +112,7 @@ export function ModalTambahSiswa({
           setOpen(false)
         })
     } else if (action === 'edit') {
-      console.log('UNTUK EDIT', dataSiswaInput)
+      // console.log('UNTUK EDIT', dataSiswaInput)
       dataSiswaUpdate(dataSiswaInput)
         .then((response: any) => {
           getData()
@@ -126,16 +139,24 @@ export function ModalTambahSiswa({
   }
 
   const handleKelamin = (value: number) => {
+    const user = getUserInfoWithNullCheck()
+    const updatedBy = user ? user.id : 0
+
     setDataSiswaInput(prevState => ({
       ...prevState,
-      ['jenisKelamin']: value,
+      jenisKelamin: value,
+      updatedBy: updatedBy,
     }))
   }
 
   const handleAgama = (value: number) => {
-    setDataSiswaInput(prevState => ({
+    const user = getUserInfoWithNullCheck()
+    const updatedBy = user ? user.id : 0
+
+    setDataSiswaInput((prevState: any) => ({
       ...prevState,
-      ['agama']: value,
+      agama: value,
+      updatedBy: updatedBy,
     }))
   }
 
@@ -143,25 +164,41 @@ export function ModalTambahSiswa({
     date,
     dateString,
   ) => {
+    const user = getUserInfoWithNullCheck()
+    const updatedBy = user ? user.id : 0
+
     const formattedDate = date?.toISOString()
-    setDataSiswaInput(prevState => ({
+    setDataSiswaInput((prevState: any) => ({
       ...prevState,
-      ['tanggalLahir']: formattedDate,
+      tanggalLahir: formattedDate,
+      updatedBy: updatedBy,
     }))
   }
+
   const onChangeTanggalMasuk: DatePickerProps['onChange'] = (
     date,
     dateString,
   ) => {
+    const user = getUserInfoWithNullCheck()
+    const updatedBy = user ? user.id : 0
+
     const formattedDate = date?.toISOString()
     setDataSiswaInput(prevState => ({
       ...prevState,
-      ['tanggalMasuk']: formattedDate,
+      tanggalMasuk: formattedDate,
+      updatedBy: updatedBy,
     }))
   }
 
   const handleKelas = (value: number) => {
-    setDataSiswaInput({ ...dataSiswaInput, kelasId: value })
+    const user = getUserInfoWithNullCheck()
+    const updatedBy = user ? user.id : 0
+
+    setDataSiswaInput((prevState: any) => ({
+      ...prevState,
+      kelasId: value,
+      updatedBy: updatedBy,
+    }))
   }
 
   return (

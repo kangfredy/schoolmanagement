@@ -18,6 +18,8 @@ import { IHistorySeragam } from '@/interface/ui/state/dataHistorySeragamTable'
 import { getDataSeragam } from '@/helper/apiHelper/seragam'
 import { ISeragam } from '@/interface/ui/state/dataSeragamModal'
 import { convertMoney } from '@/helper/util/money'
+import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
+import { convertDateTime } from '@/helper/util/time'
 
 type DataIndex = keyof IPembayaranSeragam
 
@@ -40,9 +42,11 @@ export const PembayaranSeragam = () => {
   const [dataAllHistorySeragam, setDataAllHistorySeragam] = useState<
     IHistorySeragam[]
   >([])
+  const [userId, setUserId] = useState(0)
+  const [userRole, setUserRole] = useState('')
 
   const showModal = (action: string, data: IPembayaranSeragam) => {
-    console.log('TYPE OF DATA', typeof data)
+    // console.log('TYPE OF DATA', typeof data)
     if (action === 'detail') {
       let dataInput = {
         id: data?.id,
@@ -52,10 +56,13 @@ export const PembayaranSeragam = () => {
         siswa: data?.siswa,
         kelas: data?.siswa.kelas,
         jurusan: data?.siswa?.kelas.jurusan,
+        updatedAt: data?.updatedAt,
+        updatedBy: data?.updatedBy,
+        user: data?.user,
       }
 
       setDataPembayaranSeragamInput(dataInput)
-      console.log('dataInput', dataInput)
+      // console.log('dataInput', dataInput)
       getHistoryPembayaranSeragamByPembayaranSeragamId(data?.id, action)
     } else {
       setActions(action)
@@ -69,7 +76,7 @@ export const PembayaranSeragam = () => {
   ) => {
     historyPembayaranSeragamByPembayaranSeragamId(id)
       .then(response => {
-        console.log('historyPembayaranSppByPembayaranSppId ', response)
+        // console.log('historyPembayaranSppByPembayaranSppId ', response)
         const arrayDataTemp: IHistorySeragam[] = []
 
         response.data.getHistoryPembayaranSeragamById?.map((datas: any) => {
@@ -81,6 +88,9 @@ export const PembayaranSeragam = () => {
             seragamId: datas?.seragamId,
             pembayaranSeragam: datas?.pembayaranSeragam,
             seragam: datas?.seragam,
+            updatedAt: datas?.updatedAt,
+            updatedBy: datas?.updatedBy,
+            user: datas?.user,
           }
           arrayDataTemp.push(object1)
         })
@@ -114,6 +124,9 @@ export const PembayaranSeragam = () => {
           tunggakan: datas?.tunggakan,
           totalBayar: datas?.totalBayar,
           siswa: datas?.siswa,
+          updatedAt: datas?.updatedAt,
+          updatedBy: datas?.updatedBy,
+          user: datas?.user,
         }
         arrayTemp1.push(object1)
       })
@@ -127,6 +140,7 @@ export const PembayaranSeragam = () => {
           nama: datas?.nama,
           harga: datas?.harga,
           updatedAt: datas?.updatedAt,
+          updatedBy: datas?.updatedBy,
           user: datas?.user,
         }
         arrayTemp2.push(object2)
@@ -145,11 +159,14 @@ export const PembayaranSeragam = () => {
           seragamId: datas?.seragamId,
           pembayaranSeragam: datas?.pembayaranSeragam,
           seragam: datas?.seragam,
+          updatedAt: datas?.updatedAt,
+          updatedBy: datas?.updatedBy,
+          user: datas?.user,
         }
         arrayTemp3.push(object3)
       })
       setDataAllHistorySeragam(arrayTemp3)
-      console.log('setDataAllHistorySeragam', arrayTemp3)
+      // console.log('setDataAllHistorySeragam', arrayTemp3)
 
       setLoading(false)
     } catch (error) {
@@ -159,6 +176,15 @@ export const PembayaranSeragam = () => {
 
   useEffect(() => {
     initiateData()
+    const user = getUserInfoWithNullCheck()
+    if (user) {
+      setUserId(user.id)
+      setUserRole(user.role)
+      // console.log('USER ID', user.id)
+      // console.log('USER ROLE', user.role)
+    } else {
+      console.log('LOCALSTORAGE IS EMPTY')
+    }
   }, [])
 
   const handleSearch = (
@@ -182,7 +208,7 @@ export const PembayaranSeragam = () => {
 
   //handle Popconfrim
   const handleConfirmDelete = (e: any) => {
-    console.log(e)
+    // console.log(e)
     message.success('Click on Yes')
   }
 
@@ -274,7 +300,7 @@ export const PembayaranSeragam = () => {
       ),
   })
 
-  const columns: ColumnsType<IPembayaranSeragam> = [
+  let columns: ColumnsType<IPembayaranSeragam> = [
     {
       title: 'NIM',
       dataIndex: ['siswa', 'nim'],
@@ -358,6 +384,25 @@ export const PembayaranSeragam = () => {
       },
     },
     {
+      title: 'Updated By',
+      dataIndex: ['user', 'username'],
+      key: 'updatedBy',
+      width: '20%',
+      ...getColumnSearchProps('user'),
+      sorter: (a, b) => a.user.username.localeCompare(b.user.username),
+      sortDirections: ['descend', 'ascend'],
+    },
+    {
+      title: 'Updated At',
+      dataIndex: 'updatedAt',
+      key: 'updatedAt',
+      width: '40%',
+      ...getColumnSearchProps('updatedAt'),
+      sorter: (a, b) => a.updatedAt.localeCompare(b.updatedAt),
+      sortDirections: ['descend', 'ascend'],
+      render: updatedAt => convertDateTime(updatedAt),
+    },
+    {
       title: 'Action',
       key: 'action',
       render: (_, record) => (
@@ -373,6 +418,12 @@ export const PembayaranSeragam = () => {
       ),
     },
   ]
+
+  if (userRole !== 'admin') {
+    // Remove the Updated At column from the columns array if the userRole is not 'admin'
+    columns = columns.filter(column => column.key !== 'updatedBy')
+    columns = columns.filter(column => column.key !== 'updatedAt')
+  }
 
   return (
     <div className="rounded-md bg-white p-2 h-[100%] overflow-scroll">

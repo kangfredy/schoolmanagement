@@ -15,6 +15,8 @@ import { historyPembayaranSppBySiswaId } from '@/helper/apiHelper/historyPembaya
 import { historyPembayaranSeragamBySiswaId } from '@/helper/apiHelper/historyPembayaranSeragam'
 import { IHistorySpp } from '@/interface/ui/state/dataHistorySppTable'
 import { IHistorySeragam } from '@/interface/ui/state/dataHistorySeragamTable'
+import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
+import { convertDateTime } from '@/helper/util/time'
 
 type DataIndex = keyof Isiswa
 
@@ -38,6 +40,8 @@ export const DataSiswa = () => {
   const [dataHistorySeragam, setDataHistorySeragam] = useState<
     IHistorySeragam[]
   >([])
+  const [userId, setUserId] = useState(0)
+  const [userRole, setUserRole] = useState('')
 
   const getHistoryPembayaranSppBySiswaId = (siswaId: number) => {
     console.log('getHistoryPembayaranSppBySiswaId SISWA ID', siswaId)
@@ -57,6 +61,9 @@ export const DataSiswa = () => {
             sudahDibayar: datas?.sudahDibayar,
             tanggalPembayaran: datas?.tanggalPembayaran,
             pembayaranSpp: datas?.pembayaranSpp,
+            updatedAt: datas?.updatedAt,
+            updatedBy: datas?.updatedBy,
+            user: datas?.user,
           }
           arrayHistorySppTemp.push(objectHistorySpp)
         })
@@ -81,6 +88,9 @@ export const DataSiswa = () => {
                   tanggalPembayaran: datas?.tanggalPembayaran,
                   pembayaranSeragam: datas?.pembayaranSeragam,
                   seragam: datas?.seragam,
+                  updatedAt: datas?.updatedAt,
+                  updatedBy: datas?.updatedBy,
+                  user: datas?.user,
                 }
                 arrayHistorySeragamTemp.push(objectHistorySeragam)
               },
@@ -117,6 +127,9 @@ export const DataSiswa = () => {
         kelasId: data?.kelas?.id,
         jenisKelamin: data?.jenisKelamin,
         agama: data?.agama,
+        updatedAt: data?.updatedAt,
+        updatedBy: data?.updatedBy,
+        user: data?.user,
       }
       setDataSiswaInput(dataInput)
       setActions(action)
@@ -144,6 +157,9 @@ export const DataSiswa = () => {
               datas?.jenisKelamin === 1 ? 'laki-laki' : 'perempuan',
             agama: datas?.agama,
             agamaDisplay: checkAgama(datas?.agama),
+            updatedAt: datas?.updatedAt,
+            updatedBy: datas?.updatedBy,
+            user: datas?.user,
           }
           arrayTemp.push(object1)
         })
@@ -161,6 +177,15 @@ export const DataSiswa = () => {
 
   useEffect(() => {
     initiateData()
+    const user = getUserInfoWithNullCheck()
+    if (user) {
+      setUserId(user.id)
+      setUserRole(user.role)
+      // console.log('USER ID', user.id)
+      // console.log('USER ROLE', user.role)
+    } else {
+      console.log('LOCALSTORAGE IS EMPTY')
+    }
   }, [])
 
   const handleSearch = (
@@ -185,7 +210,7 @@ export const DataSiswa = () => {
   //handle Popconfrim
   const handleConfirmDelete = async (clickedData: any) => {
     setLoading(true)
-    await dataSiswaDelete({ id: clickedData.id })
+    await dataSiswaDelete({ id: clickedData.id, updatedBy: userId })
       .then(response => {
         message.success('Sukses Delete Siswa')
         initiateData()
@@ -285,7 +310,7 @@ export const DataSiswa = () => {
       ),
   })
 
-  const columns: ColumnsType<Isiswa> = [
+  let columns: ColumnsType<Isiswa> = [
     {
       title: 'Nim',
       dataIndex: 'nim',
@@ -342,6 +367,25 @@ export const DataSiswa = () => {
       sortDirections: ['descend', 'ascend'],
     },
     {
+      title: 'Updated By',
+      dataIndex: ['user', 'username'],
+      key: 'updatedBy',
+      width: '20%',
+      ...getColumnSearchProps('user'),
+      sorter: (a, b) => a.user.username.localeCompare(b.user.username),
+      sortDirections: ['descend', 'ascend'],
+    },
+    {
+      title: 'Updated At',
+      dataIndex: 'updatedAt',
+      key: 'updatedAt',
+      width: '40%',
+      ...getColumnSearchProps('updatedAt'),
+      sorter: (a, b) => a.updatedAt.localeCompare(b.updatedAt),
+      sortDirections: ['descend', 'ascend'],
+      render: updatedAt => convertDateTime(updatedAt),
+    },
+    {
       title: 'Action',
       key: 'action',
       render: (_, record) => (
@@ -360,22 +404,33 @@ export const DataSiswa = () => {
             onClick={() => showModal('edit', record)}>
             Edit Siswa
           </Button>
-
-          {/* <Popconfirm
-            title="Konfirmasi Delete"
-            description="Anda Yakin Ingin Menghapus Data Ini?"
-            onConfirm={e => handleConfirmDelete(record)}
-            okText="Yes"
-            okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
-            cancelText="No">
-            <Button danger type="primary" size="middle" className="bg-blue-500">
-              Delete
-            </Button>
-          </Popconfirm> */}
+          {userRole === 'admin' && (
+            <Popconfirm
+              title="Konfirmasi Delete"
+              description="Anda Yakin Ingin Menghapus Data Ini?"
+              onConfirm={e => handleConfirmDelete(record)}
+              okText="Yes"
+              okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
+              cancelText="No">
+              <Button
+                danger
+                type="primary"
+                size="middle"
+                className="bg-blue-500">
+                Delete
+              </Button>
+            </Popconfirm>
+          )}
         </Space>
       ),
     },
   ]
+
+  if (userRole !== 'admin') {
+    // Remove the Updated At column from the columns array if the userRole is not 'admin'
+    columns = columns.filter(column => column.key !== 'updatedBy')
+    columns = columns.filter(column => column.key !== 'updatedAt')
+  }
 
   return (
     <Spin tip="Loading Data" spinning={loading}>

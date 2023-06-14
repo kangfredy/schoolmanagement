@@ -8,7 +8,7 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   if (req.method === 'POST') {
-    const { pembayaranSeragamId, seragamId } = req.body
+    const { pembayaranSeragamId, seragamId, updatedBy } = req.body
 
     // Create Data Baru
     const tambahHistoryPembayaranSeragam =
@@ -16,6 +16,7 @@ export default async function handler(
         data: {
           pembayaranSeragamId: pembayaranSeragamId,
           seragamId: seragamId,
+          updatedBy: Number(updatedBy),
         },
       })
 

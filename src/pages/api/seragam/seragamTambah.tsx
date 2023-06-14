@@ -15,7 +15,7 @@ export default async function handler(
       data: {
         nama: nama,
         harga: harga,
-        updatedBy: updatedBy,
+        updatedBy: Number(updatedBy),
       },
     })
 

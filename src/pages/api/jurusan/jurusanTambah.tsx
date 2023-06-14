@@ -14,7 +14,7 @@ export default async function handler(
     const tambahJurusan = await prisma.jurusan.create({
       data: {
         namaJurusan: namaJurusan,
-        updatedBy: updatedBy,
+        updatedBy: Number(updatedBy),
       },
     })
 

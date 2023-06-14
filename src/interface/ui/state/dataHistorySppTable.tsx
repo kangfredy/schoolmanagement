@@ -6,6 +6,9 @@ export interface IHistorySpp {
   sudahDibayar: boolean
   tanggalPembayaran: string
   pembayaranSpp: ISpp
+  updatedBy: number
+  updatedAt: string
+  user: Iuser
 }
 
 export interface ISpp {
@@ -39,4 +42,10 @@ export interface Ikelas {
 export interface Ijurusan {
   id: number
   namaJurusan: string
+}
+
+export interface Iuser {
+  id: number
+  username: string
+  role: string
 }

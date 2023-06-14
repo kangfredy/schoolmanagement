@@ -10,6 +10,9 @@ export interface Isiswa {
   agama: number
   agamaDisplay: string | ''
   kelas: Ikelas
+  updatedBy: number
+  updatedAt: string
+  user: Iuser
 }
 
 export interface Ikelas {
@@ -21,4 +24,10 @@ export interface Ikelas {
 export interface Ijurusan {
   id: number
   namaJurusan: string
+}
+
+export interface Iuser {
+  id: number
+  username: string
+  role: string
 }

@@ -9,7 +9,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { idSiswa }: any = req.query
+  const { idSiswa, updatedBy }: any = req.query
   const jumlahspp: any = process.env.SPP_BULANAN
   if (req.method === 'GET') {
     const generatePembayaranSpp = await prisma.pembayaranSpp.create({
@@ -17,6 +17,7 @@ export default async function handler(
         siswaId: parseInt(idSiswa),
         tunggakan: jumlahspp * 12,
         totalBayar: 0,
+        updatedBy: Number(updatedBy),
       },
     })
 
@@ -33,6 +34,7 @@ export default async function handler(
           jatuhTempo: currentDate,
           jumlah: parseInt(jumlahspp),
           sudahDibayar: false,
+          updatedBy: Number(updatedBy),
         },
       })
     }
@@ -42,6 +44,7 @@ export default async function handler(
         siswaId: parseInt(idSiswa),
         tunggakan: 0,
         totalBayar: 0,
+        updatedBy: Number(updatedBy),
       },
     })
     res.status(200).json({ message: 'Generate successful' })

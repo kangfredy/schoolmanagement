@@ -9,16 +9,18 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { idSiswa }: any = req.query
+  const { idSiswa, updatedBy }: any = req.query
   const jumlahspp: any = process.env.SPP_BULANAN
   if (req.method === 'GET') {
-    const pembayaranSpp = await prisma.pembayaranSpp.findFirst({where: {siswaId: idSiswa}})
+    const pembayaranSpp = await prisma.pembayaranSpp.findFirst({
+      where: { siswaId: idSiswa },
+    })
 
     const startDate = new Date() // Set the start date
     const numberOfMonths = 12 // Define the number of months
-    if(pembayaranSpp){
-        // Loop through each month
-    for (let i = 0; i < numberOfMonths; i++) {
+    if (pembayaranSpp) {
+      // Loop through each month
+      for (let i = 0; i < numberOfMonths; i++) {
         const currentMonth = startDate.getMonth() + i + 1
         const currentDate = new Date(startDate.getFullYear(), currentMonth, 1)
         await prisma.historyPembayaranSpp.create({
@@ -27,6 +29,7 @@ export default async function handler(
             jatuhTempo: currentDate,
             jumlah: parseInt(jumlahspp),
             sudahDibayar: false,
+            updatedBy: Number(updatedBy),
           },
         })
       }

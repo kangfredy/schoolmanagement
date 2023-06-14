@@ -14,6 +14,7 @@ export default async function handler(
       seragamId,
       tanggalPembayaran,
       sudahDibayar,
+      updatedBy,
     } = req.body
 
     // Update Data
@@ -27,6 +28,7 @@ export default async function handler(
           seragamId: seragamId,
           tanggalPembayaran: tanggalPembayaran,
           sudahDibayar: sudahDibayar,
+          updatedBy: Number(updatedBy),
         },
       })
 

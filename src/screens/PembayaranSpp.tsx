@@ -17,6 +17,8 @@ import {
 import { IHistorySpp } from '@/interface/ui/state/dataHistorySppTable'
 import { ISelect } from '@/interface/ui/component/dropdown'
 import { convertMoney } from '@/helper/util/money'
+import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
+import { convertDateTime } from '@/helper/util/time'
 
 type DataIndex = keyof ISpp
 
@@ -34,6 +36,8 @@ export const PembayaranSpp = () => {
     [] as ISelect[],
   )
   const [dataAllHistorySpp, setDataAllHistorySpp] = useState<IHistorySpp[]>([])
+  const [userId, setUserId] = useState(0)
+  const [userRole, setUserRole] = useState('')
 
   // const getHistorySppById = (id: number) => {
   //   historyPembayaranSppByPembayaranSppId(1)
@@ -102,6 +106,9 @@ export const PembayaranSpp = () => {
       siswa: data?.siswa,
       kelas: data?.siswa.kelas,
       jurusan: data?.siswa?.kelas.jurusan,
+      updatedAt: data?.updatedAt,
+      updatedBy: data?.updatedBy,
+      user: data?.user,
     }
 
     setDataSppInput(dataInput)
@@ -116,7 +123,7 @@ export const PembayaranSpp = () => {
         //   'ID',
         //   response.data.getHistoryPembayaranSppById[0].pembayaranSppId,
         // )
-        console.log('historyPembayaranSppByPembayaranSppId ', response)
+        // console.log('historyPembayaranSppByPembayaranSppId ', response)
         const arrayDataTemp: IHistorySpp[] = []
         const arraySelectTemp: any[] = []
 
@@ -129,6 +136,9 @@ export const PembayaranSpp = () => {
             sudahDibayar: datas?.sudahDibayar,
             tanggalPembayaran: datas?.tanggalPembayaran,
             pembayaranSpp: datas?.pembayaranSpp,
+            updatedAt: datas?.updatedAt,
+            updatedBy: datas?.updatedBy,
+            user: datas?.user,
           }
           arrayDataTemp.push(object1)
 
@@ -166,6 +176,9 @@ export const PembayaranSpp = () => {
           tunggakan: datas?.tunggakan,
           totalBayar: datas?.totalBayar,
           siswa: datas?.siswa,
+          updatedAt: datas?.updatedAt,
+          updatedBy: datas?.updatedBy,
+          user: datas?.user,
         }
         arrayTemp1.push(object1)
       })
@@ -182,6 +195,9 @@ export const PembayaranSpp = () => {
           sudahDibayar: datas?.sudahDibayar,
           tanggalPembayaran: datas?.tanggalPembayaran,
           pembayaranSpp: datas?.pembayaranSpp,
+          updatedAt: datas?.updatedAt,
+          updatedBy: datas?.updatedBy,
+          user: datas?.user,
         }
         arrayTemp2.push(object2)
       })
@@ -196,6 +212,15 @@ export const PembayaranSpp = () => {
 
   useEffect(() => {
     initiateData()
+    const user = getUserInfoWithNullCheck()
+    if (user) {
+      setUserId(user.id)
+      setUserRole(user.role)
+      // console.log('USER ID', user.id)
+      // console.log('USER ROLE', user.role)
+    } else {
+      console.log('LOCALSTORAGE IS EMPTY')
+    }
   }, [])
 
   const handleSearch = (
@@ -219,7 +244,7 @@ export const PembayaranSpp = () => {
 
   //handle Popconfrim
   const handleConfirmDelete = (e: any) => {
-    console.log(e)
+    // console.log(e)
     message.success('Click on Yes')
   }
 
@@ -309,7 +334,7 @@ export const PembayaranSpp = () => {
       ),
   })
 
-  const columns: ColumnsType<ISpp> = [
+  let columns: ColumnsType<ISpp> = [
     {
       title: 'NIM',
       dataIndex: ['siswa', 'nim'],
@@ -382,6 +407,25 @@ export const PembayaranSpp = () => {
       },
     },
     {
+      title: 'Updated By',
+      dataIndex: ['user', 'username'],
+      key: 'updatedBy',
+      width: '20%',
+      ...getColumnSearchProps('user'),
+      sorter: (a, b) => a.user.username.localeCompare(b.user.username),
+      sortDirections: ['descend', 'ascend'],
+    },
+    {
+      title: 'Updated At',
+      dataIndex: 'updatedAt',
+      key: 'updatedAt',
+      width: '40%',
+      ...getColumnSearchProps('updatedAt'),
+      sorter: (a, b) => a.updatedAt.localeCompare(b.updatedAt),
+      sortDirections: ['descend', 'ascend'],
+      render: updatedAt => convertDateTime(updatedAt),
+    },
+    {
       title: 'Action',
       key: 'action',
       render: (_, record) => (
@@ -397,6 +441,12 @@ export const PembayaranSpp = () => {
       ),
     },
   ]
+
+  if (userRole !== 'admin') {
+    // Remove the Updated At column from the columns array if the userRole is not 'admin'
+    columns = columns.filter(column => column.key !== 'updatedBy')
+    columns = columns.filter(column => column.key !== 'updatedAt')
+  }
 
   return (
     <>

@@ -63,11 +63,11 @@ export function ModalTambahKelas({
   }, [])
 
   const handleOk = () => {
-    if (action === 'tambah') {
-      console.log('dataKelasInput TAMBAH', dataKelasInput)
-    } else if (action === 'edit') {
-      console.log('dataKelasInput UPDATE', dataKelasInput)
-    }
+    // if (action === 'tambah') {
+    //   console.log('dataKelasInput TAMBAH', dataKelasInput)
+    // } else if (action === 'edit') {
+    //   console.log('dataKelasInput UPDATE', dataKelasInput)
+    // }
 
     setConfirmLoading(true)
     if (action === 'tambah') {

@@ -8,4 +8,6 @@ export interface IDataSiswaModal {
   kelasId: number
   jenisKelamin: number
   agama: number
+  updatedAt?: string
+  updatedBy: number
 }
