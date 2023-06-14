@@ -7,6 +7,7 @@ import { getJurusan } from '@/helper/apiHelper/jurusan'
 import { ISelect } from '@/interface/ui/component/dropdown'
 import { IDataKelasModal } from '@/interface/ui/state/dataKelasModal'
 import { ModalTambahKelasProps } from '@/interface/ui/props/ModalTambahKelas'
+import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 
 export function ModalTambahKelas({
   action,
@@ -19,12 +20,18 @@ export function ModalTambahKelas({
   const [confirmLoading, setConfirmLoading] = useState(false)
   const [dataJurusan, setDataJurusan] = useState<ISelect[]>([] as ISelect[])
   const [loading, setLoading] = useState<boolean>(false)
+  const [userId, setUserId] = useState(0)
 
-  const handleChange = (e: { target: { name: string; value: any } }) =>
-    setDataKelasInput(prevState => ({
+  const handleChange = (e: { target: { name: string; value: any } }) => {
+    const user = getUserInfoWithNullCheck()
+    const updatedBy = user ? user.id : 0
+
+    setDataKelasInput((prevState: any) => ({
       ...prevState,
       [e.target.name]: e.target.value,
+      updatedBy: updatedBy,
     }))
+  }
 
   const getJurusanData = () => {
     setLoading(true)
@@ -56,6 +63,12 @@ export function ModalTambahKelas({
   }, [])
 
   const handleOk = () => {
+    if (action === 'tambah') {
+      console.log('dataKelasInput TAMBAH', dataKelasInput)
+    } else if (action === 'edit') {
+      console.log('dataKelasInput UPDATE', dataKelasInput)
+    }
+
     setConfirmLoading(true)
     if (action === 'tambah') {
       tambahKelas(dataKelasInput)
@@ -99,7 +112,13 @@ export function ModalTambahKelas({
   }
 
   const handleJurusan = (value: number) => {
-    setDataKelasInput({ ...dataKelasInput, jurusanId: value })
+    const user = getUserInfoWithNullCheck()
+    const updatedBy = user ? user.id : 0
+    setDataKelasInput((prevState: any) => ({
+      ...prevState,
+      jurusanId: value,
+      updatedBy: updatedBy,
+    }))
   }
 
   return (

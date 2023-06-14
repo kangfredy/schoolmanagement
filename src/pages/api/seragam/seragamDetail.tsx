@@ -16,7 +16,16 @@ export default async function handler(
         id: id,
       },
       include: {
-        user: true,
+        user: {
+          select: {
+            id: true,
+            username: true,
+            role: true,
+            createdAt: true,
+            updatedAt: true,
+            isDeleted: true,
+          },
+        },
       },
     })
 

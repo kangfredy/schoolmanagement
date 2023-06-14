@@ -9,6 +9,8 @@ import { ModalTambahKelas } from '../components/ModalTambahKelas'
 import { dataKelasDelete, getDataKelas } from '@/helper/apiHelper/kelas'
 import { IDataKelasModal } from '@/interface/ui/state/dataKelasModal'
 import { Ikelas } from '@/interface/ui/state/dataKelasTable'
+import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
+import { convertDateTime } from '@/helper/util/time'
 
 type DataIndex = keyof Ikelas
 
@@ -23,12 +25,15 @@ export const DataKelas = () => {
   const [dataKelasInput, setDataKelasInput] = useState<IDataKelasModal>(
     {} as IDataKelasModal,
   )
+  const [userId, setUserId] = useState(0)
+  const [userRole, setUserRole] = useState('')
 
   const showModal = (action: string, data: Ikelas) => {
     let dataInput = {
       id: data?.id,
       namaKelas: data?.namaKelas,
       jurusanId: data?.jurusan?.id,
+      updatedBy: data?.updatedBy,
     }
     setDataKelasInput(dataInput)
     setActions(action)
@@ -51,6 +56,15 @@ export const DataKelas = () => {
 
   useEffect(() => {
     initiateData()
+    const user = getUserInfoWithNullCheck()
+    if (user) {
+      setUserId(user.id)
+      setUserRole(user.role)
+      // console.log('USER ID', user.id)
+      // console.log('USER ROLE', user.role)
+    } else {
+      console.log('LOCALSTORAGE IS EMPTY')
+    }
   }, [])
 
   const handleSearch = (
@@ -75,7 +89,7 @@ export const DataKelas = () => {
   //handle Popconfrim
   const handleConfirmDelete = async (clickedData: any) => {
     setLoading(true)
-    await dataKelasDelete({ id: clickedData.id })
+    await dataKelasDelete({ id: clickedData.id, updatedBy: userId })
       .then(response => {
         message.success('Sukses Delete Kelas')
         initiateData()
@@ -175,7 +189,7 @@ export const DataKelas = () => {
       ),
   })
 
-  const columns: ColumnsType<Ikelas> = [
+  let columns: ColumnsType<Ikelas> = [
     {
       title: 'Id',
       dataIndex: 'id',
@@ -202,6 +216,25 @@ export const DataKelas = () => {
       ...getColumnSearchProps('jurusan'),
     },
     {
+      title: 'Updated By',
+      dataIndex: ['user', 'username'],
+      key: 'updatedBy',
+      width: '20%',
+      ...getColumnSearchProps('user'),
+      sorter: (a, b) => a.user.username.localeCompare(b.user.username),
+      sortDirections: ['descend', 'ascend'],
+    },
+    {
+      title: 'Updated At',
+      dataIndex: 'updatedAt',
+      key: 'updatedAt',
+      width: '40%',
+      ...getColumnSearchProps('updatedAt'),
+      sorter: (a, b) => a.updatedAt.localeCompare(b.updatedAt),
+      sortDirections: ['descend', 'ascend'],
+      render: updatedAt => convertDateTime(updatedAt),
+    },
+    {
       title: 'Action',
       key: 'action',
       render: (_, record) => (
@@ -213,21 +246,33 @@ export const DataKelas = () => {
             onClick={() => showModal('edit', record)}>
             Edit Kelas
           </Button>
-          {/* <Popconfirm
-            title="Konfirmasi Delete"
-            description="Anda Yakin Ingin Menghapus Data Ini?"
-            onConfirm={e => handleConfirmDelete(record)}
-            okText="Yes"
-            okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
-            cancelText="No">
-            <Button danger type="primary" size="middle" className="bg-blue-500">
-              Delete
-            </Button>
-          </Popconfirm> */}
+          {userRole === 'admin' && (
+            <Popconfirm
+              title="Konfirmasi Delete"
+              description="Anda Yakin Ingin Menghapus Data Ini?"
+              onConfirm={e => handleConfirmDelete(record)}
+              okText="Yes"
+              okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
+              cancelText="No">
+              <Button
+                danger
+                type="primary"
+                size="middle"
+                className="bg-blue-500">
+                Delete
+              </Button>
+            </Popconfirm>
+          )}
         </Space>
       ),
     },
   ]
+
+  if (userRole !== 'admin') {
+    // Remove the Updated At column from the columns array if the userRole is not 'admin'
+    columns = columns.filter(column => column.key !== 'updatedBy')
+    columns = columns.filter(column => column.key !== 'updatedAt')
+  }
 
   return (
     <Spin tip="Loading Data" spinning={loading}>

@@ -1,24 +1,27 @@
-import {PrismaClient} from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    if (req.method === 'POST') {
-      const { namaKelas, jurusanId } = req.body;
-  
-      // Create Data Baru
-      const tambahKelas = await prisma.kelas.create({data: {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
+  if (req.method === 'POST') {
+    const { namaKelas, jurusanId, updatedBy } = req.body
+
+    // Create Data Baru
+    const tambahKelas = await prisma.kelas.create({
+      data: {
         namaKelas: namaKelas,
-        jurusanId: jurusanId
-      }})
-  
-      // Return a success or failed message
-      res.status(200).json({ message: 'Create successful', tambahKelas });
-    } else {
-      res.status(405).json({ message: 'Method not allowed' });
-    }
+        jurusanId: jurusanId,
+        updatedBy: updatedBy,
+      },
+    })
+
+    // Return a success or failed message
+    res.status(200).json({ message: 'Create successful', tambahKelas })
+  } else {
+    res.status(405).json({ message: 'Method not allowed' })
   }
-
-
-
+}
