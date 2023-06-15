@@ -20,6 +20,7 @@ export function ModalTambahHistorySeragam({
   dataSeragam,
   setDataPembayaranSeragamInput,
   dataPembayaranSeragamInput,
+  showModal,
   getHistoryPembayaranSeragamByPembayaranSeragamId,
 }: ModalTambahHistorySeragamProps) {
   const [confirmLoading, setConfirmLoading] = useState(false)
@@ -72,13 +73,31 @@ export function ModalTambahHistorySeragam({
     // console.log('newHistorySeragam', newHistorySeragam)
 
     setConfirmLoading(true)
-    tambahHistoryPembayaranSeragam(newHistorySeragam)
+    tambahHistoryPembayaranSeragam(
+      newHistorySeragam,
+      dataPembayaranSeragamInput.siswaId,
+      dataPembayaranSeragamInput.tunggakan,
+      dataPembayaranSeragamInput.totalBayar,
+    )
       .then((response: any) => {
+        let dataInput = {
+          id: response.data.updatePembayaranSeragam.id,
+          siswaId: response.data.updatePembayaranSeragam.siswaId,
+          tunggakan: response.data.updatePembayaranSeragam.tunggakan,
+          totalBayar: response.data.updatePembayaranSeragam.totalBayar,
+          siswa: dataPembayaranSeragamInput.siswa,
+          kelas: dataPembayaranSeragamInput.siswa.kelas,
+          jurusan: dataPembayaranSeragamInput.siswa?.kelas.jurusan,
+          updatedAt: response.data.updatePembayaranSeragam.updatedAt,
+          updatedBy: response.data.updatePembayaranSeragam.updatedBy,
+          user: dataPembayaranSeragamInput.user,
+        }
+        showModal(action, dataInput)
         getData()
-        getHistoryPembayaranSeragamByPembayaranSeragamId(
-          pembayaranSeragamId,
-          action,
-        )
+        // getHistoryPembayaranSeragamByPembayaranSeragamId(
+        //   pembayaranSeragamId,
+        //   action,
+        // )
         setConfirmLoading(false)
       })
       .then((response: any) => {

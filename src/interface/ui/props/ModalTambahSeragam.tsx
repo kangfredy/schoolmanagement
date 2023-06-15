@@ -14,6 +14,7 @@ export interface ModalTambahSeragamProps {
   dataHistorySeragam: IHistorySeragam[]
   setDataSeragam: Dispatch<SetStateAction<ISeragam[]>>
   dataSeragam: ISeragam[]
+  showModal: (action: string, data: IPembayaranSeragam) => void
   getHistoryPembayaranSeragamByPembayaranSeragamId: (
     id: number,
     action: string,

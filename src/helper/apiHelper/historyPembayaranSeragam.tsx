@@ -35,13 +35,20 @@ export const historyPembayaranSeragamBySiswaId = (siswaId: number) => {
   })
 }
 
-export const tambahHistoryPembayaranSeragam = (payload: any) => {
+export const tambahHistoryPembayaranSeragam = (
+  payload: any,
+  siswaId: number,
+  tunggakan: number,
+  totalBayar: number,
+) => {
   return new Promise<any>((resolve, reject) => {
     axios
-      .post(
-        '/api/historyPembayaranSeragam/historyPembayaranSeragamTambah',
-        payload,
-      )
+      .post('/api/historyPembayaranSeragam/historyPembayaranSeragamTambah', {
+        ...payload,
+        siswaId: siswaId,
+        tunggakan: tunggakan,
+        totalBayar: totalBayar,
+      })
       .then(response => resolve(response))
       .catch(error => reject(error))
   })
@@ -59,13 +66,20 @@ export const dataHistoryPembayaranSeragamDelete = (payload: any) => {
   })
 }
 
-export const dataHistoryPembayaranSeragamUpdate = (payload: any) => {
+export const dataHistoryPembayaranSeragamUpdate = (
+  payload: any,
+  siswaId: number,
+  tunggakan: number,
+  totalBayar: number,
+) => {
   return new Promise<any>((resolve, reject) => {
     axios
-      .post(
-        '/api/historyPembayaranSeragam/historyPembayaranSeragamUpdate',
-        payload,
-      )
+      .post('/api/historyPembayaranSeragam/historyPembayaranSeragamUpdate', {
+        ...payload,
+        siswaId: siswaId,
+        tunggakan: tunggakan,
+        totalBayar: totalBayar,
+      })
       .then(response => resolve(response))
       .catch(error => reject(error))
   })

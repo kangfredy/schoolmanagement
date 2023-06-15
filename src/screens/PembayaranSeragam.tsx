@@ -349,15 +349,7 @@ export const PembayaranSeragam = () => {
       ...getColumnSearchProps('tunggakan'),
       sorter: (a: any, b: any) => a.tunggakan - b.tunggakan,
       sortDirections: ['descend', 'ascend'],
-      render: (tunggakan: any, record: any) => {
-        const filteredData = dataAllHistorySeragam.filter(
-          (item: any) => item.pembayaranSeragamId === record.id,
-        )
-        const totalHarga = filteredData.reduce((total: number, item: any) => {
-          return total + item.seragam.harga
-        }, 0)
-        return convertMoney(totalHarga)
-      },
+      render: tunggakan => convertMoney(tunggakan),
     },
     {
       title: 'Total Pembayaran',
@@ -367,21 +359,7 @@ export const PembayaranSeragam = () => {
       ...getColumnSearchProps('totalBayar'),
       sorter: (a: any, b: any) => a.totalBayar - b.totalBayar,
       sortDirections: ['descend', 'ascend'],
-      render: (totalBayar: any, record: any) => {
-        const filteredData = dataAllHistorySeragam.filter(
-          (item: any) => item.pembayaranSeragamId === record.id,
-        )
-        const totalPembayaran = filteredData.reduce(
-          (total: number, item: any) => {
-            if (item.sudahDibayar) {
-              return total + item.seragam.harga
-            }
-            return total
-          },
-          0,
-        )
-        return convertMoney(totalPembayaran)
-      },
+      render: totalBayar => convertMoney(totalBayar),
     },
     {
       title: 'Updated By',
@@ -450,6 +428,7 @@ export const PembayaranSeragam = () => {
             setDataHistorySeragam={setDataHistorySeragam}
             dataSeragam={dataSeragam}
             setDataSeragam={setDataSeragam}
+            showModal={showModal}
             getHistoryPembayaranSeragamByPembayaranSeragamId={
               getHistoryPembayaranSeragamByPembayaranSeragamId
             }

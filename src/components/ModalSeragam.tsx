@@ -54,6 +54,7 @@ export function ModalSeragam({
   dataHistorySeragam,
   setDataSeragam,
   dataSeragam,
+  showModal,
   getHistoryPembayaranSeragamByPembayaranSeragamId,
 }: ModalTambahSeragamProps) {
   const [confirmLoading, setConfirmLoading] = useState(false)
@@ -466,13 +467,31 @@ export function ModalSeragam({
       // console.log('currentPembayaranSeragamId', currentPembayaranSeragamId)
     }
 
-    dataHistoryPembayaranSeragamUpdate(currentData)
+    dataHistoryPembayaranSeragamUpdate(
+      currentData,
+      dataPembayaranSeragamInput.siswaId,
+      dataPembayaranSeragamInput.tunggakan,
+      dataPembayaranSeragamInput.totalBayar,
+    )
       .then((response: any) => {
-        getHistoryPembayaranSeragamByPembayaranSeragamId(
-          currentPembayaranSeragamId,
-          action,
-        )
+        let dataInput = {
+          id: response.data.updatePembayaranSeragam.id,
+          siswaId: response.data.updatePembayaranSeragam.siswaId,
+          tunggakan: response.data.updatePembayaranSeragam.tunggakan,
+          totalBayar: response.data.updatePembayaranSeragam.totalBayar,
+          siswa: dataPembayaranSeragamInput.siswa,
+          kelas: dataPembayaranSeragamInput.siswa.kelas,
+          jurusan: dataPembayaranSeragamInput.siswa?.kelas.jurusan,
+          updatedAt: response.data.updatePembayaranSeragam.updatedAt,
+          updatedBy: response.data.updatePembayaranSeragam.updatedBy,
+          user: dataPembayaranSeragamInput.user,
+        }
+        showModal(action, dataInput)
         getData()
+        // getHistoryPembayaranSeragamByPembayaranSeragamId(
+        //   currentPembayaranSeragamId,
+        //   action,
+        // )
         setConfirmLoading(false)
       })
       .then(response => {
@@ -657,6 +676,7 @@ export function ModalSeragam({
         setDataSeragam={setDataSeragam}
         setDataPembayaranSeragamInput={setDataPembayaranSeragamInput}
         dataPembayaranSeragamInput={dataPembayaranSeragamInput}
+        showModal={showModal}
         getHistoryPembayaranSeragamByPembayaranSeragamId={
           getHistoryPembayaranSeragamByPembayaranSeragamId
         }
