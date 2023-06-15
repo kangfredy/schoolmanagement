@@ -51,6 +51,7 @@ export function ModalSpp({
   dataHistorySpp,
   dataHistorySppSelect,
   setDataHistorySppSelect,
+  showModal,
   getHistoryPembayaranSppByPembayaranSppId,
 }: ModalTambahSppProps) {
   const [confirmLoading, setConfirmLoading] = useState(false)
@@ -206,10 +207,36 @@ export function ModalSpp({
       // console.log('currentPembayaranSppId', currentPembayaranSppId)
     }
 
-    dataHistoryPembayaranSppUpdate(currentData)
+    dataHistoryPembayaranSppUpdate(
+      currentData,
+      dataSppInput.siswaId,
+      dataSppInput.tunggakan,
+      dataSppInput.totalBayar,
+    )
       .then((response: any) => {
         // getData()
-        getHistoryPembayaranSppByPembayaranSppId(currentPembayaranSppId)
+        // console.log(
+        //   'dataHistoryPembayaranSppUpdate',
+        //   response.data.updatePembayaranSpp,
+        // )
+
+        let dataInput = {
+          id: response.data.updatePembayaranSpp.id,
+          siswaId: response.data.updatePembayaranSpp.siswaId,
+          tunggakan: response.data.updatePembayaranSpp.tunggakan,
+          totalBayar: response.data.updatePembayaranSpp.totalBayar,
+          siswa: dataSppInput.siswa,
+          kelas: dataSppInput.siswa.kelas,
+          jurusan: dataSppInput.siswa?.kelas.jurusan,
+          updatedAt: response.data.updatePembayaranSpp.updatedAt,
+          updatedBy: response.data.updatePembayaranSpp.updatedBy,
+          user: dataSppInput.user,
+        }
+
+        // console.log('dataInput', dataInput)
+
+        showModal(dataInput)
+        // getHistoryPembayaranSppByPembayaranSppId(currentPembayaranSppId)
         getData()
         setConfirmLoading(false)
         message.success('Pembayaran Sukses')

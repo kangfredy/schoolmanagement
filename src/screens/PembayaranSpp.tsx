@@ -111,6 +111,9 @@ export const PembayaranSpp = () => {
       user: data?.user,
     }
 
+    // console.log('CURRENT tunggakan', convertMoney(data?.tunggakan))
+    // console.log('CURRENT totalBayar', convertMoney(data?.totalBayar))
+
     setDataSppInput(dataInput)
 
     getHistoryPembayaranSppByPembayaranSppId(data?.id)
@@ -393,18 +396,7 @@ export const PembayaranSpp = () => {
       ...getColumnSearchProps('totalBayar'),
       sorter: (a: any, b: any) => a.totalBayar - b.totalBayar,
       sortDirections: ['descend', 'ascend'],
-      render: (tunggakan: any, record: any) => {
-        const filteredData = dataAllHistorySpp.filter(
-          (item: any) => item.pembayaranSppId === record.id,
-        )
-        const totalJumlah = filteredData.reduce((total: number, item: any) => {
-          if (item.sudahDibayar) {
-            return total + item.jumlah
-          }
-          return total
-        }, 0)
-        return convertMoney(totalJumlah)
-      },
+      render: totalBayar => convertMoney(totalBayar),
     },
     {
       title: 'Updated By',
@@ -461,6 +453,7 @@ export const PembayaranSpp = () => {
         setDataHistorySpp={setDataHistorySpp}
         dataHistorySppSelect={dataHistorySppSelect}
         setDataHistorySppSelect={setDataHistorySppSelect}
+        showModal={showModal}
         getHistoryPembayaranSppByPembayaranSppId={
           getHistoryPembayaranSppByPembayaranSppId
         }

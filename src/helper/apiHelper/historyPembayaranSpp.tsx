@@ -53,10 +53,20 @@ export const dataHistoryPembayaranSppDelete = (payload: any) => {
   })
 }
 
-export const dataHistoryPembayaranSppUpdate = (payload: any) => {
+export const dataHistoryPembayaranSppUpdate = (
+  payload: any,
+  siswaId: number,
+  tunggakan: number,
+  totalBayar: number,
+) => {
   return new Promise<any>((resolve, reject) => {
     axios
-      .post('/api/historyPembayaranSpp/historyPembayaranSppUpdate', payload)
+      .post('/api/historyPembayaranSpp/historyPembayaranSppUpdate', {
+        ...payload,
+        siswaId: siswaId,
+        tunggakan: tunggakan,
+        totalBayar: totalBayar,
+      })
       .then(response => resolve(response))
       .catch(error => reject(error))
   })

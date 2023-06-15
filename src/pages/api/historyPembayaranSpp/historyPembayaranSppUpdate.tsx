@@ -16,6 +16,9 @@ export default async function handler(
       sudahDibayar,
       tanggalPembayaran,
       updatedBy,
+      siswaId,
+      tunggakan,
+      totalBayar,
     } = req.body
 
     // Update Data
@@ -35,10 +38,31 @@ export default async function handler(
       },
     )
 
+    // Calculate the updated values
+    const updatedTunggakan = tunggakan - 200000
+    const updatedTotalBayar = totalBayar + 200000
+
+    const updatePembayaranSpp = await prisma.pembayaranSpp.update({
+      where: {
+        id: pembayaranSppId,
+      },
+      data: {
+        siswaId: siswaId,
+        tunggakan: updatedTunggakan,
+        totalBayar: updatedTotalBayar,
+        updatedBy: Number(updatedBy),
+      },
+      include: {
+        siswa: true, // Include the related data from the siswa table
+      },
+    })
+
     // Return a success or failed message
-    res
-      .status(200)
-      .json({ message: 'Update successful', updateHistoryPembayaranSpp })
+    res.status(200).json({
+      message: 'Update successful',
+      updateHistoryPembayaranSpp,
+      updatePembayaranSpp,
+    })
   } else {
     res.status(405).json({ message: 'Method not allowed' })
   }

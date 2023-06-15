@@ -14,5 +14,6 @@ export interface ModalTambahSppProps {
   dataHistorySpp: IHistorySpp[]
   setDataHistorySppSelect: Dispatch<SetStateAction<ISelect[]>>
   dataHistorySppSelect: ISelect[]
+  showModal: (data: ISpp) => void
   getHistoryPembayaranSppByPembayaranSppId: (id: number) => void
 }
