@@ -28,7 +28,7 @@ export function ModalTambahHistorySeragam({
   const [dataSelectSeragam, setDataSelectSeragam] = useState<ISelect[]>(
     [] as ISelect[],
   )
-  const [seragamId, setSeragamId] = useState(0)
+  const [seragamId, setSeragamId] = useState<number | undefined>(undefined)
   const [seragamHarga, setSeragamHarga] = useState(0)
   const [userId, setUserId] = useState(0)
   const [userRole, setUserRole] = useState('')
@@ -80,6 +80,7 @@ export function ModalTambahHistorySeragam({
       dataPembayaranSeragamInput.totalBayar,
     )
       .then((response: any) => {
+        setSeragamId(undefined)
         let dataInput = {
           id: response.data.updatePembayaranSeragam.id,
           siswaId: response.data.updatePembayaranSeragam.siswaId,
@@ -111,8 +112,9 @@ export function ModalTambahHistorySeragam({
   }
 
   const handleCancel = () => {
-    // setDataSeragamInput({} as IDataSeragamnModal)
+    setSeragamId(undefined)
     setOpen(false)
+    // console.log('CANCEL CLICKED')
   }
 
   const handleSeragamSelect = (value: number) => {
@@ -144,6 +146,7 @@ export function ModalTambahHistorySeragam({
                 }
                 onChange={handleSeragamSelect}
                 options={dataSelectSeragam}
+                value={seragamId}
                 className="ml-2 w-60"
               />
             </div>
