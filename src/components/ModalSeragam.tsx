@@ -54,6 +54,8 @@ export function ModalSeragam({
   dataHistorySeragam,
   setDataSeragam,
   dataSeragam,
+  setDataInputFilteredSeragam,
+  dataInputFilteredSeragam,
   showModal,
   getHistoryPembayaranSeragamByPembayaranSeragamId,
 }: ModalTambahSeragamProps) {
@@ -674,6 +676,8 @@ export function ModalSeragam({
         setOpen={setOpenHistoryTambah}
         dataSeragam={dataSeragam}
         setDataSeragam={setDataSeragam}
+        dataInputFilteredSeragam={dataInputFilteredSeragam}
+        setDataInputFilteredSeragam={setDataInputFilteredSeragam}
         setDataPembayaranSeragamInput={setDataPembayaranSeragamInput}
         dataPembayaranSeragamInput={dataPembayaranSeragamInput}
         showModal={showModal}

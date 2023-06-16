@@ -18,6 +18,8 @@ export function ModalTambahHistorySeragam({
   getData,
   setDataSeragam,
   dataSeragam,
+  setDataInputFilteredSeragam,
+  dataInputFilteredSeragam,
   setDataPembayaranSeragamInput,
   dataPembayaranSeragamInput,
   showModal,
@@ -29,27 +31,17 @@ export function ModalTambahHistorySeragam({
     [] as ISelect[],
   )
   const [seragamId, setSeragamId] = useState<number | undefined>(undefined)
-  const [seragamHarga, setSeragamHarga] = useState(0)
   const [userId, setUserId] = useState(0)
   const [userRole, setUserRole] = useState('')
 
-  const getSelectSeragamData = () => {
-    setLoading(true)
-    let arrayTemp: any = []
-    dataSeragam.map((value: { id: number; nama: string }) => {
-      const objectData = {
-        value: value.id,
-        label: value.nama,
-      }
-      arrayTemp.push(objectData)
-    })
-    setDataSelectSeragam(arrayTemp)
-    // console.log('setDataSelectSeragam', arrayTemp)
-    setLoading(false)
-  }
-
   useEffect(() => {
-    getSelectSeragamData()
+    setDataSelectSeragam(
+      dataInputFilteredSeragam.map(seragam => ({
+        value: seragam.id,
+        label: seragam.nama,
+      })),
+    )
+
     const user = getUserInfoWithNullCheck()
     if (user) {
       setUserId(user.id)
@@ -59,7 +51,7 @@ export function ModalTambahHistorySeragam({
     } else {
       console.log('LOCALSTORAGE IS EMPTY')
     }
-  }, [])
+  }, [dataInputFilteredSeragam])
 
   const handleOk = () => {
     const pembayaranSeragamId = dataPembayaranSeragamInput.id

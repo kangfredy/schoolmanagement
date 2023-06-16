@@ -39,6 +39,9 @@ export const PembayaranSeragam = () => {
     IHistorySeragam[]
   >([])
   const [dataSeragam, setDataSeragam] = useState<ISeragam[]>([])
+  const [dataInputFilteredSeragam, setDataInputFilteredSeragam] = useState<
+    ISeragam[]
+  >([])
   const [dataAllHistorySeragam, setDataAllHistorySeragam] = useState<
     IHistorySeragam[]
   >([])
@@ -97,6 +100,19 @@ export const PembayaranSeragam = () => {
 
         //Assign the mapped array to the state
         setDataHistorySeragam(arrayDataTemp)
+
+        const filteredDataSeragam = dataSeragam.filter(seragam => {
+          // Check if seragamId does not exist in dataHistorySeragam
+          const notExistsInHistory = !arrayDataTemp.some(
+            history => history.seragamId === seragam.id,
+          )
+
+          // Return true if seragamId does not exist in dataHistorySeragam,
+          // false otherwise
+          return notExistsInHistory
+        })
+        console.log('CURRENT filteredDataSeragam', filteredDataSeragam)
+        setDataInputFilteredSeragam(filteredDataSeragam)
       })
       .then(response => {
         setLoading(false)
@@ -428,6 +444,8 @@ export const PembayaranSeragam = () => {
             setDataHistorySeragam={setDataHistorySeragam}
             dataSeragam={dataSeragam}
             setDataSeragam={setDataSeragam}
+            dataInputFilteredSeragam={dataInputFilteredSeragam}
+            setDataInputFilteredSeragam={setDataInputFilteredSeragam}
             showModal={showModal}
             getHistoryPembayaranSeragamByPembayaranSeragamId={
               getHistoryPembayaranSeragamByPembayaranSeragamId
