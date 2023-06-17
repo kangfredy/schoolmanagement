@@ -106,7 +106,7 @@ export const Home = () => {
     <Layout className="h-screen w-screen">
       <Sider trigger={null} collapsible collapsed={collapsed} width={230}>
         <div className="flex h-[120px] items-center justify-center">
-          <div className="mt-2 flex h-[80px] w-[80%] bg-slate-300 items-center justify-center">
+          <div className="mt-2 flex h-[80px] w-[80%] items-center justify-center">
             <Image
               src="/assets/images/PGRILogo.png"
               alt={''}
