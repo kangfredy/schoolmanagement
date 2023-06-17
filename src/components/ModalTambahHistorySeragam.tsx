@@ -33,6 +33,7 @@ export function ModalTambahHistorySeragam({
   const [seragamId, setSeragamId] = useState<number | undefined>(undefined)
   const [userId, setUserId] = useState(0)
   const [userRole, setUserRole] = useState('')
+  const [seragamError, setSeragamError] = useState('')
 
   useEffect(() => {
     setDataSelectSeragam(
@@ -54,6 +55,12 @@ export function ModalTambahHistorySeragam({
   }, [dataInputFilteredSeragam])
 
   const handleOk = () => {
+    if (seragamId === undefined) {
+      setSeragamError(seragamId === undefined ? 'Required' : '')
+
+      return
+    }
+
     const pembayaranSeragamId = dataPembayaranSeragamInput.id
 
     const newHistorySeragam: IDataHistorySeragamModal = {
@@ -105,6 +112,7 @@ export function ModalTambahHistorySeragam({
 
   const handleCancel = () => {
     setSeragamId(undefined)
+    setSeragamError('')
     setOpen(false)
     // console.log('CANCEL CLICKED')
   }
@@ -112,6 +120,7 @@ export function ModalTambahHistorySeragam({
   const handleSeragamSelect = (value: number) => {
     // console.log('Selected Option:', value)
     setSeragamId(value)
+    setSeragamError(value === 0 || value === undefined ? 'Required' : '')
   }
 
   return (
@@ -139,9 +148,16 @@ export function ModalTambahHistorySeragam({
                 onChange={handleSeragamSelect}
                 options={dataSelectSeragam}
                 value={seragamId}
+                status={seragamError ? 'error' : undefined}
                 className="ml-2 w-60"
               />
             </div>
+            {seragamError && (
+              <p style={{ color: 'red' }} className="ml-4">
+                {' '}
+                {seragamError}
+              </p>
+            )}
           </div>
         </div>
       </Spin>

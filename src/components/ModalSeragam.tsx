@@ -73,6 +73,8 @@ export function ModalSeragam({
   const [openHistoryTambah, setOpenHistoryTambah] = useState(false)
   const [userId, setUserId] = useState(0)
   const [userRole, setUserRole] = useState('')
+  const [namaSeragamError, setNamaSeragamError] = useState('')
+  const [hargaSeragamError, setHargaSeragamError] = useState('')
 
   useEffect(() => {
     const user = getUserInfoWithNullCheck()
@@ -315,6 +317,8 @@ export function ModalSeragam({
     // console.log('Clicked cancel button')
     setHarga(0)
     setNamaSeragam('')
+    setNamaSeragamError('')
+    setHargaSeragamError('')
     setOpen(false)
   }
   // const handleKelas = (value: number) => {
@@ -691,14 +695,37 @@ export function ModalSeragam({
   const handleSeragamInput = (e: any) => {
     // console.log('VALUE E', e.target.value)
     setNamaSeragam(e.target.value)
+    setNamaSeragamError(e.target.value.trim() === '' ? 'Required' : '')
   }
 
   const handleHargaInput = (e: any) => {
     // console.log('VALUE E', e.target.value)
-    setHarga(e.target.value)
+    const inputValue = e.target.value.trim()
+    const numericValue = Number(inputValue)
+
+    if (!Number.isNaN(numericValue) && inputValue !== '') {
+      setHarga(numericValue)
+      setHargaSeragamError('')
+    } else {
+      setHarga(0)
+      setHargaSeragamError('Please Input Number')
+    }
   }
 
   const handleTambahSeragam = () => {
+    if (
+      namaSeragam === '' ||
+      namaSeragam === undefined ||
+      harga === 0 ||
+      harga === undefined
+    ) {
+      setNamaSeragamError(
+        namaSeragam === '' || namaSeragam === undefined ? 'Required' : '',
+      )
+      setHargaSeragamError(harga === 0 || harga === undefined ? 'Required' : '')
+      return
+    }
+
     const newSeragam: IDataSeragamnModal = {
       nama: namaSeragam,
       harga: Number(harga),
@@ -723,24 +750,40 @@ export function ModalSeragam({
     <>
       <div className="my-4 flex flex-col">
         <div className="w-[35%] my-2">Nama Seragam dan Ukuran:</div>
-        <Input
-          placeholder="Seragam RPL (L)"
-          name="seragam"
-          prefix={<RiShirtLine />}
-          onChange={e => handleSeragamInput(e)}
-          className="w-60 my-1"
-          value={namaSeragam}
-          required
-        />
-        <Input
-          placeholder="Harga"
-          name="harga"
-          prefix={<RiShirtLine />}
-          onChange={e => handleHargaInput(e)}
-          className="w-60 mt-2 mb-3"
-          value={harga !== 0 ? harga : ''}
-          required
-        />
+        <div className="flex items-center">
+          <Input
+            placeholder="Seragam RPL (L)"
+            name="seragam"
+            prefix={<RiShirtLine />}
+            onChange={e => handleSeragamInput(e)}
+            className="w-60 my-1"
+            value={namaSeragam}
+            status={namaSeragamError ? 'error' : undefined}
+            required
+          />
+          {namaSeragamError && (
+            <p style={{ color: 'red', marginLeft: '8px' }}>
+              {namaSeragamError}
+            </p>
+          )}
+        </div>
+        <div className="flex items-center">
+          <Input
+            placeholder="Harga"
+            name="harga"
+            prefix={<RiShirtLine />}
+            onChange={e => handleHargaInput(e)}
+            className="w-60 mt-2 mb-3"
+            value={harga !== 0 ? harga : ''}
+            status={hargaSeragamError ? 'error' : undefined}
+            required
+          />
+          {hargaSeragamError && (
+            <p style={{ color: 'red', marginLeft: '8px' }}>
+              {hargaSeragamError}
+            </p>
+          )}
+        </div>
         <Button
           type="primary"
           size="middle"

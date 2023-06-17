@@ -20,7 +20,7 @@ export function ModalTambahJurusan({
 }: ModalTambahJurusanProps) {
   const [confirmLoading, setConfirmLoading] = useState(false)
   const [loading, setLoading] = useState<boolean>(false)
-  const [userId, setUserId] = useState(0)
+  const [jurusanError, setJurusanError] = useState('')
 
   const handleChange = (e: { target: { name: string; value: any } }) => {
     const user = getUserInfoWithNullCheck()
@@ -31,6 +31,8 @@ export function ModalTambahJurusan({
       [e.target.name]: e.target.value,
       updatedBy: updatedBy,
     }))
+
+    setJurusanError(e.target.value.trim() === '' ? 'Required' : '')
   }
 
   useEffect(() => {}, [])
@@ -41,6 +43,19 @@ export function ModalTambahJurusan({
     // } else if (action === 'edit') {
     //   console.log('dataJurusanInput UPDATE', dataJurusanInput)
     // }
+
+    if (
+      dataJurusanInput?.namaJurusan === '' ||
+      dataJurusanInput?.namaJurusan === undefined
+    ) {
+      setJurusanError(
+        dataJurusanInput?.namaJurusan === '' ||
+          dataJurusanInput?.namaJurusan === undefined
+          ? 'Required'
+          : '',
+      )
+      return
+    }
 
     setConfirmLoading(true)
     if (action === 'tambah') {
@@ -81,6 +96,7 @@ export function ModalTambahJurusan({
 
   const handleCancel = () => {
     setDataJurusanInput({} as IDataJurusanModal)
+    setJurusanError('')
     setOpen(false)
   }
 
@@ -111,9 +127,16 @@ export function ModalTambahJurusan({
                 prefix={<MdWarehouse />}
                 onChange={e => handleChange(e)}
                 className="ml-2 w-60"
+                status={jurusanError ? 'error' : undefined}
                 required
               />
             </div>
+            {jurusanError && (
+              <p style={{ color: 'red' }} className="ml-4">
+                {' '}
+                {jurusanError}
+              </p>
+            )}
           </div>
         </div>
       </Spin>

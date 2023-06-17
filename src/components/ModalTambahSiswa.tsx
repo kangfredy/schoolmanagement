@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import {
   DatePicker,
   DatePickerProps,
+  Form,
   Input,
   Modal,
   Spin,
@@ -18,6 +19,7 @@ import { ModalTambahSiswaProps } from '@/interface/ui/props/ModalTambahSiswa'
 import { UserOutlined, IdcardOutlined } from '@ant-design/icons'
 import { BiMapAlt } from 'react-icons/bi'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
+import dayjs from 'dayjs'
 
 export function ModalTambahSiswa({
   action,
@@ -30,6 +32,20 @@ export function ModalTambahSiswa({
   const [confirmLoading, setConfirmLoading] = useState(false)
   const [dataKelas, setDataKelas] = useState<ISelect[]>([] as ISelect[])
   const [loading, setLoading] = useState<boolean>(false)
+  const [namaError, setNamaError] = useState('')
+  const [nimError, setNimError] = useState('')
+  const [alamatError, setAlamatError] = useState('')
+  const [tanggalLahirError, setTanggalLahirError] = useState<
+    string | undefined
+  >(undefined)
+  const [agamaError, setAgamaError] = useState<string | undefined>(undefined)
+  const [jenisKelaminError, setJenisKelaminError] = useState<
+    string | undefined
+  >(undefined)
+  const [tanggalMasukError, setTanggalMasukError] = useState<
+    string | undefined
+  >(undefined)
+  const [kelasError, setKelasError] = useState<string | undefined>(undefined)
 
   const handleChange = (e: { target: { name: string; value: any } }) => {
     const user = getUserInfoWithNullCheck()
@@ -40,6 +56,21 @@ export function ModalTambahSiswa({
       [e.target.name]: e.target.value,
       updatedBy: updatedBy,
     }))
+
+    // Perform validation for the input field
+    switch (e.target.name) {
+      case 'nama':
+        setNamaError(e.target.value.trim() === '' ? 'Required' : '')
+        break
+      case 'nim':
+        setNimError(e.target.value.trim() === '' ? 'Required' : '')
+        break
+      case 'alamat':
+        setAlamatError(e.target.value.trim() === '' ? 'Required' : '')
+        break
+      default:
+        break
+    }
   }
 
   const getKelasData = () => {
@@ -79,6 +110,56 @@ export function ModalTambahSiswa({
     // } else if (action === 'edit') {
     //   console.log('dataSiswaInput UPDATE', dataSiswaInput)
     // }
+
+    // console.log('NAME VALUE TYPE', typeof dataSiswaInput.nama)
+
+    if (
+      dataSiswaInput?.nama === '' ||
+      dataSiswaInput?.nama === undefined ||
+      dataSiswaInput?.nim === '' ||
+      dataSiswaInput?.nim === undefined ||
+      dataSiswaInput?.alamat === '' ||
+      dataSiswaInput?.alamat === undefined ||
+      dataSiswaInput?.tanggalLahir === undefined ||
+      dataSiswaInput?.agama === undefined ||
+      dataSiswaInput?.jenisKelamin === undefined ||
+      dataSiswaInput?.tanggalMasuk === undefined ||
+      dataSiswaInput?.kelasId === undefined
+
+      // Add additional checks for other required fields
+    ) {
+      // Set the corresponding error state variables for the empty fields
+      setNamaError(
+        dataSiswaInput?.nama === '' || dataSiswaInput?.nama === undefined
+          ? 'Required'
+          : '',
+      )
+      setNimError(
+        dataSiswaInput?.nim?.trim() === '' || dataSiswaInput?.nim === undefined
+          ? 'Required'
+          : '',
+      )
+      setAlamatError(
+        dataSiswaInput?.alamat?.trim() === '' ||
+          dataSiswaInput?.alamat === undefined
+          ? 'Required'
+          : '',
+      )
+      setTanggalLahirError(
+        dataSiswaInput?.tanggalLahir === undefined ? 'Required' : '',
+      )
+      setAgamaError(dataSiswaInput?.agama === undefined ? 'Required' : '')
+      setJenisKelaminError(
+        dataSiswaInput?.jenisKelamin === undefined ? 'Required' : '',
+      )
+      setTanggalMasukError(
+        dataSiswaInput?.tanggalMasuk === undefined ? 'Required' : '',
+      )
+      setKelasError(dataSiswaInput?.kelasId === undefined ? 'Required' : '')
+
+      // Return early without submitting the form
+      return
+    }
 
     setConfirmLoading(true)
     if (action === 'tambah') {
@@ -135,10 +216,19 @@ export function ModalTambahSiswa({
 
   const handleCancel = () => {
     setDataSiswaInput({} as IDataSiswaModal)
+    setNamaError('')
+    setNimError('')
+    setAlamatError('')
+    setTanggalLahirError(undefined)
+    setAgamaError(undefined)
+    setJenisKelaminError(undefined)
+    setTanggalMasukError(undefined)
+    setKelasError(undefined)
     setOpen(false)
   }
 
   const handleKelamin = (value: number) => {
+    setJenisKelaminError('')
     const user = getUserInfoWithNullCheck()
     const updatedBy = user ? user.id : 0
 
@@ -150,6 +240,7 @@ export function ModalTambahSiswa({
   }
 
   const handleAgama = (value: number) => {
+    setAgamaError('')
     const user = getUserInfoWithNullCheck()
     const updatedBy = user ? user.id : 0
 
@@ -164,6 +255,7 @@ export function ModalTambahSiswa({
     date,
     dateString,
   ) => {
+    setTanggalLahirError('')
     const user = getUserInfoWithNullCheck()
     const updatedBy = user ? user.id : 0
 
@@ -179,6 +271,7 @@ export function ModalTambahSiswa({
     date,
     dateString,
   ) => {
+    setTanggalMasukError('')
     const user = getUserInfoWithNullCheck()
     const updatedBy = user ? user.id : 0
 
@@ -191,6 +284,7 @@ export function ModalTambahSiswa({
   }
 
   const handleKelas = (value: number) => {
+    setKelasError('')
     const user = getUserInfoWithNullCheck()
     const updatedBy = user ? user.id : 0
 
@@ -228,9 +322,16 @@ export function ModalTambahSiswa({
                 prefix={<UserOutlined />}
                 onChange={e => handleChange(e)}
                 className="ml-2 w-60"
+                status={namaError ? 'error' : undefined}
                 required
               />
             </div>
+            {namaError && (
+              <p style={{ color: 'red' }} className="ml-4">
+                {' '}
+                {namaError}
+              </p>
+            )}
           </div>
           <div className="my-4 flex items-center">
             <div className="w-[25%]">NIM:</div>
@@ -243,9 +344,16 @@ export function ModalTambahSiswa({
                 prefix={<IdcardOutlined />}
                 onChange={e => handleChange(e)}
                 className="ml-2 w-60"
+                status={nimError ? 'error' : undefined}
                 required
               />
             </div>
+            {nimError && (
+              <p style={{ color: 'red' }} className="ml-4">
+                {' '}
+                {nimError}
+              </p>
+            )}
           </div>
           <div className="my-4 flex items-center">
             <div className="w-[25%]">Tanggal Lahir:</div>
@@ -254,23 +362,42 @@ export function ModalTambahSiswa({
                 onChange={onChangeTanggalLahir}
                 name="tanggal_lahir"
                 className="ml-2 w-60"
+                allowClear={false}
+                status={tanggalLahirError ? 'error' : undefined}
+                value={
+                  dataSiswaInput?.tanggalLahir
+                    ? dayjs(dataSiswaInput.tanggalLahir)
+                    : null
+                }
               />
             </div>
+            {tanggalLahirError && (
+              <p style={{ color: 'red' }} className="ml-4">
+                {' '}
+                {tanggalLahirError}
+              </p>
+            )}
           </div>
           <div className="my-4 flex items-center">
             <div className="w-[25%]">Alamat:</div>
             <div>
-              <Input
+              <Input.TextArea
                 placeholder="Alamat"
                 name="alamat"
                 disabled={action === 'detail' ? true : false}
                 value={dataSiswaInput.alamat}
-                prefix={<BiMapAlt />}
                 onChange={e => handleChange(e)}
                 className="ml-2 w-60"
+                status={alamatError ? 'error' : undefined}
                 required
               />
             </div>
+            {alamatError && (
+              <p style={{ color: 'red' }} className="ml-4">
+                {' '}
+                {alamatError}
+              </p>
+            )}
           </div>
           <div className="my-4 flex items-center">
             <div className="w-[25%]">Agama:</div>
@@ -278,6 +405,7 @@ export function ModalTambahSiswa({
               <Select
                 showSearch
                 placeholder="Pilih Agama"
+                status={agamaError ? 'error' : undefined}
                 optionFilterProp="children"
                 filterOption={(input, option) =>
                   (option?.label ?? '')
@@ -315,6 +443,12 @@ export function ModalTambahSiswa({
                 value={dataSiswaInput.agama}
               />
             </div>
+            {agamaError && (
+              <p style={{ color: 'red' }} className="ml-4">
+                {' '}
+                {agamaError}
+              </p>
+            )}
           </div>
           <div className="my-4 flex items-center">
             <div className="w-[25%]">Jenis Kelamin:</div>
@@ -322,6 +456,7 @@ export function ModalTambahSiswa({
               <Select
                 showSearch
                 placeholder="Pilih Jenis Kelamin"
+                status={jenisKelaminError ? 'error' : undefined}
                 optionFilterProp="children"
                 filterOption={(input, option) =>
                   (option?.label ?? '')
@@ -343,8 +478,13 @@ export function ModalTambahSiswa({
                 value={dataSiswaInput.jenisKelamin}
               />
             </div>
+            {jenisKelaminError && (
+              <p style={{ color: 'red' }} className="ml-4">
+                {' '}
+                {jenisKelaminError}
+              </p>
+            )}
           </div>
-
           <div className="my-4 flex items-center">
             <div className="w-[25%]">Tanggal Masuk:</div>
             <div>
@@ -352,8 +492,21 @@ export function ModalTambahSiswa({
                 onChange={onChangeTanggalMasuk}
                 name="tanggal_masuk"
                 className="ml-2 w-60"
+                allowClear={false}
+                status={tanggalMasukError ? 'error' : undefined}
+                value={
+                  dataSiswaInput?.tanggalMasuk
+                    ? dayjs(dataSiswaInput.tanggalMasuk)
+                    : null
+                }
               />
             </div>
+            {tanggalMasukError && (
+              <p style={{ color: 'red' }} className="ml-4">
+                {' '}
+                {tanggalMasukError}
+              </p>
+            )}
           </div>
           <div className="my-4 flex items-center">
             <div className="w-[25%]">Kelas:</div>
@@ -361,6 +514,7 @@ export function ModalTambahSiswa({
               <Select
                 showSearch
                 placeholder="Pilih Kelas"
+                status={kelasError ? 'error' : undefined}
                 optionFilterProp="children"
                 filterOption={(input, option) =>
                   (option?.label ?? '')
@@ -373,6 +527,12 @@ export function ModalTambahSiswa({
                 value={dataSiswaInput.kelasId}
               />
             </div>
+            {kelasError && (
+              <p style={{ color: 'red' }} className="ml-4">
+                {' '}
+                {kelasError}
+              </p>
+            )}
           </div>
         </div>
       </Spin>
