@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react'
 import {
   DatePicker,
@@ -9,9 +10,14 @@ import {
   message,
   Select,
   Space,
+  Button,
+  Popconfirm,
 } from 'antd'
 import { dataSiswaUpdate, tambahSiswa } from '@/helper/apiHelper/dataSiswa'
-import { pembayaranSppGenerate } from '@/helper/apiHelper/pembayaranSpp'
+import {
+  pembayaranSppGenerate,
+  dataPembayaranSppNaikKelas,
+} from '@/helper/apiHelper/pembayaranSpp'
 import { getDataKelas } from '@/helper/apiHelper/kelas'
 import { ISelect } from '@/interface/ui/component/dropdown'
 import { IDataSiswaModal } from '@/interface/ui/state/dataSiswaModal'
@@ -28,6 +34,7 @@ export function ModalTambahSiswa({
   getData,
   setDataSiswaInput,
   dataSiswaInput,
+  initialClassId,
 }: ModalTambahSiswaProps) {
   const [confirmLoading, setConfirmLoading] = useState(false)
   const [dataKelas, setDataKelas] = useState<ISelect[]>([] as ISelect[])
@@ -46,6 +53,9 @@ export function ModalTambahSiswa({
     string | undefined
   >(undefined)
   const [kelasError, setKelasError] = useState<string | undefined>(undefined)
+  const [naikKelasError, setNaikKelasError] = useState<string | undefined>(
+    undefined,
+  )
 
   const handleChange = (e: { target: { name: string; value: any } }) => {
     const user = getUserInfoWithNullCheck()
@@ -161,6 +171,16 @@ export function ModalTambahSiswa({
       return
     }
 
+    console.log('UNTUK KE API', dataSiswaInput)
+    console.log('INITIAL CLASS ID', initialClassId)
+    console.log('CURRENT CLASS ID', dataSiswaInput.kelasId)
+    if (action === 'edit') {
+      if (initialClassId !== dataSiswaInput.kelasId) {
+        setNaikKelasError('<- Gunakan Tombol Naik Kelas')
+        return
+      }
+    }
+
     setConfirmLoading(true)
     if (action === 'tambah') {
       // console.log('UNTUK TAMBAH', dataSiswaInput)
@@ -224,6 +244,7 @@ export function ModalTambahSiswa({
     setJenisKelaminError(undefined)
     setTanggalMasukError(undefined)
     setKelasError(undefined)
+    setNaikKelasError(undefined)
     setOpen(false)
   }
 
@@ -285,6 +306,7 @@ export function ModalTambahSiswa({
 
   const handleKelas = (value: number) => {
     setKelasError('')
+    setNaikKelasError('')
     const user = getUserInfoWithNullCheck()
     const updatedBy = user ? user.id : 0
 
@@ -293,6 +315,30 @@ export function ModalTambahSiswa({
       kelasId: value,
       updatedBy: updatedBy,
     }))
+  }
+
+  const handleNaikKelas = () => {
+    if (initialClassId === dataSiswaInput.kelasId) {
+      setNaikKelasError('Kelas Belum Berubah')
+      return
+    }
+
+    // console.log('DATA UNTUK UPDATE', dataSiswaInput)
+
+    dataPembayaranSppNaikKelas(dataSiswaInput)
+      .then((response: any) => {
+        getData()
+        setDataSiswaInput({} as IDataSiswaModal)
+        setConfirmLoading(false)
+      })
+      .then(response => {
+        setOpen(false)
+        message.success('Sukses Mengganti Kelas')
+      })
+      .catch((error: any) => {
+        message.error(error.message)
+        setOpen(false)
+      })
   }
 
   return (
@@ -306,9 +352,64 @@ export function ModalTambahSiswa({
       }
       open={open}
       onOk={handleOk}
-      okButtonProps={{ className: 'bg-blue-500' }}
       confirmLoading={confirmLoading}
-      onCancel={handleCancel}>
+      onCancel={handleCancel}
+      footer={[
+        <div key="footerButtons" className="flex justify-between">
+          <div className="flex items-center">
+            {initialClassId === dataSiswaInput.kelasId ? (
+              <Button
+                onClick={handleNaikKelas}
+                disabled={action === 'tambah'}
+                type="primary"
+                style={
+                  action === 'tambah'
+                    ? {}
+                    : { backgroundColor: '#1890ff', borderColor: '#1890ff' }
+                }>
+                Naik Kelas
+              </Button>
+            ) : (
+              <Popconfirm
+                title="Yakin Ingin Berganti to Kelas?"
+                onConfirm={handleNaikKelas}
+                okButtonProps={{
+                  style: { backgroundColor: '#1890ff', borderColor: '#1890ff' },
+                }}
+                okText="Yes"
+                cancelText="No">
+                <Button
+                  type="primary"
+                  disabled={action === 'tambah'}
+                  style={
+                    action === 'tambah'
+                      ? {}
+                      : { backgroundColor: '#1890ff', borderColor: '#1890ff' }
+                  }>
+                  Naik Kelas
+                </Button>
+              </Popconfirm>
+            )}
+            {naikKelasError && (
+              <p style={{ color: 'red' }} className="ml-4">
+                {naikKelasError}
+              </p>
+            )}
+          </div>
+          <div>
+            <Button key="cancelButton" onClick={handleCancel}>
+              Cancel
+            </Button>
+            <Button
+              key="okButton"
+              type="primary"
+              onClick={handleOk}
+              style={{ backgroundColor: '#1890ff', borderColor: '#1890ff' }}>
+              OK
+            </Button>
+          </div>
+        </div>,
+      ]}>
       <Spin spinning={loading}>
         <div className="my-8">
           <div className="my-4 flex items-center">

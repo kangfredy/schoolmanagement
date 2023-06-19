@@ -154,6 +154,7 @@ export const PembayaranSpp = () => {
 
         //Assign the mapped array to the state
         setDataHistorySpp(arrayDataTemp)
+        // console.log('DATA HISTORY SPP', arrayDataTemp)
         setDataHistorySppSelect(arraySelectTemp)
 
         setOpen(true)

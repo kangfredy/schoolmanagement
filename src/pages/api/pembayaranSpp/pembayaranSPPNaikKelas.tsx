@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
-import { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequest, NextApiResponse } from 'next'
+
 const prisma = new PrismaClient()
 const dotenv = require('dotenv')
 
@@ -9,16 +10,61 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { idSiswa, updatedBy }: any = req.query
-  const jumlahspp: any = process.env.SPP_BULANAN
-  if (req.method === 'GET') {
+  if (req.method === 'POST') {
+    const {
+      id,
+      nim,
+      nama,
+      alamat,
+      tanggalMasuk,
+      tanggalLahir,
+      kelasId,
+      jenisKelamin,
+      agama,
+      updatedBy,
+    } = req.body
+    const jumlahspp: any = process.env.SPP_BULANAN
+
+    // Update Data
+    const updateNaikKelas = await prisma.dataSiswa.update({
+      where: {
+        id: id,
+      },
+      data: {
+        nim: nim,
+        nama: nama,
+        alamat: alamat,
+        tanggalMasuk: tanggalMasuk,
+        tanggalLahir: tanggalLahir,
+        kelasId: kelasId,
+        jenisKelamin: jenisKelamin,
+        agama: agama,
+        updatedBy: Number(updatedBy),
+      },
+    })
+
     const pembayaranSpp = await prisma.pembayaranSpp.findFirst({
-      where: { siswaId: idSiswa },
+      where: { siswaId: id },
     })
 
     const startDate = new Date() // Set the start date
     const numberOfMonths = 12 // Define the number of months
+
     if (pembayaranSpp) {
+      const updatedTunggakan = pembayaranSpp?.tunggakan + jumlahspp * 12
+
+      await prisma.pembayaranSpp.update({
+        where: {
+          id: pembayaranSpp?.id,
+        },
+        data: {
+          siswaId: pembayaranSpp.siswaId,
+          tunggakan: updatedTunggakan,
+          totalBayar: pembayaranSpp?.totalBayar,
+          updatedBy: Number(updatedBy),
+        },
+      })
+
       // Loop through each month
       for (let i = 0; i < numberOfMonths; i++) {
         const currentMonth = startDate.getMonth() + i + 1
@@ -34,9 +80,13 @@ export default async function handler(
         })
       }
       res.status(200).json({ message: 'Generate successful' })
+    } else if (!pembayaranSpp) {
+      res.status(500).json({ message: 'pembayaran SPP Id Not Found' })
     }
-    res.status(500).json({ message: 'pembayaran SPP Id Not Found' })
+
+    // Return a success or failed message
+    res.status(200).json({ message: 'Update successful', updateNaikKelas })
   } else {
-    res.status(405).json({ message: 'metthod not allowed' })
+    res.status(405).json({ message: 'Method not allowed' })
   }
 }

@@ -34,6 +34,10 @@ export const DataSiswa = () => {
   const [dataSiswaInput, setDataSiswaInput] = useState<IDataSiswaModal>(
     {} as IDataSiswaModal,
   )
+  const [initialClassId, setInitialClassId] = useState<number | undefined>(
+    undefined,
+  )
+
   const [confirmLoading, setConfirmLoading] = useState(false)
   const [openDetail, setOpenDetail] = useState(false)
   const [dataHistorySpp, setDataHistorySpp] = useState<IHistorySpp[]>([])
@@ -44,7 +48,7 @@ export const DataSiswa = () => {
   const [userRole, setUserRole] = useState('')
 
   const getHistoryPembayaranSppBySiswaId = (siswaId: number) => {
-    console.log('getHistoryPembayaranSppBySiswaId SISWA ID', siswaId)
+    // console.log('getHistoryPembayaranSppBySiswaId SISWA ID', siswaId)
 
     historyPembayaranSppBySiswaId(siswaId)
       .then(response => {
@@ -74,7 +78,7 @@ export const DataSiswa = () => {
       .then(() => {
         historyPembayaranSeragamBySiswaId(siswaId)
           .then(response => {
-            console.log('historyPembayaranSeragamBySiswaId RESPONSE ', response)
+            // console.log('historyPembayaranSeragamBySiswaId RESPONSE ', response)
 
             const arrayHistorySeragamTemp: IHistorySeragam[] = []
 
@@ -132,10 +136,11 @@ export const DataSiswa = () => {
         user: data?.user,
       }
       setDataSiswaInput(dataInput)
+      setInitialClassId(data?.kelas?.id)
       setActions(action)
       setOpen(true)
     }
-    console.log(data)
+    // console.log(data)
   }
 
   const initiateData = async () => {
@@ -464,6 +469,7 @@ export const DataSiswa = () => {
               setOpen={setOpen}
               dataSiswaInput={dataSiswaInput}
               setDataSiswaInput={setDataSiswaInput}
+              initialClassId={initialClassId}
             />
           </div>
         </div>
