@@ -30,6 +30,7 @@ import { convertDate } from '@/helper/util/time'
 import { convertMoney } from '@/helper/util/money'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 import { convertDateTime } from '@/helper/util/time'
+import { PrintPembayaranSpp } from '../components/PrintPembayaranSpp'
 
 const currentDate = new Date().toISOString()
 // console.log('currentDate', currentDate)
@@ -61,6 +62,7 @@ export function ModalSpp({
   const [loading, setLoading] = useState<boolean>(false)
   const [userId, setUserId] = useState(0)
   const [userRole, setUserRole] = useState('')
+  const [openPrint, setOpenPrint] = useState(false)
 
   useEffect(() => {
     const user = getUserInfoWithNullCheck()
@@ -363,7 +365,7 @@ export function ModalSpp({
   }
 
   const handlePrint = () => {
-    console.log('PRINT CLICKED')
+    setOpenPrint(true)
   }
 
   return (
@@ -418,6 +420,22 @@ export function ModalSpp({
         dataSource={dataHistorySpp}
         scroll={{ x: 400 }}
         className="h-[100%]"
+      />
+      <PrintPembayaranSpp
+        getData={getData}
+        action={action}
+        open={openPrint}
+        setOpen={setOpenPrint}
+        dataSppInput={dataSppInput}
+        setDataSppInput={setDataSppInput}
+        dataHistorySpp={dataHistorySpp}
+        setDataHistorySpp={setDataHistorySpp}
+        dataHistorySppSelect={dataHistorySppSelect}
+        setDataHistorySppSelect={setDataHistorySppSelect}
+        showModal={showModal}
+        getHistoryPembayaranSppByPembayaranSppId={
+          getHistoryPembayaranSppByPembayaranSppId
+        }
       />
     </Modal>
   )
