@@ -88,10 +88,11 @@ export function ModalSpp({
     doc.setFont('helvetica')
 
     // Additional information above the table
-    doc.text(`NIS: ${dataSppInput.siswa.nim}`, 30, 20)
-    doc.text(`Nama: ${dataSppInput.siswa.nama}`, 30, 35)
-    doc.text(`Kelas: ${dataSppInput.siswa.kelas.namaKelas}`, 30, 50)
-    doc.text(`Jurusan: ${dataSppInput.siswa.kelas.jurusan.namaJurusan}`, 30, 65)
+    doc.text(`PEMBAYARAN SPP`, 30, 20)
+    doc.text(`NIS: ${dataSppInput.siswa.nim}`, 30, 35)
+    doc.text(`Nama: ${dataSppInput.siswa.nama}`, 30, 50)
+    doc.text(`Kelas: ${dataSppInput.siswa.kelas.namaKelas}`, 30, 65)
+    doc.text(`Jurusan: ${dataSppInput.siswa.kelas.jurusan.namaJurusan}`, 30, 80)
 
     // Add the image to the right of the table
     const image = new Image()
@@ -110,7 +111,7 @@ export function ModalSpp({
 
       // Generate the table
       const tableWidth = doc.internal.pageSize.getWidth() / 2
-      const tableStartY = 80
+      const tableStartY = 90
 
       const options = {
         startY: tableStartY,
@@ -121,7 +122,7 @@ export function ModalSpp({
         styles: { cellWidth: undefined },
         addPageContent: function (data: { pageNumber: number }) {
           const imgX = tableWidth + 30 - imgWidth // Adjust the X-coordinate to position the image next to the table
-          const imgY = 20 // Position the image at the top of the first page
+          const imgY = 30 // Position the image at the top of the first page
 
           // Add the image to the first page
           if (data.pageNumber === 1) {
