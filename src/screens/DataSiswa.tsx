@@ -316,6 +316,15 @@ export const DataSiswa = () => {
   })
 
   let columns: ColumnsType<Isiswa> = [
+    // {
+    //   title: 'No',
+    //   dataIndex: 'index',
+    //   key: 'index',
+    //   width: '13%',
+    //   render: (text, record, index) => index + 1,
+    //   sorter: (a, b) => a.id - b.id,
+    //   sortDirections: ['descend', 'ascend'],
+    // },
     {
       title: 'Nim',
       dataIndex: 'nim',
@@ -341,6 +350,16 @@ export const DataSiswa = () => {
       width: '10%',
       ...getColumnSearchProps('kelas'),
       sorter: (a, b) => a.kelas.namaKelas.localeCompare(b.kelas.namaKelas),
+      sortDirections: ['descend', 'ascend'],
+    },
+    {
+      title: 'Jurusan',
+      dataIndex: ['kelas', 'jurusan', 'namaJurusan'],
+      key: 'jurusan',
+      width: '10%',
+      ...getColumnSearchProps('kelas'),
+      sorter: (a, b) =>
+        a.kelas.jurusan.namaJurusan.localeCompare(b.kelas.jurusan.namaJurusan),
       sortDirections: ['descend', 'ascend'],
     },
     {

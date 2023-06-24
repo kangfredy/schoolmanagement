@@ -192,11 +192,11 @@ export const DataJurusan = () => {
 
   let columns: ColumnsType<IJurusan> = [
     {
-      title: 'Id',
-      dataIndex: 'id',
-      key: 'id',
+      title: 'No',
+      dataIndex: 'index',
+      key: 'index',
       width: '13%',
-      ...getColumnSearchProps('id'),
+      render: (text, record, index) => index + 1,
       sorter: (a, b) => a.id - b.id,
       sortDirections: ['descend', 'ascend'],
     },

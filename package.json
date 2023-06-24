@@ -26,6 +26,7 @@
     "eslint": "8.41.0",
     "eslint-config-next": "13.4.3",
     "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.5.29",
     "moment": "^2.29.4",
     "next": "13.4.3",
     "postcss": "8.4.23",

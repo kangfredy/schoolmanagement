@@ -30,7 +30,8 @@ import { convertDate } from '@/helper/util/time'
 import { convertMoney } from '@/helper/util/money'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 import { convertDateTime } from '@/helper/util/time'
-import { PrintPembayaranSpp } from '../components/PrintPembayaranSpp'
+import { jsPDF } from 'jspdf'
+import autoTable from 'jspdf-autotable'
 
 const currentDate = new Date().toISOString()
 // console.log('currentDate', currentDate)
@@ -63,6 +64,80 @@ export function ModalSpp({
   const [userId, setUserId] = useState(0)
   const [userRole, setUserRole] = useState('')
   const [openPrint, setOpenPrint] = useState(false)
+
+  const handleGeneratePdf = () => {
+    const doc = new jsPDF({
+      format: 'a4',
+      unit: 'px',
+    })
+
+    const dataForPrint = dataHistorySpp.filter(
+      item => item.sudahDibayar === true,
+    )
+
+    const tableData = dataForPrint.map((item, index) => [
+      index + 1, // Increment the index by 1 to get the number
+      convertMoney(item.jumlah),
+      convertDate(item.jatuhTempo),
+      convertDate(item.tanggalPembayaran),
+    ])
+
+    // Additional information above the table
+    doc.setFontSize(10)
+    doc.setTextColor('#4d4e53')
+    doc.setFont('helvetica')
+
+    // Additional information above the table
+    doc.text(`NIS: ${dataSppInput.siswa.nim}`, 30, 20)
+    doc.text(`Nama: ${dataSppInput.siswa.nama}`, 30, 35)
+    doc.text(`Kelas: ${dataSppInput.siswa.kelas.namaKelas}`, 30, 50)
+    doc.text(`Jurusan: ${dataSppInput.siswa.kelas.jurusan.namaJurusan}`, 30, 65)
+
+    // Add the image to the right of the table
+    const image = new Image()
+    const imagePath = '/assets/images/PGRILogo.png'
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+
+    image.onload = function () {
+      console.log('Image loaded') // Add this line
+      canvas.width = image.width
+      canvas.height = image.height
+      ctx?.drawImage(image, 0, 0)
+      const dataUrl = canvas.toDataURL('image/png')
+      const imgWidth = 80
+      const imgHeight = (image.height * imgWidth) / image.width
+
+      // Generate the table
+      const tableWidth = doc.internal.pageSize.getWidth() / 2
+      const tableStartY = 80
+
+      const options = {
+        startY: tableStartY,
+        head: [['No', 'Jumlah', 'Jatuh Tempo', 'Tanggal Pembayaran']],
+        body: tableData,
+        tableWidth: tableWidth,
+        margin: { left: 30 },
+        styles: { cellWidth: undefined },
+        addPageContent: function (data: { pageNumber: number }) {
+          const imgX = tableWidth + 30 - imgWidth // Adjust the X-coordinate to position the image next to the table
+          const imgY = 20 // Position the image at the top of the first page
+
+          // Add the image to the first page
+          if (data.pageNumber === 1) {
+            doc.addImage(dataUrl, 'PNG', imgX, imgY, imgWidth, imgHeight)
+          }
+        },
+      }
+
+      // Generate the table with the options
+      autoTable(doc, options)
+
+      doc.save(`${dataSppInput.siswa.nim}_${dataSppInput.siswa.nama}.pdf`)
+    }
+
+    image.src = imagePath
+  }
 
   useEffect(() => {
     const user = getUserInfoWithNullCheck()
@@ -257,11 +332,11 @@ export function ModalSpp({
 
   let columns: ColumnsType<IHistorySpp> = [
     {
-      title: 'Id',
-      dataIndex: 'id',
-      key: 'id',
+      title: 'No',
+      dataIndex: 'index',
+      key: 'index',
       width: '13%',
-      ...getColumnSearchProps('id'),
+      render: (text, record, index) => index + 1,
       sorter: (a, b) => a.id - b.id,
       sortDirections: ['descend', 'ascend'],
     },
@@ -336,8 +411,8 @@ export function ModalSpp({
         <Space size="small" split>
           {!record.sudahDibayar && (
             <Popconfirm
-              title={`Pembayaran No ${record.id} ?`}
-              description={`Anda Yakin ingin Konfirmasi Pembayaran No ${record.id} ?`}
+              title={`Konfirmasi Pembayaran`}
+              description={`Anda Yakin ingin Konfirmasi Pembayaran?`}
               onConfirm={e => handleConfirmBayarHistorySpp(record)}
               onCancel={handleCancelBayarHistorySpp}
               okText="Yes"
@@ -365,7 +440,7 @@ export function ModalSpp({
   }
 
   const handlePrint = () => {
-    setOpenPrint(true)
+    // setOpenPrint(true)
   }
 
   return (
@@ -410,7 +485,7 @@ export function ModalSpp({
           type="primary"
           size="large"
           className="bg-red-500"
-          onClick={handlePrint}
+          onClick={handleGeneratePdf}
           loading={confirmLoading}>
           PRINT
         </Button>
@@ -420,22 +495,6 @@ export function ModalSpp({
         dataSource={dataHistorySpp}
         scroll={{ x: 400 }}
         className="h-[100%]"
-      />
-      <PrintPembayaranSpp
-        getData={getData}
-        action={action}
-        open={openPrint}
-        setOpen={setOpenPrint}
-        dataSppInput={dataSppInput}
-        setDataSppInput={setDataSppInput}
-        dataHistorySpp={dataHistorySpp}
-        setDataHistorySpp={setDataHistorySpp}
-        dataHistorySppSelect={dataHistorySppSelect}
-        setDataHistorySppSelect={setDataHistorySppSelect}
-        showModal={showModal}
-        getHistoryPembayaranSppByPembayaranSppId={
-          getHistoryPembayaranSppByPembayaranSppId
-        }
       />
     </Modal>
   )
