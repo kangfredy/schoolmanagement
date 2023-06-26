@@ -39,6 +39,8 @@ import { ModalTambahHistorySeragam } from '../components/ModalTambahHistorySerag
 import { ISelect } from '@/interface/ui/component/dropdown'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 import { convertDateTime } from '@/helper/util/time'
+import { jsPDF } from 'jspdf'
+import autoTable from 'jspdf-autotable'
 
 type DataIndexHistory = keyof IHistorySeragam
 type DataIndexSeragam = keyof ISeragam
@@ -75,6 +77,94 @@ export function ModalSeragam({
   const [userRole, setUserRole] = useState('')
   const [namaSeragamError, setNamaSeragamError] = useState('')
   const [hargaSeragamError, setHargaSeragamError] = useState('')
+
+  const handleGeneratePdf = () => {
+    const doc = new jsPDF({
+      format: 'a4',
+      unit: 'px',
+    })
+
+    const dataForPrint = dataHistorySeragam.filter(
+      item => item.sudahDibayar === true,
+    )
+
+    // console.log('dataForPrint', dataForPrint)
+
+    const tableData = dataForPrint.map((item, index) => [
+      index + 1, // Increment the index by 1 to get the number
+      item.seragam.nama,
+      convertMoney(item.seragam.harga),
+      convertDate(item.tanggalPembayaran),
+      item.user.username,
+    ])
+
+    // Additional information above the table
+    doc.setFontSize(10)
+    doc.setTextColor('#4d4e53')
+    doc.setFont('helvetica')
+
+    // Additional information above the table
+    doc.text(`PEMBAYARAN SERAGAM`, 4, 20)
+    doc.text(`NIS: ${dataPembayaranSeragamInput.siswa.nim}`, 4, 35)
+    doc.text(`Nama: ${dataPembayaranSeragamInput.siswa.nama}`, 4, 50)
+    doc.text(
+      `Kelas: ${dataPembayaranSeragamInput.siswa.kelas.namaKelas}`,
+      4,
+      65,
+    )
+    doc.text(
+      `Jurusan: ${dataPembayaranSeragamInput.siswa.kelas.jurusan.namaJurusan}`,
+      4,
+      80,
+    )
+
+    // Add the image to the right of the table
+    const image = new Image()
+    const imagePath = '/assets/images/PGRILogo.png'
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+
+    image.onload = function () {
+      // console.log('Image loaded') // Add this line
+      canvas.width = image.width
+      canvas.height = image.height
+      ctx?.drawImage(image, 0, 0)
+      const dataUrl = canvas.toDataURL('image/png')
+      const imgWidth = 80
+      const imgHeight = (image.height * imgWidth) / image.width
+
+      // Generate the table
+      const tableWidth = doc.internal.pageSize.getWidth() * 0.45
+      const tableStartY = 90
+
+      const options = {
+        startY: tableStartY,
+        head: [['No', 'Seragam', 'Jumlah', 'Tgl Bayar', 'Penginput']],
+        body: tableData,
+        tableWidth: tableWidth,
+        margin: { left: 4 },
+        styles: { cellWidth: undefined },
+        addPageContent: function (data: { pageNumber: number }) {
+          const imgX = tableWidth + 4 - imgWidth // Adjust the X-coordinate to position the image next to the table
+          const imgY = 30 // Position the image at the top of the first page
+
+          // Add the image to the first page
+          if (data.pageNumber === 1) {
+            doc.addImage(dataUrl, 'PNG', imgX, imgY, imgWidth, imgHeight)
+          }
+        },
+      }
+
+      // Generate the table with the options
+      autoTable(doc, options)
+
+      doc.save(
+        `${dataPembayaranSeragamInput.siswa.nim}_${dataPembayaranSeragamInput.siswa.nama}.pdf`,
+      )
+    }
+
+    image.src = imagePath
+  }
 
   useEffect(() => {
     const user = getUserInfoWithNullCheck()
@@ -663,7 +753,11 @@ export function ModalSeragam({
           onClick={() => showModalTambahHistoryPembayaranSeragam()}>
           TAMBAH
         </Button>
-        <Button type="primary" size="large" className="bg-blue-500 ml-2">
+        <Button
+          type="primary"
+          size="large"
+          className="bg-blue-500 ml-2"
+          onClick={handleGeneratePdf}>
           PRINT
         </Button>
       </div>
