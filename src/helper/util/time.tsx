@@ -19,3 +19,13 @@ export const convertDateTime = (dateString: string | null) => {
     return cDate
   }
 }
+
+export const convertToMonthYear = (dateString: string | null) => {
+  if (dateString === null) {
+    return '-'
+  } else {
+    const cDate = moment(dateString).format('MMMM YYYY')
+
+    return cDate
+  }
+}

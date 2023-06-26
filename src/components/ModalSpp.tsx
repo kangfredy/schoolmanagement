@@ -26,10 +26,13 @@ import { ModalTambahSppProps } from '@/interface/ui/props/ModalTambahSpp'
 import { IDataHistorySppModal } from '@/interface/ui/state/dataHistorySppModal'
 import { IHistorySpp } from '@/interface/ui/state/dataHistorySppTable'
 import moment from 'moment'
-import { convertDate } from '@/helper/util/time'
+import {
+  convertDate,
+  convertToMonthYear,
+  convertDateTime,
+} from '@/helper/util/time'
 import { convertMoney } from '@/helper/util/money'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
-import { convertDateTime } from '@/helper/util/time'
 import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
 
@@ -71,15 +74,29 @@ export function ModalSpp({
       unit: 'px',
     })
 
-    const dataForPrint = dataHistorySpp.filter(
-      item => item.sudahDibayar === true,
-    )
+    const chunkSize = 12 // Number of elements to include in each chunk
+    const totalChunks = Math.ceil(dataHistorySpp.length / chunkSize) // Total number of chunks
+
+    let filteredList
+    if (totalChunks === 1) {
+      filteredList = dataHistorySpp.slice(0)
+    } else {
+      const startIndex = (totalChunks - 1) * chunkSize
+      filteredList = dataHistorySpp.slice(startIndex)
+    }
+
+    // console.log('filteredList', filteredList)
+
+    const dataForPrint = filteredList.filter(item => item.sudahDibayar === true)
+
+    // console.log('dataForPrint', dataForPrint)
 
     const tableData = dataForPrint.map((item, index) => [
       index + 1, // Increment the index by 1 to get the number
       convertMoney(item.jumlah),
-      convertDate(item.jatuhTempo),
+      convertToMonthYear(item.jatuhTempo),
       convertDate(item.tanggalPembayaran),
+      item.user.username,
     ])
 
     // Additional information above the table
@@ -88,11 +105,11 @@ export function ModalSpp({
     doc.setFont('helvetica')
 
     // Additional information above the table
-    doc.text(`PEMBAYARAN SPP`, 30, 20)
-    doc.text(`NIS: ${dataSppInput.siswa.nim}`, 30, 35)
-    doc.text(`Nama: ${dataSppInput.siswa.nama}`, 30, 50)
-    doc.text(`Kelas: ${dataSppInput.siswa.kelas.namaKelas}`, 30, 65)
-    doc.text(`Jurusan: ${dataSppInput.siswa.kelas.jurusan.namaJurusan}`, 30, 80)
+    doc.text(`PEMBAYARAN SPP`, 4, 20)
+    doc.text(`NIS: ${dataSppInput.siswa.nim}`, 4, 35)
+    doc.text(`Nama: ${dataSppInput.siswa.nama}`, 4, 50)
+    doc.text(`Kelas: ${dataSppInput.siswa.kelas.namaKelas}`, 4, 65)
+    doc.text(`Jurusan: ${dataSppInput.siswa.kelas.jurusan.namaJurusan}`, 4, 80)
 
     // Add the image to the right of the table
     const image = new Image()
@@ -101,7 +118,7 @@ export function ModalSpp({
     const ctx = canvas.getContext('2d')
 
     image.onload = function () {
-      console.log('Image loaded') // Add this line
+      // console.log('Image loaded') // Add this line
       canvas.width = image.width
       canvas.height = image.height
       ctx?.drawImage(image, 0, 0)
@@ -110,18 +127,18 @@ export function ModalSpp({
       const imgHeight = (image.height * imgWidth) / image.width
 
       // Generate the table
-      const tableWidth = doc.internal.pageSize.getWidth() / 2
+      const tableWidth = doc.internal.pageSize.getWidth() * 0.45
       const tableStartY = 90
 
       const options = {
         startY: tableStartY,
-        head: [['No', 'Jumlah', 'Jatuh Tempo', 'Tanggal Pembayaran']],
+        head: [['No', 'Jumlah', 'Pembayaran', 'Tgl Bayar', 'Penginput']],
         body: tableData,
         tableWidth: tableWidth,
-        margin: { left: 30 },
+        margin: { left: 4 },
         styles: { cellWidth: undefined },
         addPageContent: function (data: { pageNumber: number }) {
-          const imgX = tableWidth + 30 - imgWidth // Adjust the X-coordinate to position the image next to the table
+          const imgX = tableWidth + 4 - imgWidth // Adjust the X-coordinate to position the image next to the table
           const imgY = 30 // Position the image at the top of the first page
 
           // Add the image to the first page

@@ -171,9 +171,9 @@ export function ModalTambahSiswa({
       return
     }
 
-    console.log('UNTUK KE API', dataSiswaInput)
-    console.log('INITIAL CLASS ID', initialClassId)
-    console.log('CURRENT CLASS ID', dataSiswaInput.kelasId)
+    // console.log('UNTUK KE API', dataSiswaInput)
+    // console.log('INITIAL CLASS ID', initialClassId)
+    // console.log('CURRENT CLASS ID', dataSiswaInput.kelasId)
     if (action === 'edit') {
       if (initialClassId !== dataSiswaInput.kelasId) {
         setNaikKelasError('<- Gunakan Tombol Naik Kelas')
