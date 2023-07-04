@@ -41,6 +41,7 @@ import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 import { convertDateTime } from '@/helper/util/time'
 import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
+import { addDecimalPoints } from '@/helper/util/number'
 
 type DataIndexHistory = keyof IHistorySeragam
 type DataIndexSeragam = keyof ISeragam
@@ -66,6 +67,7 @@ export function ModalSeragam({
   const [searchText, setSearchText] = useState('')
   const searchInput = useRef<InputRef>(null)
   const [harga, setHarga] = useState<number>(0)
+  const [hargaParsed, setHargaParsed] = useState('')
   const [namaSeragam, setNamaSeragam] = useState('')
   const [loading, setLoading] = useState<boolean>(false)
   const [dataSeragamInput, setDataSeragamInput] = useState<IDataSeragamnModal>(
@@ -177,16 +179,6 @@ export function ModalSeragam({
       console.log('LOCALSTORAGE IS EMPTY')
     }
   }, [])
-
-  // const [DataPembayaran, setDataPembayaran] = useState<IDetailSeragam>(
-  //   {} as IDetailSeragam,
-  // )
-
-  // const handleChange = (e: { target: { name: string; value: any } }) =>
-  //   setDataPembayaran(prevState => ({
-  //     ...prevState,
-  //     [e.target.name]: e.target.value,
-  //   }))
 
   const handleReset = (
     clearFilters: () => void,
@@ -410,13 +402,8 @@ export function ModalSeragam({
     setNamaSeragamError('')
     setHargaSeragamError('')
     setOpen(false)
+    setHargaParsed('')
   }
-  // const handleKelas = (value: number) => {
-  //   setDataPembayaran(prevState => ({ ...prevState, kelasId: value }))
-  // }
-  // const onSearchKelas = (value: string) => {
-  //   console.log('search:', value)
-  // }
 
   const handleSeragamConfirmDelete = async (clickedData: any) => {
     setLoading(true)
@@ -432,11 +419,6 @@ export function ModalSeragam({
         setLoading(false)
         message.error(error.message)
       })
-  }
-
-  const handleSeragamCancelDelete = (e: any) => {
-    // console.log(e)
-    // message.error('Click on No')
   }
 
   const showModalTambahSeragamBaru = (data: ISeragam) => {
@@ -519,7 +501,6 @@ export function ModalSeragam({
               title="Hapus Data?"
               description="Apakah benar ingin menghapus data ini?"
               onConfirm={e => handleSeragamConfirmDelete(record)}
-              onCancel={handleSeragamCancelDelete}
               okText="Yes"
               okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
               cancelText="No">
@@ -793,17 +774,8 @@ export function ModalSeragam({
   }
 
   const handleHargaInput = (e: any) => {
-    // console.log('VALUE E', e.target.value)
-    const inputValue = e.target.value.trim()
-    const numericValue = Number(inputValue)
-
-    if (!Number.isNaN(numericValue) && inputValue !== '') {
-      setHarga(numericValue)
-      setHargaSeragamError('')
-    } else {
-      setHarga(0)
-      setHargaSeragamError('Please Input Number')
-    }
+    setHargaParsed(addDecimalPoints(e.target.value));
+    setHarga( Number(e.target.value.replace('.', '')));
   }
 
   const handleTambahSeragam = () => {
@@ -868,7 +840,7 @@ export function ModalSeragam({
             prefix={<RiShirtLine />}
             onChange={e => handleHargaInput(e)}
             className="w-60 mt-2 mb-3"
-            value={harga !== 0 ? harga : ''}
+            value={hargaParsed ? hargaParsed : ''}
             status={hargaSeragamError ? 'error' : undefined}
             required
           />

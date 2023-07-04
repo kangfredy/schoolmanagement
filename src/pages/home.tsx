@@ -13,11 +13,12 @@ import {
   HiTag,
   HiAcademicCap,
 } from 'react-icons/hi'
+import { RiAdminFill } from 'react-icons/ri'
 import { MdClass, MdWarehouse } from 'react-icons/md'
 import Image from 'next/image'
 import { DataSiswa } from '@/screens/DataSiswa'
 import { PembayaranSpp } from '@/screens/PembayaranSpp'
-import { DataBayarPerin } from '@/screens/PembayaranPerin'
+import { DataAdministrasi } from '@/screens/PembayaranPerin'
 import { PembayaranSeragam } from '@/screens/PembayaranSeragam'
 import { DataKelas } from '@/screens/DataKelas'
 import { DataJurusan } from '@/screens/DataJurusan'
@@ -74,8 +75,8 @@ export const Home = () => {
       label: 'Pembayaran Seragam',
     },
     {
-      icon: HiTag,
-      label: 'Pembayaran Prakerin',
+      icon: RiAdminFill,
+      label: 'Administrasi',
     },
   ]
 
@@ -96,7 +97,7 @@ export const Home = () => {
       componentToRender = <PembayaranSeragam />
       break
     case '6':
-      componentToRender = <DataBayarPerin />
+      componentToRender = <DataAdministrasi />
       break
     default:
       componentToRender = null
