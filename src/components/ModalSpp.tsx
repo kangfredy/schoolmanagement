@@ -26,10 +26,15 @@ import { ModalTambahSppProps } from '@/interface/ui/props/ModalTambahSpp'
 import { IDataHistorySppModal } from '@/interface/ui/state/dataHistorySppModal'
 import { IHistorySpp } from '@/interface/ui/state/dataHistorySppTable'
 import moment from 'moment'
-import { convertDate } from '@/helper/util/time'
+import {
+  convertDate,
+  convertToMonthYear,
+  convertDateTime,
+} from '@/helper/util/time'
 import { convertMoney } from '@/helper/util/money'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
-import { convertDateTime } from '@/helper/util/time'
+import { jsPDF } from 'jspdf'
+import autoTable from 'jspdf-autotable'
 
 const currentDate = new Date().toISOString()
 // console.log('currentDate', currentDate)
@@ -61,6 +66,96 @@ export function ModalSpp({
   const [loading, setLoading] = useState<boolean>(false)
   const [userId, setUserId] = useState(0)
   const [userRole, setUserRole] = useState('')
+  const [openPrint, setOpenPrint] = useState(false)
+
+  const handleGeneratePdf = () => {
+    const doc = new jsPDF({
+      format: 'a4',
+      unit: 'px',
+    })
+
+    const chunkSize = 12 // Number of elements to include in each chunk
+    const totalChunks = Math.ceil(dataHistorySpp.length / chunkSize) // Total number of chunks
+
+    let filteredList
+    if (totalChunks === 1) {
+      filteredList = dataHistorySpp.slice(0)
+    } else {
+      const startIndex = (totalChunks - 1) * chunkSize
+      filteredList = dataHistorySpp.slice(startIndex)
+    }
+
+    // console.log('filteredList', filteredList)
+
+    const dataForPrint = filteredList.filter(item => item.sudahDibayar === true)
+
+    // console.log('dataForPrint', dataForPrint)
+
+    const tableData = dataForPrint.map((item, index) => [
+      index + 1, // Increment the index by 1 to get the number
+      convertMoney(item.jumlah),
+      convertToMonthYear(item.jatuhTempo),
+      convertDate(item.tanggalPembayaran),
+      item.user.username,
+    ])
+
+    // Additional information above the table
+    doc.setFontSize(10)
+    doc.setTextColor('#4d4e53')
+    doc.setFont('helvetica')
+
+    // Additional information above the table
+    doc.text(`PEMBAYARAN SPP`, 4, 20)
+    doc.text(`NIS: ${dataSppInput.siswa.nim}`, 4, 35)
+    doc.text(`Nama: ${dataSppInput.siswa.nama}`, 4, 50)
+    doc.text(`Kelas: ${dataSppInput.siswa.kelas.namaKelas}`, 4, 65)
+    doc.text(`Jurusan: ${dataSppInput.siswa.kelas.jurusan.namaJurusan}`, 4, 80)
+
+    // Add the image to the right of the table
+    const image = new Image()
+    const imagePath = '/assets/images/PGRILogo.png'
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+
+    image.onload = function () {
+      // console.log('Image loaded') // Add this line
+      canvas.width = image.width
+      canvas.height = image.height
+      ctx?.drawImage(image, 0, 0)
+      const dataUrl = canvas.toDataURL('image/png')
+      const imgWidth = 80
+      const imgHeight = (image.height * imgWidth) / image.width
+
+      // Generate the table
+      const tableWidth = doc.internal.pageSize.getWidth() * 0.45
+      const tableStartY = 90
+
+      const options = {
+        startY: tableStartY,
+        head: [['No', 'Jumlah', 'Pembayaran', 'Tgl Bayar', 'Penginput']],
+        body: tableData,
+        tableWidth: tableWidth,
+        margin: { left: 4 },
+        styles: { cellWidth: undefined },
+        addPageContent: function (data: { pageNumber: number }) {
+          const imgX = tableWidth + 4 - imgWidth // Adjust the X-coordinate to position the image next to the table
+          const imgY = 30 // Position the image at the top of the first page
+
+          // Add the image to the first page
+          if (data.pageNumber === 1) {
+            doc.addImage(dataUrl, 'PNG', imgX, imgY, imgWidth, imgHeight)
+          }
+        },
+      }
+
+      // Generate the table with the options
+      autoTable(doc, options)
+
+      doc.save(`${dataSppInput.siswa.nim}_${dataSppInput.siswa.nama}.pdf`)
+    }
+
+    image.src = imagePath
+  }
 
   useEffect(() => {
     const user = getUserInfoWithNullCheck()
@@ -255,11 +350,11 @@ export function ModalSpp({
 
   let columns: ColumnsType<IHistorySpp> = [
     {
-      title: 'Id',
-      dataIndex: 'id',
-      key: 'id',
+      title: 'No',
+      dataIndex: 'index',
+      key: 'index',
       width: '13%',
-      ...getColumnSearchProps('id'),
+      render: (text, record, index) => index + 1,
       sorter: (a, b) => a.id - b.id,
       sortDirections: ['descend', 'ascend'],
     },
@@ -334,8 +429,8 @@ export function ModalSpp({
         <Space size="small" split>
           {!record.sudahDibayar && (
             <Popconfirm
-              title={`Pembayaran No ${record.id} ?`}
-              description={`Anda Yakin ingin Konfirmasi Pembayaran No ${record.id} ?`}
+              title={`Konfirmasi Pembayaran`}
+              description={`Anda Yakin ingin Konfirmasi Pembayaran?`}
               onConfirm={e => handleConfirmBayarHistorySpp(record)}
               onCancel={handleCancelBayarHistorySpp}
               okText="Yes"
@@ -363,7 +458,7 @@ export function ModalSpp({
   }
 
   const handlePrint = () => {
-    console.log('PRINT CLICKED')
+    // setOpenPrint(true)
   }
 
   return (
@@ -408,7 +503,7 @@ export function ModalSpp({
           type="primary"
           size="large"
           className="bg-red-500"
-          onClick={handlePrint}
+          onClick={handleGeneratePdf}
           loading={confirmLoading}>
           PRINT
         </Button>

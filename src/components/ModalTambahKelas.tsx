@@ -20,7 +20,10 @@ export function ModalTambahKelas({
   const [confirmLoading, setConfirmLoading] = useState(false)
   const [dataJurusan, setDataJurusan] = useState<ISelect[]>([] as ISelect[])
   const [loading, setLoading] = useState<boolean>(false)
-  const [userId, setUserId] = useState(0)
+  const [kelasError, setKelasError] = useState('')
+  const [jurusanError, setJurusanError] = useState<string | undefined>(
+    undefined,
+  )
 
   const handleChange = (e: { target: { name: string; value: any } }) => {
     const user = getUserInfoWithNullCheck()
@@ -31,6 +34,8 @@ export function ModalTambahKelas({
       [e.target.name]: e.target.value,
       updatedBy: updatedBy,
     }))
+
+    setKelasError(e.target.value.trim() === '' ? 'Required' : '')
   }
 
   const getJurusanData = () => {
@@ -68,6 +73,26 @@ export function ModalTambahKelas({
     // } else if (action === 'edit') {
     //   console.log('dataKelasInput UPDATE', dataKelasInput)
     // }
+
+    if (
+      dataKelasInput?.namaKelas === '' ||
+      dataKelasInput?.namaKelas === undefined ||
+      dataKelasInput?.jurusanId === undefined
+
+      // Add additional checks for other required fields
+    ) {
+      // Set the corresponding error state variables for the empty fields
+      setKelasError(
+        dataKelasInput?.namaKelas === '' ||
+          dataKelasInput?.namaKelas === undefined
+          ? 'Required'
+          : '',
+      )
+      setJurusanError(dataKelasInput?.jurusanId === undefined ? 'Required' : '')
+
+      // Return early without submitting the form
+      return
+    }
 
     setConfirmLoading(true)
     if (action === 'tambah') {
@@ -108,10 +133,13 @@ export function ModalTambahKelas({
 
   const handleCancel = () => {
     setDataKelasInput({} as IDataKelasModal)
+    setKelasError('')
+    setJurusanError(undefined)
     setOpen(false)
   }
 
   const handleJurusan = (value: number) => {
+    setJurusanError('')
     const user = getUserInfoWithNullCheck()
     const updatedBy = user ? user.id : 0
     setDataKelasInput((prevState: any) => ({
@@ -148,9 +176,16 @@ export function ModalTambahKelas({
                 prefix={<SiGoogleclassroom />}
                 onChange={e => handleChange(e)}
                 className="ml-2 w-60"
+                status={kelasError ? 'error' : undefined}
                 required
               />
             </div>
+            {kelasError && (
+              <p style={{ color: 'red' }} className="ml-4">
+                {' '}
+                {kelasError}
+              </p>
+            )}
           </div>
           <div className="my-4 flex items-center">
             <div className="w-[25%]">Jurusan:</div>
@@ -166,10 +201,17 @@ export function ModalTambahKelas({
                 }
                 onChange={handleJurusan}
                 options={dataJurusan}
+                status={jurusanError ? 'error' : undefined}
                 className="ml-2 w-60"
                 value={dataKelasInput.jurusanId}
               />
             </div>
+            {jurusanError && (
+              <p style={{ color: 'red' }} className="ml-4">
+                {' '}
+                {jurusanError}
+              </p>
+            )}
           </div>
         </div>
       </Spin>

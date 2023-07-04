@@ -111,7 +111,7 @@ export const PembayaranSeragam = () => {
           // false otherwise
           return notExistsInHistory
         })
-        console.log('CURRENT filteredDataSeragam', filteredDataSeragam)
+        // console.log('CURRENT filteredDataSeragam', filteredDataSeragam)
         setDataInputFilteredSeragam(filteredDataSeragam)
       })
       .then(response => {

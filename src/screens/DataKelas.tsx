@@ -191,11 +191,11 @@ export const DataKelas = () => {
 
   let columns: ColumnsType<Ikelas> = [
     {
-      title: 'Id',
-      dataIndex: 'id',
-      key: 'id',
+      title: 'No',
+      dataIndex: 'index',
+      key: 'index',
       width: '13%',
-      ...getColumnSearchProps('id'),
+      render: (text, record, index) => index + 1,
       sorter: (a, b) => a.id - b.id,
       sortDirections: ['descend', 'ascend'],
     },
@@ -214,6 +214,9 @@ export const DataKelas = () => {
       key: 'jurusan',
       width: '40%',
       ...getColumnSearchProps('jurusan'),
+      sorter: (a, b) =>
+        a.jurusan.namaJurusan.localeCompare(b.jurusan.namaJurusan),
+      sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Updated By',
