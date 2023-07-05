@@ -55,3 +55,14 @@ export interface Iuser {
   username: string
   role: string
 }
+
+
+
+export interface IdataSeragamHistory {
+  nomor: number
+  jatuhTempo: string
+  jumlah: number
+  sudahDibayar: boolean
+  tanggalPembayaran: string
+  seragam: string
+}

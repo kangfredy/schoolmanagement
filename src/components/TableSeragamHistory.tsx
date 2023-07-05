@@ -1,7 +1,7 @@
 import { ITableSPPHistoryProps } from '@/interface/ui/props/TableSPPHistory'
 import { Button, Input, InputRef, Space, Table, Tag } from 'antd'
 import { SearchOutlined, UserOutlined, IdcardOutlined } from '@ant-design/icons'
-import { IdataSeragamHistory } from '@/interface/ui/state/dataSeragamHistory'
+import { IdataSeragamHistory } from '@/interface/ui/state/dataHistorySeragamTable'
 import { ColumnType, ColumnsType } from 'antd/es/table'
 import { useRef, useState } from 'react'
 import { FilterConfirmProps } from 'antd/es/table/interface'
