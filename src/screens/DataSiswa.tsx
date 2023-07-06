@@ -326,7 +326,7 @@ export const DataSiswa = () => {
     //   sortDirections: ['descend', 'ascend'],
     // },
     {
-      title: 'Nim',
+      title: 'NISN',
       dataIndex: 'nim',
       key: 'nim',
       width: '13%',

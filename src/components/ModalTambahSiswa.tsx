@@ -435,7 +435,7 @@ export function ModalTambahSiswa({
             )}
           </div>
           <div className="my-4 flex items-center">
-            <div className="w-[25%]">NIM:</div>
+            <div className="w-[25%]">NISN:</div>
             <div>
               <Input
                 placeholder="NIM"

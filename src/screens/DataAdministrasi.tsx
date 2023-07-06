@@ -1,6 +1,6 @@
 import { Spin, Tabs } from "antd";
 import { UserMenu } from "./UserMenu";
-import { ReminderSPP } from "./reminderSPP";
+import { ReminderSPP } from "./ReminderSPP";
 import { ReminderSeragam } from "./ReminderSeragam";
 
 export const DataAdministrasi = () => {
