@@ -71,3 +71,21 @@ export const dataHistoryPembayaranSppUpdate = (
       .catch(error => reject(error))
   })
 }
+
+
+export const getSiswaBelumBayarService = () => {
+  const url = "/api/historyPembayaranSpp/getSiswaBelumBayar"
+  console.log("🚀 Fetching URL: " + url);
+return new Promise<any>((resolve, reject) => {
+  axios
+    .get(url)
+    .then((response) =>{ 
+      console.log("🎉 Success Response : ", response)
+      resolve(response)
+    })
+    .catch((error) => {
+      console.log("🔥 Error : "+ error)
+      reject(error)
+  });
+});
+};

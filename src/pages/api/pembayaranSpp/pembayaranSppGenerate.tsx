@@ -26,7 +26,7 @@ export default async function handler(
 
     // Loop through each month
     for (let i = 0; i < numberOfMonths; i++) {
-      const currentMonth = startDate.getMonth() + i + 1
+      const currentMonth = startDate.getMonth() + i
       const currentDate = new Date(startDate.getFullYear(), currentMonth, 1)
       await prisma.historyPembayaranSpp.create({
         data: {

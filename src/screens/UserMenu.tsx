@@ -14,7 +14,7 @@ type DataIndex = keyof IUser
 
 
 export const UserMenu = () => {
-    const [searchText, setSearchText] = useState('')
+  const [searchText, setSearchText] = useState('')
   const [searchedColumn, setSearchedColumn] = useState('')
   const searchInput = useRef<InputRef>(null)
   const [open, setOpen] = useState(false)
