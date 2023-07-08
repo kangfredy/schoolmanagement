@@ -17,6 +17,7 @@ export default async function handler(
       tanggalLahir,
       kelasId,
       jenisKelamin,
+      asalSekolah,
       agama,
       updatedBy,
     } = req.body
@@ -31,6 +32,7 @@ export default async function handler(
         nama: nama,
         alamat: alamat,
         tanggalMasuk: tanggalMasuk,
+        asalSekolah: asalSekolah,
         tanggalLahir: tanggalLahir,
         kelasId: kelasId,
         jenisKelamin: jenisKelamin,

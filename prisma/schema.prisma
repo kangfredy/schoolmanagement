@@ -58,6 +58,7 @@ model DataSiswa {
   nama              String
   alamat            String
   tanggalMasuk      DateTime
+  asalSekolah       String
   tanggalLahir      DateTime
   kelas             Kelas               @relation(fields: [kelasId], references: [id])
   kelasId           Int
