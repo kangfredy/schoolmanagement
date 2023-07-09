@@ -134,6 +134,7 @@ export const DataSiswa = () => {
         updatedAt: data?.updatedAt,
         updatedBy: data?.updatedBy,
         user: data?.user,
+        asalSekolah: data?.asalSekolah,
       }
       setDataSiswaInput(dataInput)
       setInitialClassId(data?.kelas?.id)
@@ -159,12 +160,13 @@ export const DataSiswa = () => {
             kelas: datas?.kelas,
             jenisKelamin: datas?.jenisKelamin,
             jenisKelaminDisplay:
-              datas?.jenisKelamin === 1 ? 'laki-laki' : 'perempuan',
+            datas?.jenisKelamin === 1 ? 'laki-laki' : 'perempuan',
             agama: datas?.agama,
             agamaDisplay: checkAgama(datas?.agama),
             updatedAt: datas?.updatedAt,
             updatedBy: datas?.updatedBy,
             user: datas?.user,
+            asalSekolah: datas?.asalSekolah,
           }
           arrayTemp.push(object1)
         })
@@ -186,8 +188,6 @@ export const DataSiswa = () => {
     if (user) {
       setUserId(user.id)
       setUserRole(user.role)
-      // console.log('USER ID', user.id)
-      // console.log('USER ROLE', user.role)
     } else {
       console.log('LOCALSTORAGE IS EMPTY')
     }

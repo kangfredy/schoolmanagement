@@ -24,6 +24,7 @@ import { IDataSiswaModal } from '@/interface/ui/state/dataSiswaModal'
 import { ModalTambahSiswaProps } from '@/interface/ui/props/ModalTambahSiswa'
 import { UserOutlined, IdcardOutlined } from '@ant-design/icons'
 import { BiMapAlt } from 'react-icons/bi'
+import { FaSchool } from 'react-icons/fa'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 import dayjs from 'dayjs'
 
@@ -41,6 +42,7 @@ export function ModalTambahSiswa({
   const [loading, setLoading] = useState<boolean>(false)
   const [namaError, setNamaError] = useState('')
   const [nimError, setNimError] = useState('')
+
   const [alamatError, setAlamatError] = useState('')
   const [tanggalLahirError, setTanggalLahirError] = useState<
     string | undefined
@@ -446,6 +448,27 @@ export function ModalTambahSiswa({
                 onChange={e => handleChange(e)}
                 className="ml-2 w-60"
                 status={nimError ? 'error' : undefined}
+                required
+              />
+            </div>
+            {nimError && (
+              <p style={{ color: 'red' }} className="ml-4">
+                {' '}
+                {nimError}
+              </p>
+            )}
+          </div>
+          <div className="my-4 flex items-center">
+            <div className="w-[25%]">Asal Sekolah:</div>
+            <div>
+              <Input
+                placeholder="Asal Sekolah"
+                name="asalSekolah"
+                disabled={action === 'detail' ? true : false}
+                value={dataSiswaInput.asalSekolah}
+                prefix={<FaSchool />}
+                onChange={e => handleChange(e)}
+                className="ml-2 w-60"
                 required
               />
             </div>

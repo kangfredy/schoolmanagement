@@ -10,4 +10,5 @@ export interface IDataSiswaModal {
   agama: number
   updatedAt?: string
   updatedBy: number
+  asalSekolah: string
 }

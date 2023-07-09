@@ -435,6 +435,14 @@ export function ModalDetailSiswa({
                 values={DataSiswa?.alamat}
                 onChange={e => console.log(e)}
               />
+              <FormInput
+                label="Asal Sekolah"
+                placeholder="Asal Sekolah"
+                isDisabled
+                isArea
+                values={DataSiswa?.asalSekolah}
+                onChange={e => console.log(e)}
+              />
             </div>
             <div className="text-xl my-5">History Pembayaran SPP</div>
             <Table

@@ -8,6 +8,7 @@ export interface Isiswa {
   jenisKelamin: number
   jenisKelaminDisplay: string | ''
   agama: number
+  asalSekolah: string
   agamaDisplay: string | ''
   kelas: Ikelas
   updatedBy: number
