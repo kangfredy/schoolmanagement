@@ -739,7 +739,7 @@ export function ModalSeragam({
           size="large"
           className="bg-blue-500 ml-2"
           onClick={handleGeneratePdf}>
-          PRINT
+          Cetak
         </Button>
       </div>
       <Table

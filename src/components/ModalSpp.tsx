@@ -505,7 +505,7 @@ export function ModalSpp({
           className="bg-red-500"
           onClick={handleGeneratePdf}
           loading={confirmLoading}>
-          PRINT
+          Cetak
         </Button>
       </div>
       <Table
