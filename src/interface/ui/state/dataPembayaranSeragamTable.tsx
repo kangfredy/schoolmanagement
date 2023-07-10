@@ -13,6 +13,7 @@ export interface Isiswa {
   id: number
   nim: string
   nama: string
+  asalSekolah: string
   alamat: string
   tanggalMasuk: string
   tanggalLahir: string

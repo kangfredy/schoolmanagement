@@ -70,7 +70,7 @@ export function ModalSpp({
 
   const handleGeneratePdf = () => {
     const doc = new jsPDF({
-      format: 'a4',
+      format: 'a6',
       unit: 'px',
     })
 
@@ -96,20 +96,34 @@ export function ModalSpp({
       convertMoney(item.jumlah),
       convertToMonthYear(item.jatuhTempo),
       convertDate(item.tanggalPembayaran),
+      dataSppInput.siswa.asalSekolah,
       item.user.username,
     ])
 
     // Additional information above the table
-    doc.setFontSize(10)
+    doc.setFontSize(8)
     doc.setTextColor('#4d4e53')
     doc.setFont('helvetica')
 
+    const docHorizontalMargin =
+      (doc.internal.pageSize.getWidth() -
+        doc.internal.pageSize.getWidth() * 0.9) /
+      2
+
     // Additional information above the table
-    doc.text(`PEMBAYARAN SPP`, 4, 20)
-    doc.text(`NIS: ${dataSppInput.siswa.nim}`, 4, 35)
-    doc.text(`Nama: ${dataSppInput.siswa.nama}`, 4, 50)
-    doc.text(`Kelas: ${dataSppInput.siswa.kelas.namaKelas}`, 4, 65)
-    doc.text(`Jurusan: ${dataSppInput.siswa.kelas.jurusan.namaJurusan}`, 4, 80)
+    doc.text(`PEMBAYARAN SPP`, docHorizontalMargin, 20)
+    doc.text(`NIS: ${dataSppInput.siswa.nim}`, docHorizontalMargin, 35)
+    doc.text(`Nama: ${dataSppInput.siswa.nama}`, docHorizontalMargin, 50)
+    doc.text(
+      `Kelas: ${dataSppInput.siswa.kelas.namaKelas}`,
+      docHorizontalMargin,
+      65,
+    )
+    doc.text(
+      `Jurusan: ${dataSppInput.siswa.kelas.jurusan.namaJurusan}`,
+      docHorizontalMargin,
+      80,
+    )
 
     // Add the image to the right of the table
     const image = new Image()
@@ -127,16 +141,20 @@ export function ModalSpp({
       const imgHeight = (image.height * imgWidth) / image.width
 
       // Generate the table
-      const tableWidth = doc.internal.pageSize.getWidth() * 0.45
+      const tableWidth = doc.internal.pageSize.getWidth() * 0.9
       const tableStartY = 90
+      const horizontalMargin =
+        (doc.internal.pageSize.getWidth() - tableWidth) / 2
 
       const options = {
         startY: tableStartY,
-        head: [['No', 'Jumlah', 'Pembayaran', 'Tgl Bayar', 'Penginput']],
+        head: [
+          ['No', 'Jumlah', 'Pembayaran', 'Tgl Bayar', 'Asal', 'Penginput'],
+        ],
         body: tableData,
         tableWidth: tableWidth,
-        margin: { left: 4 },
-        styles: { cellWidth: undefined },
+        margin: { left: horizontalMargin, right: horizontalMargin },
+        styles: { cellWidth: undefined, fontSize: 8 },
         addPageContent: function (data: { pageNumber: number }) {
           const imgX = tableWidth + 4 - imgWidth // Adjust the X-coordinate to position the image next to the table
           const imgY = 30 // Position the image at the top of the first page

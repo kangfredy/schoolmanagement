@@ -82,7 +82,7 @@ export function ModalSeragam({
 
   const handleGeneratePdf = () => {
     const doc = new jsPDF({
-      format: 'a4',
+      format: 'a6',
       unit: 'px',
     })
 
@@ -97,26 +97,40 @@ export function ModalSeragam({
       item.seragam.nama,
       convertMoney(item.seragam.harga),
       convertDate(item.tanggalPembayaran),
+      dataPembayaranSeragamInput.siswa.asalSekolah,
       item.user.username,
     ])
 
     // Additional information above the table
-    doc.setFontSize(10)
+    doc.setFontSize(8)
     doc.setTextColor('#4d4e53')
     doc.setFont('helvetica')
 
+    const docHorizontalMargin =
+      (doc.internal.pageSize.getWidth() -
+        doc.internal.pageSize.getWidth() * 0.9) /
+      2
+
     // Additional information above the table
-    doc.text(`PEMBAYARAN SERAGAM`, 4, 20)
-    doc.text(`NIS: ${dataPembayaranSeragamInput.siswa.nim}`, 4, 35)
-    doc.text(`Nama: ${dataPembayaranSeragamInput.siswa.nama}`, 4, 50)
+    doc.text(`PEMBAYARAN SERAGAM`, docHorizontalMargin, 20)
+    doc.text(
+      `NIS: ${dataPembayaranSeragamInput.siswa.nim}`,
+      docHorizontalMargin,
+      35,
+    )
+    doc.text(
+      `Nama: ${dataPembayaranSeragamInput.siswa.nama}`,
+      docHorizontalMargin,
+      50,
+    )
     doc.text(
       `Kelas: ${dataPembayaranSeragamInput.siswa.kelas.namaKelas}`,
-      4,
+      docHorizontalMargin,
       65,
     )
     doc.text(
       `Jurusan: ${dataPembayaranSeragamInput.siswa.kelas.jurusan.namaJurusan}`,
-      4,
+      docHorizontalMargin,
       80,
     )
 
@@ -136,16 +150,18 @@ export function ModalSeragam({
       const imgHeight = (image.height * imgWidth) / image.width
 
       // Generate the table
-      const tableWidth = doc.internal.pageSize.getWidth() * 0.45
+      const tableWidth = doc.internal.pageSize.getWidth() * 0.9
       const tableStartY = 90
+      const horizontalMargin =
+        (doc.internal.pageSize.getWidth() - tableWidth) / 2
 
       const options = {
         startY: tableStartY,
-        head: [['No', 'Seragam', 'Jumlah', 'Tgl Bayar', 'Penginput']],
+        head: [['No', 'Seragam', 'Jumlah', 'Tgl Bayar', 'Asal', 'Penginput']],
         body: tableData,
         tableWidth: tableWidth,
-        margin: { left: 4 },
-        styles: { cellWidth: undefined },
+        margin: { left: horizontalMargin, right: horizontalMargin },
+        styles: { cellWidth: undefined, fontSize: 8 },
         addPageContent: function (data: { pageNumber: number }) {
           const imgX = tableWidth + 4 - imgWidth // Adjust the X-coordinate to position the image next to the table
           const imgY = 30 // Position the image at the top of the first page
@@ -774,8 +790,8 @@ export function ModalSeragam({
   }
 
   const handleHargaInput = (e: any) => {
-    setHargaParsed(addDecimalPoints(e.target.value));
-    setHarga( Number(e.target.value.replace('.', '')));
+    setHargaParsed(addDecimalPoints(e.target.value))
+    setHarga(Number(e.target.value.replace('.', '')))
   }
 
   const handleTambahSeragam = () => {
