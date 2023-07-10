@@ -42,7 +42,7 @@ export function ModalTambahSiswa({
   const [loading, setLoading] = useState<boolean>(false)
   const [namaError, setNamaError] = useState('')
   const [nimError, setNimError] = useState('')
-
+  const [asalSekolahError, setAsalSekolahError] = useState('')
   const [alamatError, setAlamatError] = useState('')
   const [tanggalLahirError, setTanggalLahirError] = useState<
     string | undefined
@@ -76,6 +76,9 @@ export function ModalTambahSiswa({
         break
       case 'nim':
         setNimError(e.target.value.trim() === '' ? 'Required' : '')
+        break
+      case 'asalSekolah':
+        setAsalSekolahError(e.target.value.trim() === '' ? 'Required' : '')
         break
       case 'alamat':
         setAlamatError(e.target.value.trim() === '' ? 'Required' : '')
@@ -148,6 +151,12 @@ export function ModalTambahSiswa({
       )
       setNimError(
         dataSiswaInput?.nim?.trim() === '' || dataSiswaInput?.nim === undefined
+          ? 'Required'
+          : '',
+      )
+      setAsalSekolahError(
+        dataSiswaInput?.asalSekolah?.trim() === '' ||
+          dataSiswaInput?.asalSekolah === undefined
           ? 'Required'
           : '',
       )
@@ -241,6 +250,7 @@ export function ModalTambahSiswa({
     setNamaError('')
     setNimError('')
     setAlamatError('')
+    setAsalSekolahError('')
     setTanggalLahirError(undefined)
     setAgamaError(undefined)
     setJenisKelaminError(undefined)
@@ -469,13 +479,14 @@ export function ModalTambahSiswa({
                 prefix={<FaSchool />}
                 onChange={e => handleChange(e)}
                 className="ml-2 w-60"
+                status={asalSekolahError ? 'error' : undefined}
                 required
               />
             </div>
-            {nimError && (
+            {asalSekolahError && (
               <p style={{ color: 'red' }} className="ml-4">
                 {' '}
-                {nimError}
+                {asalSekolahError}
               </p>
             )}
           </div>
