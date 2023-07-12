@@ -54,7 +54,7 @@ model Kelas {
 
 model DataSiswa {
   id                Int                 @id @default(autoincrement())
-  nim               String              @db.VarChar(100)
+  nim               String?             @db.VarChar(100)
   nama              String
   alamat            String
   tanggalMasuk      DateTime
