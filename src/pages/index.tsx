@@ -20,7 +20,7 @@ export default function Login() {
       axios
         .post('/api/login', { username, password })
         .then(response => {
-          console.log(response)
+          // console.log(response)
           messageApi.open({ type: 'success', content: 'Login Succes' })
           localStorage.setItem(
             'user',

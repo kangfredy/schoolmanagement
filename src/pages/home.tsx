@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { Layout, Menu, theme, Button } from 'antd'
+import { Layout, Menu, theme, Button, Dropdown } from 'antd'
+import type { MenuProps } from 'antd'
 const { Header, Content, Footer, Sider } = Layout
 import {
   HiUser,
@@ -39,10 +40,13 @@ export const Home = () => {
   }
 
   useEffect(() => {
-    handleRender('1')
     let storedData = localStorage.getItem('user')
+    // console.log('storedData', storedData)
+    handleRender('1')
 
-    if (storedData !== null) {
+    if (storedData == null) {
+      window.location.href = '/'
+    } else {
       try {
         setUserData(JSON.parse(storedData))
       } catch (error) {
@@ -103,6 +107,21 @@ export const Home = () => {
       componentToRender = null
   }
 
+  const logout = () => {
+    // Perform logout actions here
+    // Clear user data, redirect, etc.
+    localStorage.clear()
+    console.log('LOGOUT BUTTON CLICKED')
+    window.location.href = '/'
+  }
+
+  const items: MenuProps['items'] = [
+    {
+      key: '1',
+      label: <a onClick={logout}>Logout</a>,
+    },
+  ]
+
   return (
     <Layout className="h-screen w-screen">
       <Sider trigger={null} collapsible collapsed={collapsed} width={230}>
@@ -147,13 +166,15 @@ export const Home = () => {
           />
           <div className="mx-2 my-2 flex items-center justify-end sm:w-[40%] md:w-[30%] lg:w-[20%]">
             <div className="mr-3">{userData?.username}</div>
-            <Image
-              src="/assets/images/profileDummy.jpg"
-              alt={''}
-              style={{ borderRadius: 9999 }}
-              width={45}
-              height={45}
-            />
+            <Dropdown menu={{ items }} placement="bottomRight">
+              <Image
+                src="/assets/images/profileDummy.jpg"
+                alt={''}
+                style={{ borderRadius: 9999 }}
+                width={45}
+                height={45}
+              />
+            </Dropdown>
           </div>
         </Header>
         <Content className="m-5">{componentToRender}</Content>
