@@ -318,7 +318,7 @@ export const PembayaranSeragam = () => {
 
   let columns: ColumnsType<IPembayaranSeragam> = [
     {
-      title: 'NIM',
+      title: 'NISN',
       dataIndex: ['siswa', 'nim'],
       key: 'nim',
       width: '13%',

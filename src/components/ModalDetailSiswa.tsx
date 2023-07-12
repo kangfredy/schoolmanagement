@@ -330,15 +330,15 @@ export function ModalDetailSiswa({
   ]
 
   const columnsHistorySeragam: ColumnsType<IHistorySeragam> = [
-    {
-      title: 'Nomor',
-      dataIndex: 'id',
-      key: 'id',
-      width: '13%',
-      ...getColumnHistorySeragamSearchProps('id'),
-      sorter: (a, b) => a.id - b.id,
-      sortDirections: ['descend', 'ascend'],
-    },
+    // {
+    //   title: 'Nomor',
+    //   dataIndex: 'id',
+    //   key: 'id',
+    //   width: '13%',
+    //   ...getColumnHistorySeragamSearchProps('id'),
+    //   sorter: (a, b) => a.id - b.id,
+    //   sortDirections: ['descend', 'ascend'],
+    // },
     {
       title: 'Seragam',
       dataIndex: ['seragam', 'nama'],
@@ -404,7 +404,7 @@ export function ModalDetailSiswa({
                 icons={<MdAccountCircle />}
               />
               <FormInput
-                label="NIM"
+                label="NISN"
                 placeholder="NIM"
                 icons={<IoIosCard />}
                 isDisabled

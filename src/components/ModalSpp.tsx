@@ -367,15 +367,15 @@ export function ModalSpp({
   const handleCancelBayarHistorySpp = () => {}
 
   let columns: ColumnsType<IHistorySpp> = [
-    {
-      title: 'No',
-      dataIndex: 'index',
-      key: 'index',
-      width: '13%',
-      render: (text, record, index) => index + 1,
-      sorter: (a, b) => a.id - b.id,
-      sortDirections: ['descend', 'ascend'],
-    },
+    // {
+    //   title: 'No',
+    //   dataIndex: 'index',
+    //   key: 'index',
+    //   width: '13%',
+    //   render: (text, record, index) => index + 1,
+    //   sorter: (a, b) => a.id - b.id,
+    //   sortDirections: ['descend', 'ascend'],
+    // },
     {
       title: 'Jumlah',
       dataIndex: 'jumlah',
@@ -492,7 +492,7 @@ export function ModalSpp({
         {dataSppInput ? (
           <>
             <div className="w-[50%] flex my-2">
-              <div className="w-[50%]">NIS</div>
+              <div className="w-[50%]">NISN</div>
               <div className="w-[50%]">{dataSppInput?.siswa?.nim}</div>
             </div>
             <div className="w-[50%] flex my-2">

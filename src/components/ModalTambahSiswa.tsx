@@ -450,7 +450,7 @@ export function ModalTambahSiswa({
             <div className="w-[25%]">NISN:</div>
             <div>
               <Input
-                placeholder="NIM"
+                placeholder="NISN"
                 name="nim"
                 disabled={action === 'detail' ? true : false}
                 value={dataSiswaInput.nim}

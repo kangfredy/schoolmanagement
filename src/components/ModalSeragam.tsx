@@ -453,15 +453,15 @@ export function ModalSeragam({
   }
 
   let columnsSeragam: ColumnsType<ISeragam> = [
-    {
-      title: 'Nomor',
-      dataIndex: 'id',
-      key: 'id',
-      width: '13%',
-      ...getSeragamColumnSearchProps('id'),
-      sorter: (a, b) => a.id - b.id,
-      sortDirections: ['descend', 'ascend'],
-    },
+    // {
+    //   title: 'Nomor',
+    //   dataIndex: 'id',
+    //   key: 'id',
+    //   width: '13%',
+    //   ...getSeragamColumnSearchProps('id'),
+    //   sorter: (a, b) => a.id - b.id,
+    //   sortDirections: ['descend', 'ascend'],
+    // },
     {
       title: 'Seragam',
       dataIndex: 'nama',
@@ -600,15 +600,15 @@ export function ModalSeragam({
   const handleCancelBayarHistorySeragam = () => {}
 
   let columnsHistorySeragam: ColumnsType<IHistorySeragam> = [
-    {
-      title: 'Nomor',
-      dataIndex: 'id',
-      key: 'id',
-      width: '13%',
-      ...getHistorySeragamColumnSearchProps('id'),
-      sorter: (a, b) => a.id - b.id,
-      sortDirections: ['descend', 'ascend'],
-    },
+    // {
+    //   title: 'Nomor',
+    //   dataIndex: 'id',
+    //   key: 'id',
+    //   width: '13%',
+    //   ...getHistorySeragamColumnSearchProps('id'),
+    //   sorter: (a, b) => a.id - b.id,
+    //   sortDirections: ['descend', 'ascend'],
+    // },
     {
       title: 'Seragam',
       dataIndex: ['seragam', 'nama'],
@@ -714,7 +714,7 @@ export function ModalSeragam({
         {dataPembayaranSeragamInput ? (
           <>
             <div className="w-[50%] flex my-2">
-              <div className="w-[50%]">NIS</div>
+              <div className="w-[50%]">NISN</div>
               <div className="w-[50%]">
                 {dataPembayaranSeragamInput?.siswa?.nim}
               </div>

@@ -340,7 +340,7 @@ export const PembayaranSpp = () => {
 
   let columns: ColumnsType<ISpp> = [
     {
-      title: 'NIM',
+      title: 'NISN',
       dataIndex: ['siswa', 'nim'],
       key: 'nim',
       width: '13%',
