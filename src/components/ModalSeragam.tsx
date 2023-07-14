@@ -739,7 +739,9 @@ export function ModalSeragam({
             </div>
           </>
         ) : (
-          <Spin size="large" />
+          <div className="flex justify-center">
+            <Spin size="large" />
+          </div>
         )}
       </div>
       <div className="flex justify-end my-5 w-[97%]">
@@ -753,17 +755,23 @@ export function ModalSeragam({
         <Button
           type="primary"
           size="large"
-          className="bg-blue-500 ml-2"
+          className="bg-red-500 ml-2"
           onClick={handleGeneratePdf}>
           Cetak
         </Button>
       </div>
-      <Table
-        columns={columnsHistorySeragam}
-        dataSource={dataHistorySeragam}
-        scroll={{ x: 400 }}
-        className="h-[100%]"
-      />
+      {dataHistorySeragam === null ? (
+        <div className="flex justify-center">
+          <Spin size="large" />
+        </div>
+      ) : (
+        <Table
+          columns={columnsHistorySeragam}
+          dataSource={dataHistorySeragam}
+          scroll={{ x: 400 }}
+          className="h-[100%]"
+        />
+      )}
       <ModalTambahHistorySeragam
         getData={getData}
         action={action}
