@@ -405,7 +405,7 @@ export function ModalDetailSiswa({
               />
               <FormInput
                 label="NISN"
-                placeholder="NIM"
+                placeholder="NISN"
                 icons={<IoIosCard />}
                 isDisabled
                 values={DataSiswa.nim}

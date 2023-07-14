@@ -131,8 +131,8 @@ export function ModalTambahSiswa({
     if (
       dataSiswaInput?.nama === '' ||
       dataSiswaInput?.nama === undefined ||
-      // dataSiswaInput?.nim === '' ||
-      // dataSiswaInput?.nim === undefined ||
+      dataSiswaInput?.asalSekolah === '' ||
+      dataSiswaInput?.asalSekolah === undefined ||
       dataSiswaInput?.alamat === '' ||
       dataSiswaInput?.alamat === undefined ||
       dataSiswaInput?.tanggalLahir === undefined ||
@@ -335,8 +335,62 @@ export function ModalTambahSiswa({
       return
     }
 
-    // console.log('DATA UNTUK UPDATE', dataSiswaInput)
+    if (
+      dataSiswaInput?.nama === '' ||
+      dataSiswaInput?.nama === undefined ||
+      dataSiswaInput?.asalSekolah === '' ||
+      dataSiswaInput?.asalSekolah === undefined ||
+      dataSiswaInput?.alamat === '' ||
+      dataSiswaInput?.alamat === undefined ||
+      dataSiswaInput?.tanggalLahir === undefined ||
+      dataSiswaInput?.agama === undefined ||
+      dataSiswaInput?.jenisKelamin === undefined ||
+      dataSiswaInput?.tanggalMasuk === undefined ||
+      dataSiswaInput?.kelasId === undefined
 
+      // Add additional checks for other required fields
+    ) {
+      // Set the corresponding error state variables for the empty fields
+      setNamaError(
+        dataSiswaInput?.nama === '' || dataSiswaInput?.nama === undefined
+          ? 'Required'
+          : '',
+      )
+      // setNimError(
+      //   dataSiswaInput?.nim?.trim() === '' || dataSiswaInput?.nim === undefined
+      //     ? 'Required'
+      //     : '',
+      // )
+      setAsalSekolahError(
+        dataSiswaInput?.asalSekolah?.trim() === '' ||
+          dataSiswaInput?.asalSekolah === undefined
+          ? 'Required'
+          : '',
+      )
+      setAlamatError(
+        dataSiswaInput?.alamat?.trim() === '' ||
+          dataSiswaInput?.alamat === undefined
+          ? 'Required'
+          : '',
+      )
+      setTanggalLahirError(
+        dataSiswaInput?.tanggalLahir === undefined ? 'Required' : '',
+      )
+      setAgamaError(dataSiswaInput?.agama === undefined ? 'Required' : '')
+      setJenisKelaminError(
+        dataSiswaInput?.jenisKelamin === undefined ? 'Required' : '',
+      )
+      setTanggalMasukError(
+        dataSiswaInput?.tanggalMasuk === undefined ? 'Required' : '',
+      )
+      setKelasError(dataSiswaInput?.kelasId === undefined ? 'Required' : '')
+
+      // Return early without submitting the form
+      return
+    }
+
+    // console.log('DATA UNTUK UPDATE', dataSiswaInput)
+    setConfirmLoading(true)
     dataPembayaranSppNaikKelas(dataSiswaInput)
       .then((response: any) => {
         getData()
