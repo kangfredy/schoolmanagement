@@ -177,7 +177,7 @@ export const Home = () => {
             </Dropdown>
           </div>
         </Header>
-        <Content className="m-5">{componentToRender}</Content>
+        <Content className="mt-2 mx-5 h-[90%] overflow-scroll">{componentToRender}</Content>
         <Footer style={{ textAlign: 'center' }}>
           Ant Design ©2023 Created by Ant UED
         </Footer>
