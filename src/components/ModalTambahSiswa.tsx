@@ -58,15 +58,14 @@ export function ModalTambahSiswa({
   const [naikKelasError, setNaikKelasError] = useState<string | undefined>(
     undefined,
   )
+  const [userData, setUserData] = useState<any>()
 
   const handleChange = (e: { target: { name: string; value: any } }) => {
-    const user = getUserInfoWithNullCheck()
-    const updatedBy = user ? user.id : 0
 
     setDataSiswaInput((prevState: any) => ({
       ...prevState,
       [e.target.name]: e.target.value,
-      updatedBy: updatedBy,
+      updatedBy: userData.id,
     }))
 
     // Perform validation for the input field
@@ -115,8 +114,14 @@ export function ModalTambahSiswa({
       })
   }
 
+  const getUserData = async () => {
+    const user = await getUserInfoWithNullCheck()
+    setUserData(user)
+  }
+
   useEffect(() => {
     getKelasData()
+    getUserData()
   }, [])
 
   const handleOk = () => {
@@ -262,25 +267,21 @@ export function ModalTambahSiswa({
 
   const handleKelamin = (value: number) => {
     setJenisKelaminError('')
-    const user = getUserInfoWithNullCheck()
-    const updatedBy = user ? user.id : 0
 
     setDataSiswaInput(prevState => ({
       ...prevState,
       jenisKelamin: value,
-      updatedBy: updatedBy,
+      updatedBy: userData.id,
     }))
   }
 
   const handleAgama = (value: number) => {
     setAgamaError('')
-    const user = getUserInfoWithNullCheck()
-    const updatedBy = user ? user.id : 0
 
     setDataSiswaInput((prevState: any) => ({
       ...prevState,
       agama: value,
-      updatedBy: updatedBy,
+      updatedBy: userData.id,
     }))
   }
 
@@ -289,14 +290,12 @@ export function ModalTambahSiswa({
     dateString,
   ) => {
     setTanggalLahirError('')
-    const user = getUserInfoWithNullCheck()
-    const updatedBy = user ? user.id : 0
 
     const formattedDate = date?.toISOString()
     setDataSiswaInput((prevState: any) => ({
       ...prevState,
       tanggalLahir: formattedDate,
-      updatedBy: updatedBy,
+      updatedBy: userData.id,
     }))
   }
 
@@ -305,27 +304,23 @@ export function ModalTambahSiswa({
     dateString,
   ) => {
     setTanggalMasukError('')
-    const user = getUserInfoWithNullCheck()
-    const updatedBy = user ? user.id : 0
 
     const formattedDate = date?.toISOString()
     setDataSiswaInput(prevState => ({
       ...prevState,
       tanggalMasuk: formattedDate,
-      updatedBy: updatedBy,
+      updatedBy: userData.id,
     }))
   }
 
   const handleKelas = (value: number) => {
     setKelasError('')
     setNaikKelasError('')
-    const user = getUserInfoWithNullCheck()
-    const updatedBy = user ? user.id : 0
 
     setDataSiswaInput((prevState: any) => ({
       ...prevState,
       kelasId: value,
-      updatedBy: updatedBy,
+      updatedBy: userData,
     }))
   }
 
