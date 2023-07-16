@@ -78,10 +78,14 @@ export const Home = () => {
       icon: HiCash,
       label: 'Pembayaran Seragam',
     },
-    {
-      icon: RiAdminFill,
-      label: 'Administrasi',
-    },
+    ...(userData?.role === 'admin'
+      ? [
+          {
+            icon: RiAdminFill,
+            label: 'Administrasi',
+          },
+        ]
+      : []),
   ]
 
   switch (value) {
@@ -177,7 +181,9 @@ export const Home = () => {
             </Dropdown>
           </div>
         </Header>
-        <Content className="mt-2 mx-5 h-[90%] overflow-scroll">{componentToRender}</Content>
+        <Content className="mt-2 mx-5 h-[90%] overflow-scroll">
+          {componentToRender}
+        </Content>
         <Footer style={{ textAlign: 'center' }}>
           Ant Design ©2023 Created by Ant UED
         </Footer>
