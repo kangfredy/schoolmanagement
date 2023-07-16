@@ -23,6 +23,7 @@ import { DataAdministrasi } from '@/screens/DataAdministrasi'
 import { PembayaranSeragam } from '@/screens/PembayaranSeragam'
 import { DataKelas } from '@/screens/DataKelas'
 import { DataJurusan } from '@/screens/DataJurusan'
+import { decodeData, key } from '@/helper/util/saltPassword'
 
 export const Home = () => {
   const [collapsed, setCollapsed] = useState(false)
@@ -41,17 +42,16 @@ export const Home = () => {
 
   useEffect(() => {
     let storedData = localStorage.getItem('user')
-    // console.log('storedData', storedData)
     handleRender('1')
 
     if (storedData == null) {
       window.location.href = '/'
     } else {
       try {
-        setUserData(JSON.parse(storedData))
+        setUserData(JSON.parse(decodeData(storedData, key)))
       } catch (error) {
         // Handle JSON parse error
-        console.error('Error parsing data:', error)
+        console.log('Error parsing data:', error)
         window.location.href = '/'
       }
     }

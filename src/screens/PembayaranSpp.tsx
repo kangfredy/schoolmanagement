@@ -39,64 +39,6 @@ export const PembayaranSpp = () => {
   const [userId, setUserId] = useState(0)
   const [userRole, setUserRole] = useState('')
 
-  // const getHistorySppById = (id: number) => {
-  //   historyPembayaranSppByPembayaranSppId(1)
-  //     .then(response => {
-  //       console.log(
-  //         'ID',
-  //         response.data.getHistoryPembayaranSppById[0].pembayaranSppId,
-  //       )
-  //       console.log('historyPembayaranSppByPembayaranSppId ', response)
-  //       const arrayDataTemp: IHistorySpp[] = []
-  //       const arraySelectTemp: any[] = []
-
-  //       response.data.getHistoryPembayaranSppById?.map((datas: any) => {
-  //         const object1: IHistorySpp = {
-  //           id: datas?.id,
-  //           pembayaranSppId: datas?.pembayaranSppId,
-  //           jatuhTempo: datas?.jatuhTempo,
-  //           jumlah: datas?.jumlah,
-  //           sudahDibayar: datas?.sudahDibayar,
-  //           tanggalPembayaran: datas?.tanggalPembayaran,
-  //           pembayaranSpp: datas?.pembayaranSpp,
-  //         }
-  //         arrayDataTemp.push(object1)
-
-  //         const object2: any = {
-  //           value: datas.id,
-  //           label: datas.id,
-  //         }
-  //         arraySelectTemp.push(object2)
-  //       })
-
-  //       //Assign the mapped array to the state
-  //       setDataHistorySpp(arrayDataTemp)
-  //       setDataHistorySppSelect(arraySelectTemp)
-  //     })
-  //     .then(response => {
-  //       setLoading(false)
-  //     })
-  //     .catch(error => {
-  //       console.error(error.message)
-  //       setLoading(false)
-  //     })
-  // }
-
-  // const showModal = (action: string, data: ISpp) => {
-  //   let dataInput = {
-  //     id: data?.id,
-  //     siswaId: data?.siswaId,
-  //     tunggakan: data?.tunggakan,
-  //     totalBayar: data?.totalBayar,
-  //     siswa: data?.siswa,
-  //     kelas: data?.siswa.kelas,
-  //     jurusan: data?.siswa?.kelas.jurusan,
-  //   }
-  //   setDataSppInput(dataInput)
-  //   setActions(action)
-  //   setOpen(true)
-  // }
-
   const showModal = (data: ISpp) => {
     let dataInput = {
       id: data?.id,
@@ -214,17 +156,19 @@ export const PembayaranSpp = () => {
     }
   }
 
-  useEffect(() => {
-    initiateData()
-    const user = getUserInfoWithNullCheck()
+  const getUserData = async () => {
+    const user = await getUserInfoWithNullCheck()
     if (user) {
       setUserId(user.id)
       setUserRole(user.role)
-      // console.log('USER ID', user.id)
-      // console.log('USER ROLE', user.role)
     } else {
       console.log('LOCALSTORAGE IS EMPTY')
     }
+  }
+
+  useEffect(() => {
+    initiateData()
+    getUserData()
   }, [])
 
   const handleSearch = (

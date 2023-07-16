@@ -190,17 +190,19 @@ export const PembayaranSeragam = () => {
     }
   }
 
-  useEffect(() => {
-    initiateData()
-    const user = getUserInfoWithNullCheck()
+  const getUserData = async () => {
+    const user = await getUserInfoWithNullCheck()
     if (user) {
       setUserId(user.id)
       setUserRole(user.role)
-      // console.log('USER ID', user.id)
-      // console.log('USER ROLE', user.role)
     } else {
       console.log('LOCALSTORAGE IS EMPTY')
     }
+  }
+
+  useEffect(() => {
+    initiateData()
+    getUserData()
   }, [])
 
   const handleSearch = (

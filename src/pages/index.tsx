@@ -5,6 +5,7 @@ import { Alert, message, Button, Spin } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
 import axios from 'axios'
 import { THEME_COLOR } from '@/helper/util/theme'
+import { encodeData, key } from '@/helper/util/saltPassword'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -24,12 +25,12 @@ export default function Login() {
           messageApi.open({ type: 'success', content: 'Login Succes' })
           localStorage.setItem(
             'user',
-            JSON.stringify({
+            encodeData(JSON.stringify({
               id: response.data.user.id,
               username: response.data.user.username,
               isLogin: true,
               role: response.data.user.role,
-            }),
+            }), key),
           )
           setLoading(false)
           window.location.href = '/home'

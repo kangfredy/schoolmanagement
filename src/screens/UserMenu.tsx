@@ -51,16 +51,19 @@ export const UserMenu = () => {
         setLoading(false)
       })
   }
-
-  useEffect(() => {
-    initiateData()
-    const user = getUserInfoWithNullCheck()
+  const getUserData = async () => {
+    const user = await getUserInfoWithNullCheck()
     if (user) {
       setUserId(user.id)
       setUserRole(user.role)
     } else {
       console.log('LOCALSTORAGE IS EMPTY')
     }
+  }
+
+  useEffect(() => {
+    initiateData()
+    getUserData()
   }, [])
 
   const handleSearch = (

@@ -17,6 +17,7 @@ import { IHistorySpp } from '@/interface/ui/state/dataHistorySppTable'
 import { IHistorySeragam } from '@/interface/ui/state/dataHistorySeragamTable'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 import { convertDateTime } from '@/helper/util/time'
+import { encodeData, key } from '@/helper/util/saltPassword'
 
 type DataIndex = keyof Isiswa
 
@@ -182,15 +183,19 @@ export const DataSiswa = () => {
       })
   }
 
-  useEffect(() => {
-    initiateData()
-    const user = getUserInfoWithNullCheck()
+  const getUserData = async () => {
+    const user = await getUserInfoWithNullCheck()
     if (user) {
       setUserId(user.id)
       setUserRole(user.role)
     } else {
       console.log('LOCALSTORAGE IS EMPTY')
     }
+  }
+
+  useEffect(() => {
+    initiateData()
+    getUserData()
   }, [])
 
   const handleSearch = (

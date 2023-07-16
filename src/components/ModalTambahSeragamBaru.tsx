@@ -17,17 +17,26 @@ export function ModalTambahSeragamBaru({
   const [loading, setLoading] = useState<boolean>(false)
   const [namaSeragamError, setNamaSeragamError] = useState('')
   const [hargaSeragamError, setHargaSeragamError] = useState('')
+  const [userData, setUserData] = useState<any>()
+
+  const getUserData = async() => {
+    const user = await getUserInfoWithNullCheck()
+    setUserData(user)
+  }
+
+  useEffect(()=> {
+    getUserData()
+  },[])
 
   const handleChange = (e: { target: { name: string; value: string } }) => {
-    const user = getUserInfoWithNullCheck()
-    const updatedBy = user ? user.id : 0
+    
 
     const { name, value } = e.target
     const updatedValue = name === 'harga' ? Number(value) : value
     setDataSeragamInput((prevState: any) => ({
       ...prevState,
       [name]: updatedValue,
-      updatedBy: updatedBy,
+      updatedBy: userData.id,
     }))
 
     // Perform validation for the input field
@@ -43,14 +52,14 @@ export function ModalTambahSeragamBaru({
         setDataSeragamInput((prevState: any) => ({
           ...prevState,
           [name]: numericValue,
-          updatedBy: updatedBy,
+          updatedBy: userData.id,
         }))
         setHargaSeragamError('')
       } else {
         setDataSeragamInput((prevState: any) => ({
           ...prevState,
           [name]: 0,
-          updatedBy: updatedBy,
+          updatedBy: userData.id,
         }))
         setHargaSeragamError('Input Number')
       }

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { SearchOutlined } from '@ant-design/icons'
 import { InputRef, Modal, Popconfirm, Spin, message } from 'antd'
 import { Button, Input, Space, Table } from 'antd'
@@ -53,17 +54,19 @@ export const DataJurusan = () => {
       })
   }
 
-  useEffect(() => {
+  const checkSession = async () => {
     initiateData()
-    const user = getUserInfoWithNullCheck()
+    let user = await getUserInfoWithNullCheck()
     if (user) {
       setUserId(user.id)
       setUserRole(user.role)
-      // console.log('USER ID', user.id)
-      // console.log('USER ROLE', user.role)
     } else {
       console.log('LOCALSTORAGE IS EMPTY')
     }
+  }
+
+  useEffect(() => {
+    checkSession()
   }, [])
 
   const handleSearch = (

@@ -21,18 +21,23 @@ export function ModalTambahJurusan({
   const [confirmLoading, setConfirmLoading] = useState(false)
   const [loading, setLoading] = useState<boolean>(false)
   const [jurusanError, setJurusanError] = useState('')
+  const [userData, setuserData] = useState<any>({})
 
-  const handleChange = (e: { target: { name: string; value: any } }) => {
-    const user = getUserInfoWithNullCheck()
-    const updatedBy = user ? user.id : 0
+  const handleChange = async (e: { target: { name: string; value: any } }) => {
+    
 
     setDataJurusanInput((prevState: any) => ({
       ...prevState,
       [e.target.name]: e.target.value,
-      updatedBy: updatedBy,
+      updatedBy: userData.id,
     }))
 
     setJurusanError(e.target.value.trim() === '' ? 'Required' : '')
+  }
+
+  const getUserData = async() => {
+    const user = await getUserInfoWithNullCheck()
+    setuserData(user)
   }
 
   useEffect(() => {}, [])

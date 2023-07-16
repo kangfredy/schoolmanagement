@@ -175,8 +175,8 @@ export function ModalSpp({
     image.src = imagePath
   }
 
-  useEffect(() => {
-    const user = getUserInfoWithNullCheck()
+  const getUserData = async() => {
+    const user = await getUserInfoWithNullCheck()
     if (user) {
       setUserId(user.id)
       setUserRole(user.role)
@@ -185,6 +185,10 @@ export function ModalSpp({
     } else {
       console.log('LOCALSTORAGE IS EMPTY')
     }
+  }
+
+  useEffect(() => {
+    getUserData()
   }, [])
 
   const handleSearch = (
@@ -296,8 +300,8 @@ export function ModalSpp({
 
   const handleConfirmBayarHistorySpp = (currentData: IHistorySpp) => {
     // console.log('DATA TO CONFIRM', currentData)
-    const user = getUserInfoWithNullCheck()
-    const updatedBy = user ? user.id : 0
+    // const user = await getUserInfoWithNullCheck()
+    // const updatedBy = user ? user.id : 0
 
     //Untuk dilepar ke api
     const currentDate = new Date().toISOString()
@@ -310,7 +314,7 @@ export function ModalSpp({
     }
 
     // Add the updatedBy property to currentData
-    currentData.updatedBy = updatedBy
+    currentData.updatedBy = userId
 
     // console.log('BAYAR DATA', currentData)
 

@@ -1,21 +1,39 @@
-import * as crypto from "crypto"
+import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 
-export const encodeData = (data: any, key: any) => {
-    const cipher = crypto.createCipheriv('aes-256-cbc', key, crypto.randomBytes(16));
-    let encrypted = cipher.update(data, 'utf8', 'base64');
-    encrypted += cipher.final('base64');
-    return encrypted;
-  };
-  
-export  const decodeData = (encodedData: any, key: any) => {
-    const decipher = crypto.createDecipheriv('aes-256-cbc', key, Buffer.alloc(16));
-    let decrypted = decipher.update(encodedData, 'base64', 'utf8');
-    decrypted += decipher.final('utf8');
-    return decrypted;
-  };
-  
-  // Usage
-  //const data = 'Sensitive information';
-const keyString = 'SMKPGRILAHAT';
-const salt = crypto.randomBytes(16); // Generate a random salt
-export const key = crypto.pbkdf2Sync(keyString, salt, 10000, 32, 'sha256'); 
+// Pad the secret key to the desired length
+function padKey(secretKey: string, length: number): Buffer {
+  const keyBuffer = Buffer.alloc(length);
+  const keyData = Buffer.from(secretKey, 'utf8');
+
+  keyData.copy(keyBuffer);
+  return keyBuffer;
+}
+
+// AES encryption function
+export function encodeData(message: string, secretKey: string): string {
+  const key = padKey(secretKey, 32); // 32 bytes for AES-256
+  const iv = randomBytes(16);
+  const cipher = createCipheriv('aes-256-cbc', key, iv);
+
+  let encrypted = cipher.update(message, 'utf8', 'base64');
+  encrypted += cipher.final('base64');
+
+  const encryptedMessage = iv.toString('base64') + ':' + encrypted;
+  return encryptedMessage;
+}
+
+// AES decryption function
+export function decodeData(encryptedMessage: string, secretKey: string): string {
+  const [ivString, encrypted] = encryptedMessage.split(':');
+  const iv = Buffer.from(ivString, 'base64');
+  const key = padKey(secretKey, 32); // 32 bytes for AES-256
+  const decipher = createDecipheriv('aes-256-cbc', key, iv);
+
+  let decrypted = decipher.update(encrypted, 'base64', 'utf8');
+  decrypted += decipher.final('utf8');
+
+  return decrypted;
+}
+
+// Usage
+export const key = 'SMKPGRILAHAT';

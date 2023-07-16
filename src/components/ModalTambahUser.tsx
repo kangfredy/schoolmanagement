@@ -21,8 +21,8 @@ export function ModalTambahUser({
   const [loading, setLoading] = useState<boolean>(false)
   const [userError, setUserError] = useState('')
 
-  const handleChange = (e: any) => {
-    const user = getUserInfoWithNullCheck()
+  const handleChange = async (e: any) => {
+    const user = await getUserInfoWithNullCheck()
     const updatedBy = user ? user.id : 0
 
     setDataUserInput((prevState: any) => ({

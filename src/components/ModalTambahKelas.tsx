@@ -24,15 +24,15 @@ export function ModalTambahKelas({
   const [jurusanError, setJurusanError] = useState<string | undefined>(
     undefined,
   )
+  const [userData, setUserData] = useState<any>({})
 
   const handleChange = (e: { target: { name: string; value: any } }) => {
-    const user = getUserInfoWithNullCheck()
-    const updatedBy = user ? user.id : 0
+   
 
     setDataKelasInput((prevState: any) => ({
       ...prevState,
       [e.target.name]: e.target.value,
-      updatedBy: updatedBy,
+      updatedBy: userData.id,
     }))
 
     setKelasError(e.target.value.trim() === '' ? 'Required' : '')
@@ -63,8 +63,14 @@ export function ModalTambahKelas({
       })
   }
 
+  const getUserData = async () => {
+    const user = getUserInfoWithNullCheck()
+    setUserData(user)
+  }
+
   useEffect(() => {
     getJurusanData()
+    getUserData()
   }, [])
 
   const handleOk = () => {
@@ -140,12 +146,10 @@ export function ModalTambahKelas({
 
   const handleJurusan = (value: number) => {
     setJurusanError('')
-    const user = getUserInfoWithNullCheck()
-    const updatedBy = user ? user.id : 0
     setDataKelasInput((prevState: any) => ({
       ...prevState,
       jurusanId: value,
-      updatedBy: updatedBy,
+      updatedBy: userData.id,
     }))
   }
 

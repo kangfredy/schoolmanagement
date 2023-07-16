@@ -35,15 +35,8 @@ export function ModalTambahHistorySeragam({
   const [userRole, setUserRole] = useState('')
   const [seragamError, setSeragamError] = useState('')
 
-  useEffect(() => {
-    setDataSelectSeragam(
-      dataInputFilteredSeragam.map(seragam => ({
-        value: seragam.id,
-        label: seragam.nama,
-      })),
-    )
-
-    const user = getUserInfoWithNullCheck()
+  const getUserData = async() => {
+    const user = await getUserInfoWithNullCheck()
     if (user) {
       setUserId(user.id)
       setUserRole(user.role)
@@ -52,6 +45,16 @@ export function ModalTambahHistorySeragam({
     } else {
       console.log('LOCALSTORAGE IS EMPTY')
     }
+  }
+
+  useEffect(() => {
+    setDataSelectSeragam(
+      dataInputFilteredSeragam.map(seragam => ({
+        value: seragam.id,
+        label: seragam.nama,
+      })),
+    )
+    getUserData()
   }, [dataInputFilteredSeragam])
 
   const handleOk = () => {
