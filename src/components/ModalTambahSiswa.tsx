@@ -320,7 +320,7 @@ export function ModalTambahSiswa({
     setDataSiswaInput((prevState: any) => ({
       ...prevState,
       kelasId: value,
-      updatedBy: userData,
+      updatedBy: userData.id,
     }))
   }
 

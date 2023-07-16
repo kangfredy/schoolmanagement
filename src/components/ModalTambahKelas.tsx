@@ -64,7 +64,7 @@ export function ModalTambahKelas({
   }
 
   const getUserData = async () => {
-    const user = getUserInfoWithNullCheck()
+    const user = await getUserInfoWithNullCheck()
     setUserData(user)
   }
 

@@ -40,7 +40,9 @@ export function ModalTambahJurusan({
     setuserData(user)
   }
 
-  useEffect(() => {}, [])
+  useEffect(() => {
+    getUserData()
+  }, [])
 
   const handleOk = () => {
     // if (action === 'tambah') {
