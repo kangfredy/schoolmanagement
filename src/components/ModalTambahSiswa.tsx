@@ -692,7 +692,7 @@ export function ModalTambahSiswa({
           </div>
           <div className="my-4 flex items-center">
             <div className="w-[25%]">Kelas:</div>
-            <div>
+            <div className='w-[75%]'>
               <Select
                 showSearch
                 placeholder="Pilih Kelas"
@@ -705,7 +705,7 @@ export function ModalTambahSiswa({
                 }
                 onChange={handleKelas}
                 options={dataKelas}
-                className="ml-2 w-60"
+                className="ml-2 w-[100%]"
                 value={dataSiswaInput.kelasId}
               />
             </div>

@@ -41,7 +41,7 @@ model Jurusan {
 
 model Kelas {
   id        Int         @id @default(autoincrement())
-  namaKelas String      @db.VarChar(32)
+  namaKelas String      @db.VarChar(64)
   isDeleted Boolean     @default(false)
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
