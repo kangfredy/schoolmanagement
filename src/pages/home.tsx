@@ -168,7 +168,7 @@ export const Home = () => {
             <div className="mr-3">{userData?.username}</div>
             <Dropdown menu={{ items }} placement="bottomRight">
               <Image
-                src="/assets/images/profileDummy.jpg"
+                src="/assets/images/PGRILogo.png"
                 alt={''}
                 style={{ borderRadius: 9999 }}
                 width={45}
