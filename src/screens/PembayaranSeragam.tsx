@@ -154,7 +154,6 @@ export const PembayaranSeragam = () => {
         const object2: ISeragam = {
           id: datas?.id,
           nama: datas?.nama,
-          harga: datas?.harga,
           updatedAt: datas?.updatedAt,
           updatedBy: datas?.updatedBy,
           user: datas?.user,

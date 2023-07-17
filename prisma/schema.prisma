@@ -11,22 +11,22 @@ datasource db {
 }
 
 model User {
-  id                       Int                        @id @default(autoincrement())
-  username                 String                     @unique @db.VarChar(255)
-  password                 String                     @db.VarChar(255)
-  role                     String                     @db.VarChar(20)
-  createdAt                DateTime                   @default(now())
-  updatedAt                DateTime                   @updatedAt
-  isDeleted                Boolean                    @default(false)
-  Jurusan                  Jurusan[]
-  Kelas                    Kelas[]
-  DataSiswa                DataSiswa[]
-  PembayaranSpp            PembayaranSpp[]
-  HistoryPembayaranSpp     HistoryPembayaranSpp[]
-  Seragam                  Seragam[]
-  PembayaranSeragam        PembayaranSeragam[]
+  id                             Int                              @id @default(autoincrement())
+  username                       String                           @unique @db.VarChar(255)
+  password                       String                           @db.VarChar(255)
+  role                           String                           @db.VarChar(20)
+  createdAt                      DateTime                         @default(now())
+  updatedAt                      DateTime                         @updatedAt
+  isDeleted                      Boolean                          @default(false)
+  Jurusan                        Jurusan[]
+  Kelas                          Kelas[]
+  DataSiswa                      DataSiswa[]
+  PembayaranSpp                  PembayaranSpp[]
+  HistoryPembayaranSpp           HistoryPembayaranSpp[]
+  Seragam                        Seragam[]
+  PembayaranSeragam              PembayaranSeragam[]
   DetailHistoryPembayaranSeragam DetailHistoryPembayaranSeragam[]
-  HistoryPembayaranSeragam HistoryPembayaranSeragam[]
+  HistoryPembayaranSeragam       HistoryPembayaranSeragam[]
 }
 
 model Jurusan {
@@ -104,30 +104,29 @@ model HistoryPembayaranSpp {
 }
 
 model Seragam {
-  id                Int                        @id @default(autoincrement())
-  nama              String
-  isDeleted         Boolean                    @default(false)
-  harga             Int
-  createdAt         DateTime                   @default(now())
-  updatedAt         DateTime                   @updatedAt
-  updatedBy         Int
-  user              User                       @relation(fields: [updatedBy], references: [id])
+  id                      Int                              @id @default(autoincrement())
+  nama                    String
+  isDeleted               Boolean                          @default(false)
+  createdAt               DateTime                         @default(now())
+  updatedAt               DateTime                         @updatedAt
+  updatedBy               Int
+  user                    User                             @relation(fields: [updatedBy], references: [id])
   detailHistoryPembayaran DetailHistoryPembayaranSeragam[]
 }
 
 model PembayaranSeragam {
-  id                       Int                        @id @default(autoincrement())
-  siswa                    DataSiswa                  @relation(fields: [siswaId], references: [id])
-  siswaId                  Int
-  totalBayar               Int
-  tunggakan                Int
+  id                             Int                              @id @default(autoincrement())
+  siswa                          DataSiswa                        @relation(fields: [siswaId], references: [id])
+  siswaId                        Int
+  totalBayar                     Int
+  tunggakan                      Int
   detailHistoryPembayaranSeragam DetailHistoryPembayaranSeragam[]
-  historyPembayaranSeragam HistoryPembayaranSeragam[]
-  createdAt                DateTime                   @default(now())
-  updatedAt                DateTime                   @updatedAt
-  updatedBy                Int
-  user                     User                       @relation(fields: [updatedBy], references: [id])
-  isDeleted                Boolean                    @default(false)
+  historyPembayaranSeragam       HistoryPembayaranSeragam[]
+  createdAt                      DateTime                         @default(now())
+  updatedAt                      DateTime                         @updatedAt
+  updatedBy                      Int
+  user                           User                             @relation(fields: [updatedBy], references: [id])
+  isDeleted                      Boolean                          @default(false)
 }
 
 model DetailHistoryPembayaranSeragam {
@@ -147,7 +146,7 @@ model HistoryPembayaranSeragam {
   id                  Int               @id @default(autoincrement())
   pembayaranSeragam   PembayaranSeragam @relation(fields: [pembayaranSeragamId], references: [id])
   pembayaranSeragamId Int
-  jumlahDiBayar       Int? 
+  jumlahDiBayar       Int?
   tanggalPembayaran   DateTime?
   isDeleted           Boolean           @default(false)
   createdAt           DateTime          @default(now())

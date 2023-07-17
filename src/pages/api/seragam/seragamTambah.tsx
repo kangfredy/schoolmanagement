@@ -8,13 +8,12 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   if (req.method === 'POST') {
-    const { nama, harga, updatedBy } = req.body
+    const { nama, updatedBy } = req.body
 
     // Create Data Baru
     const tambahSeragam = await prisma.seragam.create({
       data: {
         nama: nama,
-        harga: harga,
         updatedBy: Number(updatedBy),
       },
     })

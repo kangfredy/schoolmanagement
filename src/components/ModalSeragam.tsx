@@ -78,7 +78,6 @@ export function ModalSeragam({
   const [userId, setUserId] = useState(0)
   const [userRole, setUserRole] = useState('')
   const [namaSeragamError, setNamaSeragamError] = useState('')
-  const [hargaSeragamError, setHargaSeragamError] = useState('')
 
   const handleGeneratePdf = () => {
     const doc = new jsPDF({
@@ -184,7 +183,7 @@ export function ModalSeragam({
     image.src = imagePath
   }
 
-  const getUserData = async () =>{
+  const getUserData = async () => {
     const user = await getUserInfoWithNullCheck()
     if (user) {
       setUserId(user.id)
@@ -420,7 +419,6 @@ export function ModalSeragam({
     setHarga(0)
     setNamaSeragam('')
     setNamaSeragamError('')
-    setHargaSeragamError('')
     setOpen(false)
     setHargaParsed('')
   }
@@ -445,7 +443,6 @@ export function ModalSeragam({
     let dataInput = {
       id: data?.id,
       nama: data?.nama,
-      harga: data?.harga,
       updatedBy: data?.updatedBy,
     }
     setDataSeragamInput(dataInput)
@@ -475,16 +472,16 @@ export function ModalSeragam({
       sorter: (a, b) => a.nama.localeCompare(b.nama),
       sortDirections: ['descend', 'ascend'],
     },
-    {
-      title: 'Harga',
-      dataIndex: 'harga',
-      key: 'harga',
-      width: '23%',
-      ...getSeragamColumnSearchProps('harga'),
-      sorter: (a, b) => a.harga - b.harga,
-      sortDirections: ['descend', 'ascend'],
-      render: harga => convertMoney(harga),
-    },
+    // {
+    //   title: 'Harga',
+    //   dataIndex: 'harga',
+    //   key: 'harga',
+    //   width: '23%',
+    //   ...getSeragamColumnSearchProps('harga'),
+    //   sorter: (a, b) => a.harga - b.harga,
+    //   sortDirections: ['descend', 'ascend'],
+    //   render: harga => convertMoney(harga),
+    // },
     {
       title: 'Updated By',
       dataIndex: ['user', 'username'],
@@ -801,28 +798,16 @@ export function ModalSeragam({
     setNamaSeragamError(e.target.value.trim() === '' ? 'Required' : '')
   }
 
-  const handleHargaInput = (e: any) => {
-    setHargaParsed(addDecimalPoints(e.target.value))
-    setHarga(Number(e.target.value.replace('.', '')))
-  }
-
   const handleTambahSeragam = () => {
-    if (
-      namaSeragam === '' ||
-      namaSeragam === undefined ||
-      harga === 0 ||
-      harga === undefined
-    ) {
+    if (namaSeragam === '' || namaSeragam === undefined) {
       setNamaSeragamError(
         namaSeragam === '' || namaSeragam === undefined ? 'Required' : '',
       )
-      setHargaSeragamError(harga === 0 || harga === undefined ? 'Required' : '')
       return
     }
 
     const newSeragam: IDataSeragamnModal = {
       nama: namaSeragam,
-      harga: Number(harga),
       updatedBy: userId,
     }
     // console.log('DATA KE API', newSeragam)
@@ -861,7 +846,7 @@ export function ModalSeragam({
             </p>
           )}
         </div>
-        <div className="flex items-center">
+        {/* <div className="flex items-center">
           <Input
             placeholder="Harga"
             name="harga"
@@ -877,11 +862,11 @@ export function ModalSeragam({
               {hargaSeragamError}
             </p>
           )}
-        </div>
+        </div> */}
         <Button
           type="primary"
           size="middle"
-          className="bg-blue-500 w-60 mb-4"
+          className="bg-blue-500 w-60 mb-4 mt-2"
           onClick={handleTambahSeragam}>
           Tambah
         </Button>
