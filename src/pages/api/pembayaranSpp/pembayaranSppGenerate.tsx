@@ -11,6 +11,7 @@ export default async function handler(
 ) {
   const { idSiswa, updatedBy }: any = req.query
   const jumlahspp: any = process.env.SPP_BULANAN
+  const tunggakanseragam: any = process.env.TOTAL_SERAGAM
   if (req.method === 'GET') {
     const generatePembayaranSpp = await prisma.pembayaranSpp.create({
       data: {
@@ -42,8 +43,8 @@ export default async function handler(
     await prisma.pembayaranSeragam.create({
       data: {
         siswaId: parseInt(idSiswa),
-        tunggakan: 0,
         totalBayar: 0,
+        tunggakan: Number(tunggakanseragam),
         updatedBy: Number(updatedBy),
       },
     })
