@@ -160,16 +160,54 @@ export function ModalSpp({
 
     const middleDocX = doc.internal.pageSize.getWidth() / 2
 
+    // Handle Long Name
+    const namaSiswa = dataSppInput.siswa.nama
+    let shortenedNama = namaSiswa
+
+    if (namaSiswa.length > 25) {
+      const nameStringList = namaSiswa.split(' ')
+      const spaceCount = nameStringList.length - 1
+      // console.log(spaceCount)
+
+      const subString = namaSiswa.substring(0, 25)
+      const spaceIndex = subString.lastIndexOf(' ')
+      // console.log(spaceIndex)
+
+      const subStringSpaceCount = subString.split(' ').length - 1
+      // console.log(subStringSpaceCount)
+
+      let frontName = ''
+      let backName = ''
+
+      for (let i = 0; i <= subStringSpaceCount; i++) {
+        frontName += nameStringList[i]
+        if (i < subStringSpaceCount) {
+          frontName += ' '
+        }
+      }
+
+      for (let i = subStringSpaceCount + 1; i < nameStringList.length; i++) {
+        const firstChar = nameStringList[i].charAt(0).toUpperCase()
+        backName += firstChar + '.'
+        if (i < nameStringList.length - 1) {
+          backName += ' '
+        }
+      }
+
+      shortenedNama = frontName + ' ' + backName
+      shortenedNama = shortenedNama.replace(/\s{2,}/g, ' ')
+      shortenedNama = shortenedNama.trim()
+
+      // console.log('frontName', frontName)
+      // console.log('backName', backName)
+      // console.log('shortenedNama ', shortenedNama)
+    }
+
     doc.setFontSize(5)
     doc.setFont('helvetica', 'normal')
-    doc.text(
-      `Nama Siswa: ${dataSppInput.siswa.nama}`,
-      docHorizontalMargin,
-      currentY,
-      {
-        align: 'left',
-      },
-    )
+    doc.text(`Nama Siswa: ${shortenedNama}`, docHorizontalMargin, currentY, {
+      align: 'left',
+    })
     currentY += 5
 
     doc.setFontSize(5)
