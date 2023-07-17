@@ -239,12 +239,23 @@ export function ModalSpp({
       const imagePath2 = qrCodeUrl
 
       image2.onload = function () {
-        const imgWidth2 = 40
+        const imgWidth2 = 20
         const imgHeight2 = (image2.height * imgWidth2) / image2.width
         const imgX2 = docWidth - horizontalMargin - imgWidth2 - 5
         const imgY2 = docHeight - imgHeight2 - 10
 
         doc.addImage(image2, 'PNG', imgX2, imgY2, imgWidth2, imgHeight2)
+
+        doc.setFontSize(5)
+        doc.setFont('helvetica', 'normal')
+        doc.text(
+          `Disahkan`,
+          docWidth - horizontalMargin - imgWidth2 - 20,
+          docHeight - imgHeight2,
+          {
+            align: 'center',
+          },
+        )
 
         // Generate the table
         const tableWidth = doc.internal.pageSize.getWidth() * 0.9
