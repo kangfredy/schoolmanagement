@@ -182,7 +182,7 @@ export function ModalSpp({
     doc.setFontSize(5)
     doc.setFont('helvetica', 'normal')
     doc.text(
-      `Asal: ${dataSppInput.siswa.asalSekolah}`,
+      `Asal Sekolah: ${dataSppInput.siswa.asalSekolah}`,
       docHorizontalMargin,
       currentY,
       {
