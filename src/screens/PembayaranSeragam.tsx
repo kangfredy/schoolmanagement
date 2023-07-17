@@ -86,11 +86,9 @@ export const PembayaranSeragam = () => {
           const object1: IHistorySeragam = {
             id: datas?.id,
             pembayaranSeragamId: datas?.pembayaranSeragamId,
-            sudahDibayar: datas?.sudahDibayar,
+            jumlahDiBayar: datas?.jumlahDiBayar,
             tanggalPembayaran: datas?.tanggalPembayaran,
-            seragamId: datas?.seragamId,
             pembayaranSeragam: datas?.pembayaranSeragam,
-            seragam: datas?.seragam,
             updatedAt: datas?.updatedAt,
             updatedBy: datas?.updatedBy,
             user: datas?.user,
@@ -101,18 +99,18 @@ export const PembayaranSeragam = () => {
         //Assign the mapped array to the state
         setDataHistorySeragam(arrayDataTemp)
 
-        const filteredDataSeragam = dataSeragam.filter(seragam => {
-          // Check if seragamId does not exist in dataHistorySeragam
-          const notExistsInHistory = !arrayDataTemp.some(
-            history => history.seragamId === seragam.id,
-          )
+        // const filteredDataSeragam = dataSeragam.filter(seragam => {
+        //   // Check if seragamId does not exist in dataHistorySeragam
+        //   const notExistsInHistory = !arrayDataTemp.some(
+        //     history => history.seragamId === seragam.id,
+        //   )
 
-          // Return true if seragamId does not exist in dataHistorySeragam,
-          // false otherwise
-          return notExistsInHistory
-        })
-        // console.log('CURRENT filteredDataSeragam', filteredDataSeragam)
-        setDataInputFilteredSeragam(filteredDataSeragam)
+        //   // Return true if seragamId does not exist in dataHistorySeragam,
+        //   // false otherwise
+        //   return notExistsInHistory
+        // })
+        // // console.log('CURRENT filteredDataSeragam', filteredDataSeragam)
+        // setDataInputFilteredSeragam(filteredDataSeragam)
       })
       .then(response => {
         setLoading(false)
@@ -169,11 +167,9 @@ export const PembayaranSeragam = () => {
         const object3: IHistorySeragam = {
           id: datas?.id,
           pembayaranSeragamId: datas?.pembayaranSeragamId,
-          sudahDibayar: datas?.sudahDibayar,
+          jumlahDiBayar: datas?.jumlahDiBayar,
           tanggalPembayaran: datas?.tanggalPembayaran,
-          seragamId: datas?.seragamId,
           pembayaranSeragam: datas?.pembayaranSeragam,
-          seragam: datas?.seragam,
           updatedAt: datas?.updatedAt,
           updatedBy: datas?.updatedBy,
           user: datas?.user,

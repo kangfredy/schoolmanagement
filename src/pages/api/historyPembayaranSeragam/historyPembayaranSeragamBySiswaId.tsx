@@ -20,7 +20,6 @@ export default async function handler(
         },
         include: {
           pembayaranSeragam: true,
-          seragam: true,
           user: {
             select: {
               id: true,

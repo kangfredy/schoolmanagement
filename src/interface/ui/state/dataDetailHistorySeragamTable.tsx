@@ -1,13 +1,19 @@
 export interface IHistorySeragam {
   id: number
   pembayaranSeragamId: number
-  jumlahDiBayar: number
-  tanggalPembayaran: string
+  seragamId: number
   pembayaranSeragam: IPembayaranSeragam
+  seragam: ISeragam
   updatedBy: number
   updatedAt: string
   user: Iuser
 }
+
+export interface ISeragam {
+  id: number
+  nama: string
+}
+
 export interface IPembayaranSeragam {
   id: number
   siswaId: number
