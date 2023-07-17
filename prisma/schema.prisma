@@ -25,6 +25,7 @@ model User {
   HistoryPembayaranSpp     HistoryPembayaranSpp[]
   Seragam                  Seragam[]
   PembayaranSeragam        PembayaranSeragam[]
+  DetailHistoryPembayaranSeragam DetailHistoryPembayaranSeragam[]
   HistoryPembayaranSeragam HistoryPembayaranSeragam[]
 }
 
@@ -111,7 +112,7 @@ model Seragam {
   updatedAt         DateTime                   @updatedAt
   updatedBy         Int
   user              User                       @relation(fields: [updatedBy], references: [id])
-  historyPembayaran HistoryPembayaranSeragam[]
+  detailHistoryPembayaran DetailHistoryPembayaranSeragam[]
 }
 
 model PembayaranSeragam {
@@ -120,6 +121,7 @@ model PembayaranSeragam {
   siswaId                  Int
   totalBayar               Int
   tunggakan                Int
+  detailHistoryPembayaranSeragam DetailHistoryPembayaranSeragam[]
   historyPembayaranSeragam HistoryPembayaranSeragam[]
   createdAt                DateTime                   @default(now())
   updatedAt                DateTime                   @updatedAt
@@ -128,12 +130,10 @@ model PembayaranSeragam {
   isDeleted                Boolean                    @default(false)
 }
 
-model HistoryPembayaranSeragam {
+model DetailHistoryPembayaranSeragam {
   id                  Int               @id @default(autoincrement())
   pembayaranSeragam   PembayaranSeragam @relation(fields: [pembayaranSeragamId], references: [id])
   pembayaranSeragamId Int
-  sudahDibayar        Boolean           @default(false)
-  tanggalPembayaran   DateTime?
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
   updatedBy           Int
@@ -141,4 +141,17 @@ model HistoryPembayaranSeragam {
   isDeleted           Boolean           @default(false)
   seragamId           Int
   seragam             Seragam           @relation(fields: [seragamId], references: [id])
+}
+
+model HistoryPembayaranSeragam {
+  id                  Int               @id @default(autoincrement())
+  pembayaranSeragam   PembayaranSeragam @relation(fields: [pembayaranSeragamId], references: [id])
+  pembayaranSeragamId Int
+  jumlahDiBayar       Int? 
+  tanggalPembayaran   DateTime?
+  isDeleted           Boolean           @default(false)
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  updatedBy           Int
+  user                User              @relation(fields: [updatedBy], references: [id])
 }
