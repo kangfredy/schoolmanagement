@@ -7,6 +7,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
+  const sppbulanan: any = process.env.SPP_BULANAN
   if (req.method === 'POST') {
     const {
       id,
@@ -39,8 +40,8 @@ export default async function handler(
     )
 
     // Calculate the updated values
-    const updatedTunggakan = tunggakan - 200000
-    const updatedTotalBayar = totalBayar + 200000
+    const updatedTunggakan = tunggakan - Number(sppbulanan)
+    const updatedTotalBayar = totalBayar + Number(sppbulanan)
 
     const updatePembayaranSpp = await prisma.pembayaranSpp.update({
       where: {
