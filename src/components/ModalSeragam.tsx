@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {
   Input,
   Modal,
@@ -36,6 +37,7 @@ import {
 } from '@/helper/apiHelper/seragam'
 import { ModalTambahSeragamBaru } from '../components/ModalTambahSeragamBaru'
 import { ModalTambahHistorySeragam } from '../components/ModalTambahHistorySeragam'
+import { ModalDetailHistoryPembayaranSeragam } from '../components/ModalDetailHistoryPembayaranSeragam'
 import { ISelect } from '@/interface/ui/component/dropdown'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 import { convertDateTime } from '@/helper/util/time'
@@ -55,6 +57,8 @@ export function ModalSeragam({
   dataPembayaranSeragamInput,
   setDataHistorySeragam,
   dataHistorySeragam,
+  setDataDetailHistoryPembayaranSeragam,
+  dataDetailHistoryPembayaranSeragam,
   setDataSeragam,
   dataSeragam,
   setDataInputFilteredSeragam,
@@ -75,6 +79,10 @@ export function ModalSeragam({
   )
   const [openTambah, setOpenTambah] = useState(false)
   const [openHistoryTambah, setOpenHistoryTambah] = useState(false)
+  const [
+    openDetailPembayaranHistorySeragam,
+    setOpenDetailPembayaranHistorySeragam,
+  ] = useState(false)
   const [userId, setUserId] = useState(0)
   const [userRole, setUserRole] = useState('')
   const [namaSeragamError, setNamaSeragamError] = useState('')
@@ -198,6 +206,7 @@ export function ModalSeragam({
 
   useEffect(() => {
     getUserData()
+    // console.log('FROM MODAL SERAGAM', dataDetailHistoryPembayaranSeragam)
   }, [])
 
   const handleReset = (
@@ -450,8 +459,9 @@ export function ModalSeragam({
     setOpenTambah(true)
   }
 
-  const handleDetail = () => {
-    console.log('TOMBOL DETAIL CLICEKD')
+  const showModalDetailHistoryPembayaranSeragam = () => {
+    // console.log('TOMBOL DETAIL CLICEKD')
+    setOpenDetailPembayaranHistorySeragam(true)
   }
 
   const showModalTambahHistoryPembayaranSeragam = () => {
@@ -731,7 +741,7 @@ export function ModalSeragam({
           type="primary"
           size="large"
           className="bg-green-500"
-          onClick={() => handleDetail()}>
+          onClick={() => showModalDetailHistoryPembayaranSeragam()}>
           DETAIL
         </Button>
         <Button
@@ -768,6 +778,26 @@ export function ModalSeragam({
         setOpen={setOpenHistoryTambah}
         dataSeragam={dataSeragam}
         setDataSeragam={setDataSeragam}
+        dataInputFilteredSeragam={dataInputFilteredSeragam}
+        setDataInputFilteredSeragam={setDataInputFilteredSeragam}
+        setDataPembayaranSeragamInput={setDataPembayaranSeragamInput}
+        dataPembayaranSeragamInput={dataPembayaranSeragamInput}
+        showModal={showModal}
+        getHistoryPembayaranSeragamByPembayaranSeragamId={
+          getHistoryPembayaranSeragamByPembayaranSeragamId
+        }
+      />
+      <ModalDetailHistoryPembayaranSeragam
+        getData={getData}
+        action={action}
+        open={openDetailPembayaranHistorySeragam}
+        setOpen={setOpenDetailPembayaranHistorySeragam}
+        dataSeragam={dataSeragam}
+        setDataSeragam={setDataSeragam}
+        setDataDetailHistoryPembayaranSeragam={
+          setDataDetailHistoryPembayaranSeragam
+        }
+        dataDetailHistoryPembayaranSeragam={dataDetailHistoryPembayaranSeragam}
         dataInputFilteredSeragam={dataInputFilteredSeragam}
         setDataInputFilteredSeragam={setDataInputFilteredSeragam}
         setDataPembayaranSeragamInput={setDataPembayaranSeragamInput}

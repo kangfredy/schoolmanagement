@@ -1,4 +1,4 @@
-export interface IDataHistorySeragamModal {
+export interface IDataDetailHistorySeragamModal {
   id?: number
   pembayaranSeragamId: number
   seragamId: number

@@ -1,4 +1,4 @@
-export interface IHistorySeragam {
+export interface IDetailHistorySeragam {
   id: number
   pembayaranSeragamId: number
   seragamId: number
