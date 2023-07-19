@@ -20,10 +20,30 @@ export default async function handler(
         },
       })
 
+    const getPembayaranSeragam = await prisma.pembayaranSeragam.findUnique({
+      where: {
+        id: tambahDetailHistoryPembayaranSeragam.pembayaranSeragamId,
+      },
+      include: {
+        siswa: true,
+        user: {
+          select: {
+            id: true,
+            username: true,
+            role: true,
+            createdAt: true,
+            updatedAt: true,
+            isDeleted: true,
+          },
+        },
+      },
+    })
+
     // Return a success or failed message
     res.status(200).json({
-      message: 'Update successful',
+      message: 'Tambah successful',
       tambahDetailHistoryPembayaranSeragam,
+      getPembayaranSeragam,
     })
   } else {
     res.status(405).json({ message: 'Method not allowed' })

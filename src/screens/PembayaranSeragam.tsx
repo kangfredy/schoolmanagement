@@ -104,19 +104,6 @@ export const PembayaranSeragam = () => {
 
         //Assign the mapped array to the state
         setDataHistorySeragam(arrayDataTemp)
-
-        // const filteredDataSeragam = dataSeragam.filter(seragam => {
-        //   // Check if seragamId does not exist in dataHistorySeragam
-        //   const notExistsInHistory = !arrayDataTemp.some(
-        //     history => history.seragamId === seragam.id,
-        //   )
-
-        //   // Return true if seragamId does not exist in dataHistorySeragam,
-        //   // false otherwise
-        //   return notExistsInHistory
-        // })
-        // // console.log('CURRENT filteredDataSeragam', filteredDataSeragam)
-        // setDataInputFilteredSeragam(filteredDataSeragam)
       })
       .then(response => {
         detailHistoryPembayaranSeragamByPembayaranSeragamId(id)
@@ -142,6 +129,19 @@ export const PembayaranSeragam = () => {
             //Assign the mapped array to the state
             setDataDetailHistoryPembayaranSeragam(arrayDataTemp)
             // console.log('FROM PEMBAYARAN SERAGAM ', arrayDataTemp)
+
+            const filteredDataSeragam = dataSeragam.filter(seragam => {
+              // Check if seragamId does not exist in dataHistorySeragam
+              const notExistsInHistory = !arrayDataTemp.some(
+                history => history.seragamId === seragam.id,
+              )
+
+              // Return true if seragamId does not exist in dataHistorySeragam,
+              // false otherwise
+              return notExistsInHistory
+            })
+            // console.log('CURRENT filteredDataSeragam', filteredDataSeragam)
+            setDataInputFilteredSeragam(filteredDataSeragam)
           })
           .then(response => {
             setLoading(false)

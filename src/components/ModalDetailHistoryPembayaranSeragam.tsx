@@ -25,6 +25,7 @@ import { IDetailHistorySeragam } from '@/interface/ui/state/dataDetailHistorySer
 import { IDataHistorySeragamModal } from '@/interface/ui/state/dataHistorySeragamModal'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 import { convertDateTime } from '@/helper/util/time'
+import { ModalTambahDetailHistorySeragam } from '../components/ModalTambahDetailHistorySeragam'
 
 type DataIndex = keyof IDetailHistorySeragam
 
@@ -52,7 +53,7 @@ export function ModalDetailHistoryPembayaranSeragam({
   const [userId, setUserId] = useState(0)
   const [userRole, setUserRole] = useState('')
   const [jumlahDibayar, setJumlahDibayar] = useState(0)
-  const [jumlahDibayarError, setJumlahDibayarError] = useState('')
+  const [openDetailHistoryTambah, setOpenDetailHistoryTambah] = useState(false)
 
   const getUserData = async () => {
     const user = await getUserInfoWithNullCheck()
@@ -74,68 +75,7 @@ export function ModalDetailHistoryPembayaranSeragam({
     getUserData()
   }, [])
 
-  const handleOk = () => {
-    if (jumlahDibayar === 0 || jumlahDibayar === undefined) {
-      setJumlahDibayarError(
-        jumlahDibayar === 0 || jumlahDibayar === undefined ? 'Required' : '',
-      )
-
-      return
-    }
-
-    const pembayaranSeragamId = dataPembayaranSeragamInput.id
-
-    const currentDate = new Date().toISOString()
-
-    const newHistorySeragam: IDataHistorySeragamModal = {
-      pembayaranSeragamId: Number(pembayaranSeragamId),
-      tanggalPembayaran: currentDate,
-      jumlahDiBayar: Number(jumlahDibayar),
-      updatedBy: userId,
-    }
-
-    // console.log('newHistorySeragam', newHistorySeragam)
-
-    setConfirmLoading(true)
-    tambahHistoryPembayaranSeragam(
-      newHistorySeragam,
-      dataPembayaranSeragamInput.siswaId,
-      dataPembayaranSeragamInput.tunggakan,
-      dataPembayaranSeragamInput.totalBayar,
-    )
-      .then((response: any) => {
-        // let dataInput = {
-        //   id: response.data.updatePembayaranSeragam.id,
-        //   siswaId: response.data.updatePembayaranSeragam.siswaId,
-        //   tunggakan: response.data.updatePembayaranSeragam.tunggakan,
-        //   totalBayar: response.data.updatePembayaranSeragam.totalBayar,
-        //   siswa: dataPembayaranSeragamInput.siswa,
-        //   kelas: dataPembayaranSeragamInput.siswa.kelas,
-        //   jurusan: dataPembayaranSeragamInput.siswa?.kelas.jurusan,
-        //   updatedAt: response.data.updatePembayaranSeragam.updatedAt,
-        //   updatedBy: response.data.updatePembayaranSeragam.updatedBy,
-        //   user: dataPembayaranSeragamInput.user,
-        // }
-        // showModal(action, dataInput)
-        // getData()
-        // getHistoryPembayaranSeragamByPembayaranSeragamId(
-        //   pembayaranSeragamId,
-        //   action,
-        // )
-        setConfirmLoading(false)
-      })
-      .then((response: any) => {
-        setOpen(false)
-        message.success('Tambah Data Sukses')
-      })
-      .catch((error: any) => {
-        message.error(error.message)
-        setOpen(false)
-      })
-  }
-
   const handleCancel = () => {
-    setJumlahDibayarError('')
     setOpen(false)
     // console.log('CANCEL CLICKED')
   }
@@ -352,7 +292,8 @@ export function ModalDetailHistoryPembayaranSeragam({
   }
 
   const handleTambahDetailHistoryPembayaranSeragam = () => {
-    console.log('CLICKED handleTambahDetailHistoryPembayaranSeragam')
+    // console.log('CLICKED handleTambahDetailHistoryPembayaranSeragam')
+    setOpenDetailHistoryTambah(true)
   }
 
   return (
@@ -424,6 +365,22 @@ export function ModalDetailHistoryPembayaranSeragam({
           />
         )}
       </>
+      <ModalTambahDetailHistorySeragam
+        getData={getData}
+        action={action}
+        open={openDetailHistoryTambah}
+        setOpen={setOpenDetailHistoryTambah}
+        dataSeragam={dataSeragam}
+        setDataSeragam={setDataSeragam}
+        dataInputFilteredSeragam={dataInputFilteredSeragam}
+        setDataInputFilteredSeragam={setDataInputFilteredSeragam}
+        setDataPembayaranSeragamInput={setDataPembayaranSeragamInput}
+        dataPembayaranSeragamInput={dataPembayaranSeragamInput}
+        showModal={showModal}
+        getHistoryPembayaranSeragamByPembayaranSeragamId={
+          getHistoryPembayaranSeragamByPembayaranSeragamId
+        }
+      />
     </Modal>
   )
 }
