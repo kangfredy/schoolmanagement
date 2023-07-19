@@ -85,111 +85,239 @@ export function ModalSeragam({
   ] = useState(false)
   const [userId, setUserId] = useState(0)
   const [userRole, setUserRole] = useState('')
+  const [userName, setUserName] = useState('')
   const [namaSeragamError, setNamaSeragamError] = useState('')
 
   const handleGeneratePdf = () => {
-    console.log('PRINT CLICKED')
-    // const doc = new jsPDF({
-    //   format: 'a6',
-    //   unit: 'px',
-    // })
+    const doc = new jsPDF({
+      format: 'a6',
+      unit: 'px',
+    })
+    const chunkSize = 12
+    const totalChunks = Math.ceil(dataHistorySeragam.length / chunkSize)
+    let filteredList
+    if (totalChunks === 1) {
+      filteredList = dataHistorySeragam.slice(0)
+    } else {
+      const startIndex = (totalChunks - 1) * chunkSize
+      filteredList = dataHistorySeragam.slice(startIndex)
+    }
+    const tableData = filteredList.map((item, index) => [
+      index + 1,
+      convertMoney(item.jumlahDiBayar),
+      convertDate(item.tanggalPembayaran),
+      item.user.username,
+    ])
+    const currentDate = new Date()
+    const printedDateTime = convertDateTime(currentDate.toString())
+    const qrData = `PEMBAYARAN SERAGAM \nPrinted By ${userName}, \nPrinted Date: ${printedDateTime}, \nNama: ${dataPembayaranSeragamInput.siswa.nama}, \nNIM: ${dataPembayaranSeragamInput.siswa.nim}, \nKelas: ${dataPembayaranSeragamInput.siswa.kelas.namaKelas}, \nJurusan: ${dataPembayaranSeragamInput.siswa.kelas.jurusan.namaJurusan}, \nAsal Sekolah: ${dataPembayaranSeragamInput.siswa.asalSekolah}`
+    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(
+      qrData,
+    )}`
+    const docWidth = doc.internal.pageSize.getWidth()
+    const docHeight = doc.internal.pageSize.getHeight()
+    const contentWidth = docWidth * 0.96
+    const horizontalMargin = (docWidth - contentWidth) / 2
+    const topDocMargin = 6
+    const lineSpacing = 10
+    let currentY = topDocMargin
+    doc.setFontSize(4)
+    doc.setFont('helvetica')
+    doc.setTextColor('#6C6C6C')
+    doc.text(
+      'YAYASAN PEMBINA LEMBAGA PENDIDIKAN PROVINSI',
+      docWidth / 2,
+      currentY,
+      {
+        align: 'center',
+      },
+    )
+    currentY += 7
+    doc.setFontSize(5)
+    doc.setFont('helvetica', 'bold')
+    doc.setTextColor('#6C6C6C')
+    doc.text(
+      'PERSATUAN GURU REPUBLIK INDONESIA (YPLP PROVINSI PGRI) SUMATERA SELATAN',
+      docWidth / 2,
+      currentY,
+      { align: 'center' },
+    )
+    currentY += 10
+    doc.setFontSize(8)
+    doc.setFont('helvetica', 'bold')
+    doc.setTextColor('#6C6C6C')
+    doc.text('SMK PGRI 2 LAHAT', docWidth / 2, currentY, { align: 'center' })
+    currentY += lineSpacing
+    doc.setFontSize(4)
+    doc.setFont('helvetica', 'normal')
+    doc.setTextColor('#6C6C6C')
+    doc.text(
+      'Jalan Kirab Remaja, Kelurahan RD. PT. KAI Lahat HP : 0821 7955 4241',
+      docWidth / 2,
+      currentY,
+      { align: 'center' },
+    )
+    currentY += 10
+    const docHorizontalMargin =
+      (doc.internal.pageSize.getWidth() -
+        doc.internal.pageSize.getWidth() * 0.9) /
+      2
+    const middleDocX = doc.internal.pageSize.getWidth() / 2
+    // Handle Long Name
+    const namaSiswa = dataPembayaranSeragamInput.siswa.nama
+    let shortenedNama = namaSiswa
+    if (namaSiswa.length > 25) {
+      const nameStringList = namaSiswa.split(' ')
+      const spaceCount = nameStringList.length - 1
+      // console.log(spaceCount)
+      const subString = namaSiswa.substring(0, 25)
+      const spaceIndex = subString.lastIndexOf(' ')
+      // console.log(spaceIndex)
+      const subStringSpaceCount = subString.split(' ').length - 1
+      // console.log(subStringSpaceCount)
+      let frontName = ''
+      let backName = ''
+      for (let i = 0; i <= subStringSpaceCount; i++) {
+        frontName += nameStringList[i]
+        if (i < subStringSpaceCount) {
+          frontName += ' '
+        }
+      }
+      for (let i = subStringSpaceCount + 1; i < nameStringList.length; i++) {
+        const firstChar = nameStringList[i].charAt(0).toUpperCase()
+        backName += firstChar + '.'
+        if (i < nameStringList.length - 1) {
+          backName += ' '
+        }
+      }
+      shortenedNama = frontName + ' ' + backName
+      shortenedNama = shortenedNama.replace(/\s{2,}/g, ' ')
+      shortenedNama = shortenedNama.trim()
+      // console.log('frontName', frontName)
+      // console.log('backName', backName)
+      // console.log('shortenedNama ', shortenedNama)
+    }
+    doc.setFontSize(5)
+    doc.setFont('helvetica', 'normal')
+    doc.text(`Nama Siswa: ${shortenedNama}`, docHorizontalMargin, currentY, {
+      align: 'left',
+    })
+    currentY += 5
+    doc.setFontSize(5)
+    doc.setFont('helvetica', 'normal')
+    doc.text(
+      `NISN: ${dataPembayaranSeragamInput.siswa.nim}`,
+      docHorizontalMargin,
+      currentY,
+      {
+        align: 'left',
+      },
+    )
+    currentY += 5
+    doc.setFontSize(5)
+    doc.setFont('helvetica', 'normal')
+    doc.text(
+      `Asal Sekolah: ${dataPembayaranSeragamInput.siswa.asalSekolah}`,
+      docHorizontalMargin,
+      currentY,
+      {
+        align: 'left',
+      },
+    )
+    currentY -= 10
+    doc.setFontSize(5)
+    doc.setFont('helvetica', 'normal')
+    doc.text(
+      `Jurusan: ${dataPembayaranSeragamInput.siswa.kelas.jurusan.namaJurusan}`,
+      middleDocX,
+      currentY,
+      {
+        align: 'left',
+      },
+    )
+    currentY += 5
+    doc.setFontSize(5)
+    doc.setFont('helvetica', 'normal')
+    doc.text(
+      `Kelas: ${dataPembayaranSeragamInput.siswa.kelas.namaKelas}`,
+      middleDocX,
+      currentY,
+      {
+        align: 'left',
+      },
+    )
 
-    // const dataForPrint = dataHistorySeragam.filter(
-    //   item => item.sudahDibayar === true,
-    // )
+    const totalBiaya = convertMoney(
+      dataPembayaranSeragamInput.totalBayar +
+        dataPembayaranSeragamInput.tunggakan,
+    )
 
-    // // console.log('dataForPrint', dataForPrint)
+    currentY += 5
+    doc.setFontSize(5)
+    doc.setFont('helvetica', 'normal')
+    doc.text(`Total: ${totalBiaya}`, middleDocX, currentY, {
+      align: 'left',
+    })
 
-    // const tableData = dataForPrint.map((item, index) => [
-    //   index + 1, // Increment the index by 1 to get the number
-    //   item.seragam.nama,
-    //   convertMoney(item.seragam.harga),
-    //   convertDate(item.tanggalPembayaran),
-    //   dataPembayaranSeragamInput.siswa.asalSekolah,
-    //   item.user.username,
-    // ])
+    currentY -= 5
 
-    // // Additional information above the table
-    // doc.setFontSize(8)
-    // doc.setTextColor('#4d4e53')
-    // doc.setFont('helvetica')
-
-    // const docHorizontalMargin =
-    //   (doc.internal.pageSize.getWidth() -
-    //     doc.internal.pageSize.getWidth() * 0.9) /
-    //   2
-
-    // // Additional information above the table
-    // doc.text(`PEMBAYARAN SERAGAM`, docHorizontalMargin, 20)
-    // doc.text(
-    //   `NIS: ${dataPembayaranSeragamInput.siswa.nim}`,
-    //   docHorizontalMargin,
-    //   35,
-    // )
-    // doc.text(
-    //   `Nama: ${dataPembayaranSeragamInput.siswa.nama}`,
-    //   docHorizontalMargin,
-    //   50,
-    // )
-    // doc.text(
-    //   `Kelas: ${dataPembayaranSeragamInput.siswa.kelas.namaKelas}`,
-    //   docHorizontalMargin,
-    //   65,
-    // )
-    // doc.text(
-    //   `Jurusan: ${dataPembayaranSeragamInput.siswa.kelas.jurusan.namaJurusan}`,
-    //   docHorizontalMargin,
-    //   80,
-    // )
-
-    // // Add the image to the right of the table
-    // const image = new Image()
-    // const imagePath = '/assets/images/PGRILogo.png'
-    // const canvas = document.createElement('canvas')
-    // const ctx = canvas.getContext('2d')
-
-    // image.onload = function () {
-    //   // console.log('Image loaded') // Add this line
-    //   canvas.width = image.width
-    //   canvas.height = image.height
-    //   ctx?.drawImage(image, 0, 0)
-    //   const dataUrl = canvas.toDataURL('image/png')
-    //   const imgWidth = 80
-    //   const imgHeight = (image.height * imgWidth) / image.width
-
-    //   // Generate the table
-    //   const tableWidth = doc.internal.pageSize.getWidth() * 0.9
-    //   const tableStartY = 90
-    //   const horizontalMargin =
-    //     (doc.internal.pageSize.getWidth() - tableWidth) / 2
-
-    //   const options = {
-    //     startY: tableStartY,
-    //     head: [['No', 'Seragam', 'Jumlah', 'Tgl Bayar', 'Asal', 'Penginput']],
-    //     body: tableData,
-    //     tableWidth: tableWidth,
-    //     margin: { left: horizontalMargin, right: horizontalMargin },
-    //     styles: { cellWidth: undefined, fontSize: 8 },
-    //     addPageContent: function (data: { pageNumber: number }) {
-    //       const imgX = tableWidth + 4 - imgWidth // Adjust the X-coordinate to position the image next to the table
-    //       const imgY = 30 // Position the image at the top of the first page
-
-    //       // Add the image to the first page
-    //       if (data.pageNumber === 1) {
-    //         doc.addImage(dataUrl, 'PNG', imgX, imgY, imgWidth, imgHeight)
-    //       }
-    //     },
-    //   }
-
-    //   // Generate the table with the options
-    //   autoTable(doc, options)
-
-    //   doc.save(
-    //     `${dataPembayaranSeragamInput.siswa.nim}_${dataPembayaranSeragamInput.siswa.nama}.pdf`,
-    //   )
-    // }
-
-    // image.src = imagePath
+    doc.setFontSize(12)
+    doc.setFont('helvetica', 'bold')
+    doc.text('Seragam', docWidth - docHorizontalMargin, currentY, {
+      align: 'right',
+    })
+    currentY += 6
+    // Add the first image below the texts
+    const image1 = new Image()
+    const imagePath1 = '/assets/images/PGRILogo.png'
+    image1.onload = function () {
+      const imgWidth1 = 40
+      const imgHeight1 = (image1.height * imgWidth1) / image1.width
+      const imgX1 = 3
+      const imgY1 = 12
+      doc.addImage(image1, 'PNG', imgX1, imgY1, imgWidth1, imgHeight1)
+      // Add the second image to the bottom right corner
+      const image2 = new Image()
+      const imagePath2 = qrCodeUrl
+      image2.onload = function () {
+        const imgWidth2 = 20
+        const imgHeight2 = (image2.height * imgWidth2) / image2.width
+        const imgX2 = docWidth - horizontalMargin - imgWidth2 - 5
+        const imgY2 = docHeight - imgHeight2 - 10
+        doc.addImage(image2, 'PNG', imgX2, imgY2, imgWidth2, imgHeight2)
+        doc.setFontSize(5)
+        doc.setFont('helvetica', 'normal')
+        doc.text(
+          `Disahkan`,
+          docWidth - horizontalMargin - imgWidth2 - 20,
+          docHeight - imgHeight2,
+          {
+            align: 'center',
+          },
+        )
+        // Generate the table
+        const tableWidth = doc.internal.pageSize.getWidth() * 0.9
+        const tableStartY = currentY + 4
+        const tableHorizontalMargin =
+          (doc.internal.pageSize.getWidth() - tableWidth) / 2
+        const options = {
+          headStyles: { fillColor: '#696969' },
+          startY: tableStartY,
+          head: [['No', 'Jumlah', 'Tanggal Pembayaran', 'Penginput']],
+          body: tableData,
+          tableWidth: tableWidth,
+          margin: { left: tableHorizontalMargin, right: tableHorizontalMargin },
+          styles: { cellWidth: undefined, fontSize: 4 },
+        }
+        // Generate the table with the options
+        autoTable(doc, options)
+        doc.save(
+          `${dataPembayaranSeragamInput.siswa.nim}_${dataPembayaranSeragamInput.siswa.nama}.pdf`,
+        )
+      }
+      image2.src = imagePath2
+    }
+    image1.src = imagePath1
   }
 
   const getUserData = async () => {
@@ -197,6 +325,7 @@ export function ModalSeragam({
     if (user) {
       setUserId(user.id)
       setUserRole(user.role)
+      setUserName(user.username)
       // console.log('USER ID dari ModelSeragam', user.id)
       // console.log('USER ROLE dari ModelSeragam', user.role)
     } else {

@@ -68,10 +68,10 @@ export function ModalDetailHistoryPembayaranSeragam({
   }
 
   useEffect(() => {
-    console.log(
-      'FROM ModalDetailHistoryPembayaranSeragam',
-      dataDetailHistoryPembayaranSeragam,
-    )
+    // console.log(
+    //   'FROM ModalDetailHistoryPembayaranSeragam',
+    //   dataDetailHistoryPembayaranSeragam,
+    // )
     getUserData()
   }, [])
 
