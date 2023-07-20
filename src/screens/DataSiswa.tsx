@@ -159,7 +159,7 @@ export const DataSiswa = () => {
             kelas: datas?.kelas,
             jenisKelamin: datas?.jenisKelamin,
             jenisKelaminDisplay:
-              datas?.jenisKelamin === 1 ? 'laki-laki' : 'perempuan',
+              datas?.jenisKelamin === 1 ? 'Laki-laki' : 'Perempuan',
             agama: datas?.agama,
             agamaDisplay: checkAgama(datas?.agama),
             updatedAt: datas?.updatedAt,
