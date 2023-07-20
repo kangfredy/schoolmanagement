@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {
   Input,
   Modal,
@@ -36,6 +37,7 @@ import {
 } from '@/helper/apiHelper/seragam'
 import { ModalTambahSeragamBaru } from '../components/ModalTambahSeragamBaru'
 import { ModalTambahHistorySeragam } from '../components/ModalTambahHistorySeragam'
+import { ModalDetailHistoryPembayaranSeragam } from '../components/ModalDetailHistoryPembayaranSeragam'
 import { ISelect } from '@/interface/ui/component/dropdown'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 import { convertDateTime } from '@/helper/util/time'
@@ -55,6 +57,8 @@ export function ModalSeragam({
   dataPembayaranSeragamInput,
   setDataHistorySeragam,
   dataHistorySeragam,
+  setDataDetailHistoryPembayaranSeragam,
+  dataDetailHistoryPembayaranSeragam,
   setDataSeragam,
   dataSeragam,
   setDataInputFilteredSeragam,
@@ -75,120 +79,253 @@ export function ModalSeragam({
   )
   const [openTambah, setOpenTambah] = useState(false)
   const [openHistoryTambah, setOpenHistoryTambah] = useState(false)
+  const [
+    openDetailPembayaranHistorySeragam,
+    setOpenDetailPembayaranHistorySeragam,
+  ] = useState(false)
   const [userId, setUserId] = useState(0)
   const [userRole, setUserRole] = useState('')
+  const [userName, setUserName] = useState('')
   const [namaSeragamError, setNamaSeragamError] = useState('')
-  const [hargaSeragamError, setHargaSeragamError] = useState('')
 
   const handleGeneratePdf = () => {
     const doc = new jsPDF({
       format: 'a6',
       unit: 'px',
     })
-
-    const dataForPrint = dataHistorySeragam.filter(
-      item => item.sudahDibayar === true,
-    )
-
-    // console.log('dataForPrint', dataForPrint)
-
-    const tableData = dataForPrint.map((item, index) => [
-      index + 1, // Increment the index by 1 to get the number
-      item.seragam.nama,
-      convertMoney(item.seragam.harga),
+    const chunkSize = 12
+    const totalChunks = Math.ceil(dataHistorySeragam.length / chunkSize)
+    let filteredList
+    if (totalChunks === 1) {
+      filteredList = dataHistorySeragam.slice(0)
+    } else {
+      const startIndex = (totalChunks - 1) * chunkSize
+      filteredList = dataHistorySeragam.slice(startIndex)
+    }
+    const tableData = filteredList.map((item, index) => [
+      index + 1,
+      convertMoney(item.jumlahDiBayar),
       convertDate(item.tanggalPembayaran),
-      dataPembayaranSeragamInput.siswa.asalSekolah,
       item.user.username,
     ])
-
-    // Additional information above the table
-    doc.setFontSize(8)
-    doc.setTextColor('#4d4e53')
+    const currentDate = new Date()
+    const printedDateTime = convertDateTime(currentDate.toString())
+    const qrData = `PEMBAYARAN SERAGAM \nPrinted By ${userName}, \nPrinted Date: ${printedDateTime}, \nNama: ${dataPembayaranSeragamInput.siswa.nama}, \nNIM: ${dataPembayaranSeragamInput.siswa.nim}, \nKelas: ${dataPembayaranSeragamInput.siswa.kelas.namaKelas}, \nJurusan: ${dataPembayaranSeragamInput.siswa.kelas.jurusan.namaJurusan}, \nAsal Sekolah: ${dataPembayaranSeragamInput.siswa.asalSekolah}`
+    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(
+      qrData,
+    )}`
+    const docWidth = doc.internal.pageSize.getWidth()
+    const docHeight = doc.internal.pageSize.getHeight()
+    const contentWidth = docWidth * 0.96
+    const horizontalMargin = (docWidth - contentWidth) / 2
+    const topDocMargin = 6
+    const lineSpacing = 10
+    let currentY = topDocMargin
+    doc.setFontSize(4)
     doc.setFont('helvetica')
-
+    doc.setTextColor('#6C6C6C')
+    doc.text(
+      'YAYASAN PEMBINA LEMBAGA PENDIDIKAN PROVINSI',
+      docWidth / 2,
+      currentY,
+      {
+        align: 'center',
+      },
+    )
+    currentY += 7
+    doc.setFontSize(5)
+    doc.setFont('helvetica', 'bold')
+    doc.setTextColor('#6C6C6C')
+    doc.text(
+      'PERSATUAN GURU REPUBLIK INDONESIA (YPLP PROVINSI PGRI) SUMATERA SELATAN',
+      docWidth / 2,
+      currentY,
+      { align: 'center' },
+    )
+    currentY += 10
+    doc.setFontSize(8)
+    doc.setFont('helvetica', 'bold')
+    doc.setTextColor('#6C6C6C')
+    doc.text('SMK PGRI 2 LAHAT', docWidth / 2, currentY, { align: 'center' })
+    currentY += lineSpacing
+    doc.setFontSize(4)
+    doc.setFont('helvetica', 'normal')
+    doc.setTextColor('#6C6C6C')
+    doc.text(
+      'Jalan Kirab Remaja, Kelurahan RD. PT. KAI Lahat HP : 0821 7955 4241',
+      docWidth / 2,
+      currentY,
+      { align: 'center' },
+    )
+    currentY += 10
     const docHorizontalMargin =
       (doc.internal.pageSize.getWidth() -
         doc.internal.pageSize.getWidth() * 0.9) /
       2
-
-    // Additional information above the table
-    doc.text(`PEMBAYARAN SERAGAM`, docHorizontalMargin, 20)
+    const middleDocX = doc.internal.pageSize.getWidth() / 2
+    // Handle Long Name
+    const namaSiswa = dataPembayaranSeragamInput.siswa.nama
+    let shortenedNama = namaSiswa
+    if (namaSiswa.length > 25) {
+      const nameStringList = namaSiswa.split(' ')
+      const spaceCount = nameStringList.length - 1
+      // console.log(spaceCount)
+      const subString = namaSiswa.substring(0, 25)
+      const spaceIndex = subString.lastIndexOf(' ')
+      // console.log(spaceIndex)
+      const subStringSpaceCount = subString.split(' ').length - 1
+      // console.log(subStringSpaceCount)
+      let frontName = ''
+      let backName = ''
+      for (let i = 0; i <= subStringSpaceCount; i++) {
+        frontName += nameStringList[i]
+        if (i < subStringSpaceCount) {
+          frontName += ' '
+        }
+      }
+      for (let i = subStringSpaceCount + 1; i < nameStringList.length; i++) {
+        const firstChar = nameStringList[i].charAt(0).toUpperCase()
+        backName += firstChar + '.'
+        if (i < nameStringList.length - 1) {
+          backName += ' '
+        }
+      }
+      shortenedNama = frontName + ' ' + backName
+      shortenedNama = shortenedNama.replace(/\s{2,}/g, ' ')
+      shortenedNama = shortenedNama.trim()
+      // console.log('frontName', frontName)
+      // console.log('backName', backName)
+      // console.log('shortenedNama ', shortenedNama)
+    }
+    doc.setFontSize(5)
+    doc.setFont('helvetica', 'normal')
+    doc.text(`Nama Siswa: ${shortenedNama}`, docHorizontalMargin, currentY, {
+      align: 'left',
+    })
+    currentY += 5
+    doc.setFontSize(5)
+    doc.setFont('helvetica', 'normal')
     doc.text(
-      `NIS: ${dataPembayaranSeragamInput.siswa.nim}`,
+      `NISN: ${dataPembayaranSeragamInput.siswa.nim}`,
       docHorizontalMargin,
-      35,
+      currentY,
+      {
+        align: 'left',
+      },
     )
+    currentY += 5
+    doc.setFontSize(5)
+    doc.setFont('helvetica', 'normal')
     doc.text(
-      `Nama: ${dataPembayaranSeragamInput.siswa.nama}`,
+      `Asal Sekolah: ${dataPembayaranSeragamInput.siswa.asalSekolah}`,
       docHorizontalMargin,
-      50,
+      currentY,
+      {
+        align: 'left',
+      },
     )
-    doc.text(
-      `Kelas: ${dataPembayaranSeragamInput.siswa.kelas.namaKelas}`,
-      docHorizontalMargin,
-      65,
-    )
+    currentY -= 10
+    doc.setFontSize(5)
+    doc.setFont('helvetica', 'normal')
     doc.text(
       `Jurusan: ${dataPembayaranSeragamInput.siswa.kelas.jurusan.namaJurusan}`,
-      docHorizontalMargin,
-      80,
+      middleDocX,
+      currentY,
+      {
+        align: 'left',
+      },
+    )
+    currentY += 5
+    doc.setFontSize(5)
+    doc.setFont('helvetica', 'normal')
+    doc.text(
+      `Kelas: ${dataPembayaranSeragamInput.siswa.kelas.namaKelas}`,
+      middleDocX,
+      currentY,
+      {
+        align: 'left',
+      },
     )
 
-    // Add the image to the right of the table
-    const image = new Image()
-    const imagePath = '/assets/images/PGRILogo.png'
-    const canvas = document.createElement('canvas')
-    const ctx = canvas.getContext('2d')
+    const totalBiaya = convertMoney(
+      dataPembayaranSeragamInput.totalBayar +
+        dataPembayaranSeragamInput.tunggakan,
+    )
 
-    image.onload = function () {
-      // console.log('Image loaded') // Add this line
-      canvas.width = image.width
-      canvas.height = image.height
-      ctx?.drawImage(image, 0, 0)
-      const dataUrl = canvas.toDataURL('image/png')
-      const imgWidth = 80
-      const imgHeight = (image.height * imgWidth) / image.width
+    currentY += 5
+    doc.setFontSize(5)
+    doc.setFont('helvetica', 'normal')
+    doc.text(`Total: ${totalBiaya}`, middleDocX, currentY, {
+      align: 'left',
+    })
 
-      // Generate the table
-      const tableWidth = doc.internal.pageSize.getWidth() * 0.9
-      const tableStartY = 90
-      const horizontalMargin =
-        (doc.internal.pageSize.getWidth() - tableWidth) / 2
+    currentY -= 5
 
-      const options = {
-        startY: tableStartY,
-        head: [['No', 'Seragam', 'Jumlah', 'Tgl Bayar', 'Asal', 'Penginput']],
-        body: tableData,
-        tableWidth: tableWidth,
-        margin: { left: horizontalMargin, right: horizontalMargin },
-        styles: { cellWidth: undefined, fontSize: 8 },
-        addPageContent: function (data: { pageNumber: number }) {
-          const imgX = tableWidth + 4 - imgWidth // Adjust the X-coordinate to position the image next to the table
-          const imgY = 30 // Position the image at the top of the first page
-
-          // Add the image to the first page
-          if (data.pageNumber === 1) {
-            doc.addImage(dataUrl, 'PNG', imgX, imgY, imgWidth, imgHeight)
-          }
-        },
+    doc.setFontSize(12)
+    doc.setFont('helvetica', 'bold')
+    doc.text('Seragam', docWidth - docHorizontalMargin, currentY, {
+      align: 'right',
+    })
+    currentY += 6
+    // Add the first image below the texts
+    const image1 = new Image()
+    const imagePath1 = '/assets/images/PGRILogo.png'
+    image1.onload = function () {
+      const imgWidth1 = 40
+      const imgHeight1 = (image1.height * imgWidth1) / image1.width
+      const imgX1 = 3
+      const imgY1 = 12
+      doc.addImage(image1, 'PNG', imgX1, imgY1, imgWidth1, imgHeight1)
+      // Add the second image to the bottom right corner
+      const image2 = new Image()
+      const imagePath2 = qrCodeUrl
+      image2.onload = function () {
+        const imgWidth2 = 20
+        const imgHeight2 = (image2.height * imgWidth2) / image2.width
+        const imgX2 = docWidth - horizontalMargin - imgWidth2 - 5
+        const imgY2 = docHeight - imgHeight2 - 10
+        doc.addImage(image2, 'PNG', imgX2, imgY2, imgWidth2, imgHeight2)
+        doc.setFontSize(5)
+        doc.setFont('helvetica', 'normal')
+        doc.text(
+          `Disahkan`,
+          docWidth - horizontalMargin - imgWidth2 - 20,
+          docHeight - imgHeight2,
+          {
+            align: 'center',
+          },
+        )
+        // Generate the table
+        const tableWidth = doc.internal.pageSize.getWidth() * 0.9
+        const tableStartY = currentY + 4
+        const tableHorizontalMargin =
+          (doc.internal.pageSize.getWidth() - tableWidth) / 2
+        const options = {
+          headStyles: { fillColor: '#696969' },
+          startY: tableStartY,
+          head: [['No', 'Jumlah', 'Tanggal Pembayaran', 'Penginput']],
+          body: tableData,
+          tableWidth: tableWidth,
+          margin: { left: tableHorizontalMargin, right: tableHorizontalMargin },
+          styles: { cellWidth: undefined, fontSize: 4 },
+        }
+        // Generate the table with the options
+        autoTable(doc, options)
+        doc.save(
+          `${dataPembayaranSeragamInput.siswa.nim}_${dataPembayaranSeragamInput.siswa.nama}.pdf`,
+        )
       }
-
-      // Generate the table with the options
-      autoTable(doc, options)
-
-      doc.save(
-        `${dataPembayaranSeragamInput.siswa.nim}_${dataPembayaranSeragamInput.siswa.nama}.pdf`,
-      )
+      image2.src = imagePath2
     }
-
-    image.src = imagePath
+    image1.src = imagePath1
   }
 
-  const getUserData = async () =>{
+  const getUserData = async () => {
     const user = await getUserInfoWithNullCheck()
     if (user) {
       setUserId(user.id)
       setUserRole(user.role)
+      setUserName(user.username)
       // console.log('USER ID dari ModelSeragam', user.id)
       // console.log('USER ROLE dari ModelSeragam', user.role)
     } else {
@@ -198,6 +335,7 @@ export function ModalSeragam({
 
   useEffect(() => {
     getUserData()
+    // console.log('FROM MODAL SERAGAM', dataDetailHistoryPembayaranSeragam)
   }, [])
 
   const handleReset = (
@@ -420,7 +558,6 @@ export function ModalSeragam({
     setHarga(0)
     setNamaSeragam('')
     setNamaSeragamError('')
-    setHargaSeragamError('')
     setOpen(false)
     setHargaParsed('')
   }
@@ -445,11 +582,15 @@ export function ModalSeragam({
     let dataInput = {
       id: data?.id,
       nama: data?.nama,
-      harga: data?.harga,
       updatedBy: data?.updatedBy,
     }
     setDataSeragamInput(dataInput)
     setOpenTambah(true)
+  }
+
+  const showModalDetailHistoryPembayaranSeragam = () => {
+    // console.log('TOMBOL DETAIL CLICEKD')
+    setOpenDetailPembayaranHistorySeragam(true)
   }
 
   const showModalTambahHistoryPembayaranSeragam = () => {
@@ -475,16 +616,16 @@ export function ModalSeragam({
       sorter: (a, b) => a.nama.localeCompare(b.nama),
       sortDirections: ['descend', 'ascend'],
     },
-    {
-      title: 'Harga',
-      dataIndex: 'harga',
-      key: 'harga',
-      width: '23%',
-      ...getSeragamColumnSearchProps('harga'),
-      sorter: (a, b) => a.harga - b.harga,
-      sortDirections: ['descend', 'ascend'],
-      render: harga => convertMoney(harga),
-    },
+    // {
+    //   title: 'Harga',
+    //   dataIndex: 'harga',
+    //   key: 'harga',
+    //   width: '23%',
+    //   ...getSeragamColumnSearchProps('harga'),
+    //   sorter: (a, b) => a.harga - b.harga,
+    //   sortDirections: ['descend', 'ascend'],
+    //   render: harga => convertMoney(harga),
+    // },
     {
       title: 'Updated By',
       dataIndex: ['user', 'username'],
@@ -538,99 +679,90 @@ export function ModalSeragam({
     },
   ]
 
-  const handleConfirmBayarHistorySeragam = (currentData: IHistorySeragam) => {
-    // console.log('DATA TO CONFIRM', currentData)
-    // const user = await getUserInfoWithNullCheck()
-    // const updatedBy = user ? user.id : 0
+  // const handleConfirmBayarHistorySeragam = (currentData: IHistorySeragam) => {
+  //   // console.log('DATA TO CONFIRM', currentData)
+  //   // const user = await getUserInfoWithNullCheck()
+  //   // const updatedBy = user ? user.id : 0
 
-    //Untuk dilepar ke api
-    const currentDate = new Date().toISOString()
-    if (currentData && currentData.sudahDibayar !== undefined) {
-      currentData.sudahDibayar = true
-    }
+  //   //Untuk dilepar ke api
+  //   const currentDate = new Date().toISOString()
+  //   if (currentData && currentData.sudahDibayar !== undefined) {
+  //     currentData.sudahDibayar = true
+  //   }
 
-    if (currentData && currentData.tanggalPembayaran !== undefined) {
-      currentData.tanggalPembayaran = currentDate
-    }
+  //   if (currentData && currentData.tanggalPembayaran !== undefined) {
+  //     currentData.tanggalPembayaran = currentDate
+  //   }
 
-    // Add the updatedBy property to currentData
-    currentData.updatedBy = userId
+  //   // Add the updatedBy property to currentData
+  //   currentData.updatedBy = userId
 
-    // console.log('BAYAR DATA', currentData)
+  //   // console.log('BAYAR DATA', currentData)
 
-    let currentPembayaranSeragamId: number
-    if (currentData && currentData.pembayaranSeragamId !== undefined) {
-      currentPembayaranSeragamId = currentData.pembayaranSeragamId
-      // console.log('currentPembayaranSeragamId', currentPembayaranSeragamId)
-    }
+  //   let currentPembayaranSeragamId: number
+  //   if (currentData && currentData.pembayaranSeragamId !== undefined) {
+  //     currentPembayaranSeragamId = currentData.pembayaranSeragamId
+  //     // console.log('currentPembayaranSeragamId', currentPembayaranSeragamId)
+  //   }
 
-    dataHistoryPembayaranSeragamUpdate(
-      currentData,
-      dataPembayaranSeragamInput.siswaId,
-      dataPembayaranSeragamInput.tunggakan,
-      dataPembayaranSeragamInput.totalBayar,
-    )
-      .then((response: any) => {
-        let dataInput = {
-          id: response.data.updatePembayaranSeragam.id,
-          siswaId: response.data.updatePembayaranSeragam.siswaId,
-          tunggakan: response.data.updatePembayaranSeragam.tunggakan,
-          totalBayar: response.data.updatePembayaranSeragam.totalBayar,
-          siswa: dataPembayaranSeragamInput.siswa,
-          kelas: dataPembayaranSeragamInput.siswa.kelas,
-          jurusan: dataPembayaranSeragamInput.siswa?.kelas.jurusan,
-          updatedAt: response.data.updatePembayaranSeragam.updatedAt,
-          updatedBy: response.data.updatePembayaranSeragam.updatedBy,
-          user: dataPembayaranSeragamInput.user,
-        }
-        showModal(action, dataInput)
-        getData()
-        // getHistoryPembayaranSeragamByPembayaranSeragamId(
-        //   currentPembayaranSeragamId,
-        //   action,
-        // )
-        setConfirmLoading(false)
-      })
-      .then(response => {
-        // setOpen(false)
-        setOpen(true)
-      })
-      .catch((error: any) => {
-        // setOpen(false)
-        setOpen(true)
-      })
-  }
+  //   dataHistoryPembayaranSeragamUpdate(
+  //     currentData,
+  //     dataPembayaranSeragamInput.siswaId,
+  //     dataPembayaranSeragamInput.tunggakan,
+  //     dataPembayaranSeragamInput.totalBayar,
+  //   )
+  //     .then((response: any) => {
+  //       let dataInput = {
+  //         id: response.data.updatePembayaranSeragam.id,
+  //         siswaId: response.data.updatePembayaranSeragam.siswaId,
+  //         tunggakan: response.data.updatePembayaranSeragam.tunggakan,
+  //         totalBayar: response.data.updatePembayaranSeragam.totalBayar,
+  //         siswa: dataPembayaranSeragamInput.siswa,
+  //         kelas: dataPembayaranSeragamInput.siswa.kelas,
+  //         jurusan: dataPembayaranSeragamInput.siswa?.kelas.jurusan,
+  //         updatedAt: response.data.updatePembayaranSeragam.updatedAt,
+  //         updatedBy: response.data.updatePembayaranSeragam.updatedBy,
+  //         user: dataPembayaranSeragamInput.user,
+  //       }
+  //       showModal(action, dataInput)
+  //       getData()
+  //       // getHistoryPembayaranSeragamByPembayaranSeragamId(
+  //       //   currentPembayaranSeragamId,
+  //       //   action,
+  //       // )
+  //       setConfirmLoading(false)
+  //     })
+  //     .then(response => {
+  //       // setOpen(false)
+  //       setOpen(true)
+  //     })
+  //     .catch((error: any) => {
+  //       // setOpen(false)
+  //       setOpen(true)
+  //     })
+  // }
 
   const handleCancelBayarHistorySeragam = () => {}
 
   let columnsHistorySeragam: ColumnsType<IHistorySeragam> = [
-    // {
-    //   title: 'Nomor',
-    //   dataIndex: 'id',
-    //   key: 'id',
-    //   width: '13%',
-    //   ...getHistorySeragamColumnSearchProps('id'),
-    //   sorter: (a, b) => a.id - b.id,
-    //   sortDirections: ['descend', 'ascend'],
-    // },
     {
-      title: 'Seragam',
-      dataIndex: ['seragam', 'nama'],
-      key: 'seragam',
-      width: '20%',
-      ...getHistorySeragamColumnSearchProps('seragam'),
-      sorter: (a, b) => a.seragam.nama.localeCompare(b.seragam.nama),
+      title: 'No',
+      dataIndex: 'index',
+      key: 'index',
+      width: '13%',
+      render: (text, record, index) => index + 1,
+      sorter: (a, b) => a.id - b.id,
       sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Jumlah Dibayar',
-      dataIndex: ['seragam', 'harga'],
-      key: 'seragam',
+      dataIndex: 'jumlahDiBayar',
+      key: 'jumlahDiBayar',
       width: '23%',
-      ...getHistorySeragamColumnSearchProps('seragam'),
-      sorter: (a, b) => a.seragam.harga - b.seragam.harga,
+      ...getHistorySeragamColumnSearchProps('jumlahDiBayar'),
+      sorter: (a, b) => a.jumlahDiBayar - b.jumlahDiBayar,
       sortDirections: ['descend', 'ascend'],
-      render: harga => convertMoney(harga),
+      render: jumlahDiBayar => convertMoney(jumlahDiBayar),
     },
     {
       title: 'Tanggal Pembayaran',
@@ -641,21 +773,6 @@ export function ModalSeragam({
       sorter: (a, b) => a.tanggalPembayaran.localeCompare(b.tanggalPembayaran),
       sortDirections: ['descend', 'ascend'],
       render: tanggalPembayaran => convertDate(tanggalPembayaran),
-    },
-    {
-      title: 'Sudah Dibayar',
-      dataIndex: 'sudahDibayar',
-      key: 'sudahDibayar',
-      width: '30%',
-      render: (_, record) => (
-        <>
-          {record.sudahDibayar ? (
-            <Tag color="#87d068">Terbayar</Tag>
-          ) : (
-            <Tag color="#f50">Belum Dibayar</Tag>
-          )}
-        </>
-      ),
     },
     {
       title: 'Updated By',
@@ -676,28 +793,28 @@ export function ModalSeragam({
       sortDirections: ['descend', 'ascend'],
       render: updatedAt => convertDateTime(updatedAt),
     },
-    {
-      title: 'Action',
-      key: 'action',
-      render: (_: any, record: any) => (
-        <Space size="small" split>
-          {!record.sudahDibayar && (
-            <Popconfirm
-              title={`Pembayaran No ${record.id} ?`}
-              description={`Anda Yakin ingin Konfirmasi Pembayaran No ${record.id} ?`}
-              onConfirm={e => handleConfirmBayarHistorySeragam(record)}
-              onCancel={handleCancelBayarHistorySeragam}
-              okText="Yes"
-              okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
-              cancelText="No">
-              <Button type="primary" size="middle" className="bg-blue-500">
-                BAYAR
-              </Button>
-            </Popconfirm>
-          )}
-        </Space>
-      ),
-    },
+    // {
+    //   title: 'Action',
+    //   key: 'action',
+    //   render: (_: any, record: any) => (
+    //     <Space size="small" split>
+    //       {!record.sudahDibayar && (
+    //         <Popconfirm
+    //           title={`Pembayaran No ${record.id} ?`}
+    //           description={`Anda Yakin ingin Konfirmasi Pembayaran No ${record.id} ?`}
+    //           onConfirm={e => handleConfirmBayarHistorySeragam(record)}
+    //           onCancel={handleCancelBayarHistorySeragam}
+    //           okText="Yes"
+    //           okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
+    //           cancelText="No">
+    //           <Button type="primary" size="middle" className="bg-blue-500">
+    //             BAYAR
+    //           </Button>
+    //         </Popconfirm>
+    //       )}
+    //     </Space>
+    //   ),
+    // },
   ]
 
   if (userRole !== 'admin') {
@@ -752,16 +869,23 @@ export function ModalSeragam({
         <Button
           type="primary"
           size="large"
-          className="bg-blue-500"
+          className="bg-green-500"
+          onClick={() => showModalDetailHistoryPembayaranSeragam()}>
+          DETAIL
+        </Button>
+        <Button
+          type="primary"
+          size="large"
+          className="bg-blue-500 ml-2"
           onClick={() => showModalTambahHistoryPembayaranSeragam()}>
-          TAMBAH
+          TAMBAH PEMBAYARAN
         </Button>
         <Button
           type="primary"
           size="large"
           className="bg-red-500 ml-2"
           onClick={handleGeneratePdf}>
-          Cetak
+          CETAK
         </Button>
       </div>
       {dataHistorySeragam === null ? (
@@ -792,6 +916,26 @@ export function ModalSeragam({
           getHistoryPembayaranSeragamByPembayaranSeragamId
         }
       />
+      <ModalDetailHistoryPembayaranSeragam
+        getData={getData}
+        action={action}
+        open={openDetailPembayaranHistorySeragam}
+        setOpen={setOpenDetailPembayaranHistorySeragam}
+        dataSeragam={dataSeragam}
+        setDataSeragam={setDataSeragam}
+        setDataDetailHistoryPembayaranSeragam={
+          setDataDetailHistoryPembayaranSeragam
+        }
+        dataDetailHistoryPembayaranSeragam={dataDetailHistoryPembayaranSeragam}
+        dataInputFilteredSeragam={dataInputFilteredSeragam}
+        setDataInputFilteredSeragam={setDataInputFilteredSeragam}
+        setDataPembayaranSeragamInput={setDataPembayaranSeragamInput}
+        dataPembayaranSeragamInput={dataPembayaranSeragamInput}
+        showModal={showModal}
+        getHistoryPembayaranSeragamByPembayaranSeragamId={
+          getHistoryPembayaranSeragamByPembayaranSeragamId
+        }
+      />
     </>
   )
 
@@ -801,28 +945,16 @@ export function ModalSeragam({
     setNamaSeragamError(e.target.value.trim() === '' ? 'Required' : '')
   }
 
-  const handleHargaInput = (e: any) => {
-    setHargaParsed(addDecimalPoints(e.target.value))
-    setHarga(Number(e.target.value.replace('.', '')))
-  }
-
   const handleTambahSeragam = () => {
-    if (
-      namaSeragam === '' ||
-      namaSeragam === undefined ||
-      harga === 0 ||
-      harga === undefined
-    ) {
+    if (namaSeragam === '' || namaSeragam === undefined) {
       setNamaSeragamError(
         namaSeragam === '' || namaSeragam === undefined ? 'Required' : '',
       )
-      setHargaSeragamError(harga === 0 || harga === undefined ? 'Required' : '')
       return
     }
 
     const newSeragam: IDataSeragamnModal = {
       nama: namaSeragam,
-      harga: Number(harga),
       updatedBy: userId,
     }
     // console.log('DATA KE API', newSeragam)
@@ -861,7 +993,7 @@ export function ModalSeragam({
             </p>
           )}
         </div>
-        <div className="flex items-center">
+        {/* <div className="flex items-center">
           <Input
             placeholder="Harga"
             name="harga"
@@ -877,11 +1009,11 @@ export function ModalSeragam({
               {hargaSeragamError}
             </p>
           )}
-        </div>
+        </div> */}
         <Button
           type="primary"
           size="middle"
-          className="bg-blue-500 w-60 mb-4"
+          className="bg-blue-500 w-60 mb-4 mt-2"
           onClick={handleTambahSeragam}>
           Tambah
         </Button>

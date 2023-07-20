@@ -14,7 +14,9 @@ import {
   historyPembayaranSeragamByPembayaranSeragamId,
   dataHistoryPembayaranSeragamUpdate,
 } from '@/helper/apiHelper/historyPembayaranSeragam'
+import { detailHistoryPembayaranSeragamByPembayaranSeragamId } from '@/helper/apiHelper/detailHistoryPembayaranSeragam'
 import { IHistorySeragam } from '@/interface/ui/state/dataHistorySeragamTable'
+import { IDetailHistorySeragam } from '@/interface/ui/state/dataDetailHistorySeragamTable'
 import { getDataSeragam } from '@/helper/apiHelper/seragam'
 import { ISeragam } from '@/interface/ui/state/dataSeragamModal'
 import { convertMoney } from '@/helper/util/money'
@@ -38,6 +40,10 @@ export const PembayaranSeragam = () => {
   const [dataHistorySeragam, setDataHistorySeragam] = useState<
     IHistorySeragam[]
   >([])
+  const [
+    dataDetailHistoryPembayaranSeragam,
+    setDataDetailHistoryPembayaranSeragam,
+  ] = useState<IDetailHistorySeragam[]>([])
   const [dataSeragam, setDataSeragam] = useState<ISeragam[]>([])
   const [dataInputFilteredSeragam, setDataInputFilteredSeragam] = useState<
     ISeragam[]
@@ -65,7 +71,7 @@ export const PembayaranSeragam = () => {
       }
 
       setDataPembayaranSeragamInput(dataInput)
-      // console.log('dataInput', dataInput)
+      // console.log('dataInput PembayaranSeragam', dataInput)
       getHistoryPembayaranSeragamByPembayaranSeragamId(data?.id, action)
     } else {
       setActions(action)
@@ -86,11 +92,9 @@ export const PembayaranSeragam = () => {
           const object1: IHistorySeragam = {
             id: datas?.id,
             pembayaranSeragamId: datas?.pembayaranSeragamId,
-            sudahDibayar: datas?.sudahDibayar,
+            jumlahDiBayar: datas?.jumlahDiBayar,
             tanggalPembayaran: datas?.tanggalPembayaran,
-            seragamId: datas?.seragamId,
             pembayaranSeragam: datas?.pembayaranSeragam,
-            seragam: datas?.seragam,
             updatedAt: datas?.updatedAt,
             updatedBy: datas?.updatedBy,
             user: datas?.user,
@@ -100,26 +104,57 @@ export const PembayaranSeragam = () => {
 
         //Assign the mapped array to the state
         setDataHistorySeragam(arrayDataTemp)
-
-        const filteredDataSeragam = dataSeragam.filter(seragam => {
-          // Check if seragamId does not exist in dataHistorySeragam
-          const notExistsInHistory = !arrayDataTemp.some(
-            history => history.seragamId === seragam.id,
-          )
-
-          // Return true if seragamId does not exist in dataHistorySeragam,
-          // false otherwise
-          return notExistsInHistory
-        })
-        // console.log('CURRENT filteredDataSeragam', filteredDataSeragam)
-        setDataInputFilteredSeragam(filteredDataSeragam)
       })
       .then(response => {
-        setLoading(false)
-        setActions(action)
-      })
-      .finally(() => {
-        setOpen(true)
+        detailHistoryPembayaranSeragamByPembayaranSeragamId(id)
+          .then(response => {
+            const arrayDataTemp: IDetailHistorySeragam[] = []
+
+            response.data.getDetailHistoryPembayaranSeragamById?.map(
+              (datas: any) => {
+                const object1: IDetailHistorySeragam = {
+                  id: datas?.id,
+                  pembayaranSeragamId: datas?.pembayaranSeragamId,
+                  pembayaranSeragam: datas?.pembayaranSeragam,
+                  seragamId: datas?.seragamId,
+                  seragam: datas?.seragam,
+                  updatedAt: datas?.updatedAt,
+                  updatedBy: datas?.updatedBy,
+                  user: datas?.user,
+                }
+                arrayDataTemp.push(object1)
+              },
+            )
+
+            //Assign the mapped array to the state
+            setDataDetailHistoryPembayaranSeragam(arrayDataTemp)
+            // console.log('FROM PEMBAYARAN SERAGAM ', arrayDataTemp)
+
+            const filteredDataSeragam = dataSeragam.filter(seragam => {
+              // Check if seragamId does not exist in dataHistorySeragam
+              const notExistsInHistory = !arrayDataTemp.some(
+                history => history.seragamId === seragam.id,
+              )
+
+              // Return true if seragamId does not exist in dataHistorySeragam,
+              // false otherwise
+              return notExistsInHistory
+            })
+            // console.log('CURRENT filteredDataSeragam', filteredDataSeragam)
+            setDataInputFilteredSeragam(filteredDataSeragam)
+          })
+          .then(response => {
+            setLoading(false)
+            setActions(action)
+          })
+          .finally(() => {
+            setOpen(true)
+          })
+          .catch(error => {
+            console.error(error.message)
+            setLoading(false)
+            setOpen(false)
+          })
       })
       .catch(error => {
         console.error(error.message)
@@ -154,7 +189,6 @@ export const PembayaranSeragam = () => {
         const object2: ISeragam = {
           id: datas?.id,
           nama: datas?.nama,
-          harga: datas?.harga,
           updatedAt: datas?.updatedAt,
           updatedBy: datas?.updatedBy,
           user: datas?.user,
@@ -170,11 +204,9 @@ export const PembayaranSeragam = () => {
         const object3: IHistorySeragam = {
           id: datas?.id,
           pembayaranSeragamId: datas?.pembayaranSeragamId,
-          sudahDibayar: datas?.sudahDibayar,
+          jumlahDiBayar: datas?.jumlahDiBayar,
           tanggalPembayaran: datas?.tanggalPembayaran,
-          seragamId: datas?.seragamId,
           pembayaranSeragam: datas?.pembayaranSeragam,
-          seragam: datas?.seragam,
           updatedAt: datas?.updatedAt,
           updatedBy: datas?.updatedBy,
           user: datas?.user,
@@ -222,12 +254,6 @@ export const PembayaranSeragam = () => {
     clearFilters()
     setSearchText('')
     confirm()
-  }
-
-  //handle Popconfrim
-  const handleConfirmDelete = (e: any) => {
-    // console.log(e)
-    message.success('Click on Yes')
   }
 
   const getColumnSearchProps = (
@@ -444,6 +470,12 @@ export const PembayaranSeragam = () => {
             setDataPembayaranSeragamInput={setDataPembayaranSeragamInput}
             dataHistorySeragam={dataHistorySeragam}
             setDataHistorySeragam={setDataHistorySeragam}
+            dataDetailHistoryPembayaranSeragam={
+              dataDetailHistoryPembayaranSeragam
+            }
+            setDataDetailHistoryPembayaranSeragam={
+              setDataDetailHistoryPembayaranSeragam
+            }
             dataSeragam={dataSeragam}
             setDataSeragam={setDataSeragam}
             dataInputFilteredSeragam={dataInputFilteredSeragam}

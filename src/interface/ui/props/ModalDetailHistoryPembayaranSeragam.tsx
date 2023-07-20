@@ -1,27 +1,26 @@
 import { Dispatch, SetStateAction } from 'react'
+import {
+  IDataSeragamnModal,
+  ISeragam,
+} from '@/interface/ui/state/dataSeragamModal'
 import { IPembayaranSeragam } from '../state/dataPembayaranSeragamTable'
-import { IHistorySeragam } from '../state/dataHistorySeragamTable'
-import { ISeragam } from '@/interface/ui/state/dataSeragamModal'
 import { IDetailHistorySeragam } from '../state/dataDetailHistorySeragamTable'
 
-export interface ModalTambahSeragamProps {
+export interface ModalDetailHistoryPembayaranSeragamProps {
   open: boolean
   action: string
   setOpen: Dispatch<SetStateAction<boolean>>
   getData: () => any
-  setDataPembayaranSeragamInput: Dispatch<SetStateAction<IPembayaranSeragam>>
-  dataPembayaranSeragamInput: IPembayaranSeragam
-  setDataHistorySeragam: Dispatch<SetStateAction<IHistorySeragam[]>>
-  dataHistorySeragam: IHistorySeragam[]
+  setDataSeragam: Dispatch<SetStateAction<ISeragam[]>>
+  dataSeragam: ISeragam[]
   setDataDetailHistoryPembayaranSeragam: Dispatch<
     SetStateAction<IDetailHistorySeragam[]>
   >
   dataDetailHistoryPembayaranSeragam: IDetailHistorySeragam[]
-
-  setDataSeragam: Dispatch<SetStateAction<ISeragam[]>>
-  dataSeragam: ISeragam[]
   setDataInputFilteredSeragam: Dispatch<SetStateAction<ISeragam[]>>
   dataInputFilteredSeragam: ISeragam[]
+  setDataPembayaranSeragamInput: Dispatch<SetStateAction<IPembayaranSeragam>>
+  dataPembayaranSeragamInput: IPembayaranSeragam
   showModal: (action: string, data: IPembayaranSeragam) => void
   getHistoryPembayaranSeragamByPembayaranSeragamId: (
     id: number,

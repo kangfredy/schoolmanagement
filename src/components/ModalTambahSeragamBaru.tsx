@@ -16,26 +16,22 @@ export function ModalTambahSeragamBaru({
   const [confirmLoading, setConfirmLoading] = useState(false)
   const [loading, setLoading] = useState<boolean>(false)
   const [namaSeragamError, setNamaSeragamError] = useState('')
-  const [hargaSeragamError, setHargaSeragamError] = useState('')
   const [userData, setUserData] = useState<any>()
 
-  const getUserData = async() => {
+  const getUserData = async () => {
     const user = await getUserInfoWithNullCheck()
     setUserData(user)
   }
 
-  useEffect(()=> {
+  useEffect(() => {
     getUserData()
-  },[])
+  }, [])
 
   const handleChange = (e: { target: { name: string; value: string } }) => {
-    
-
     const { name, value } = e.target
-    const updatedValue = name === 'harga' ? Number(value) : value
     setDataSeragamInput((prevState: any) => ({
       ...prevState,
-      [name]: updatedValue,
+      nama: value,
       updatedBy: userData.id,
     }))
 
@@ -43,46 +39,18 @@ export function ModalTambahSeragamBaru({
     if (e.target.name === 'nama') {
       setNamaSeragamError(e.target.value.trim() === '' ? 'Required' : '')
     }
-
-    if (e.target.name === 'harga') {
-      const inputValue = e.target.value.trim()
-      const numericValue = Number(inputValue)
-
-      if (!Number.isNaN(numericValue) && inputValue !== '') {
-        setDataSeragamInput((prevState: any) => ({
-          ...prevState,
-          [name]: numericValue,
-          updatedBy: userData.id,
-        }))
-        setHargaSeragamError('')
-      } else {
-        setDataSeragamInput((prevState: any) => ({
-          ...prevState,
-          [name]: 0,
-          updatedBy: userData.id,
-        }))
-        setHargaSeragamError('Input Number')
-      }
-    }
   }
 
   const handleOk = () => {
     if (
       dataSeragamInput?.nama === '' ||
-      dataSeragamInput?.nama === undefined ||
-      dataSeragamInput?.harga === 0 ||
-      dataSeragamInput?.harga === undefined
+      dataSeragamInput?.nama === undefined
 
       // Add additional checks for other required fields
     ) {
       // Set the corresponding error state variables for the empty fields
       setNamaSeragamError(
         dataSeragamInput?.nama === '' || dataSeragamInput?.nama === undefined
-          ? 'Required'
-          : '',
-      )
-      setHargaSeragamError(
-        dataSeragamInput?.harga === 0 || dataSeragamInput?.harga === undefined
           ? 'Required'
           : '',
       )
@@ -111,7 +79,6 @@ export function ModalTambahSeragamBaru({
   const handleCancel = () => {
     setDataSeragamInput({} as IDataSeragamnModal)
     setNamaSeragamError('')
-    setHargaSeragamError('')
     setOpen(false)
   }
 
@@ -146,7 +113,7 @@ export function ModalTambahSeragamBaru({
               </p>
             )}
           </div>
-          <div className="my-4 flex items-center">
+          {/* <div className="my-4 flex items-center">
             <div className="w-[25%]">Harga:</div>
             <div>
               <Input
@@ -168,7 +135,7 @@ export function ModalTambahSeragamBaru({
                 {hargaSeragamError}
               </p>
             )}
-          </div>
+          </div> */}
         </div>
       </Spin>
     </Modal>

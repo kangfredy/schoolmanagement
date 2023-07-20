@@ -4,14 +4,14 @@ import { useEffect, useState } from 'react'
 import { Select, Space } from 'antd'
 import { SiGoogleclassroom } from 'react-icons/si'
 import { IDataSeragamnModal } from '@/interface/ui/state/dataSeragamModal'
-import { ModalTambahHistorySeragamProps } from '@/interface/ui/props/ModalTambahHistorySeragam'
-import { tambahHistoryPembayaranSeragam } from '@/helper/apiHelper/historyPembayaranSeragam'
+import { ModalTambahDetailHistorySeragamProps } from '@/interface/ui/props/ModalTambahDetailHistorySeragam'
+import { tambahDetailHistoryPembayaranSeragam } from '@/helper/apiHelper/detailHistoryPembayaranSeragam'
 import { RiShirtLine } from 'react-icons/ri'
 import { ISelect } from '@/interface/ui/component/dropdown'
-import { IDataHistorySeragamModal } from '@/interface/ui/state/dataHistorySeragamModal'
+import { IDataDetailHistorySeragamModal } from '@/interface/ui/state/dataDetailHistorySeragamModal'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 
-export function ModalTambahHistorySeragam({
+export function ModalTambahDetailHistorySeragam({
   open,
   action,
   setOpen,
@@ -24,13 +24,16 @@ export function ModalTambahHistorySeragam({
   dataPembayaranSeragamInput,
   showModal,
   getHistoryPembayaranSeragamByPembayaranSeragamId,
-}: ModalTambahHistorySeragamProps) {
+}: ModalTambahDetailHistorySeragamProps) {
   const [confirmLoading, setConfirmLoading] = useState(false)
   const [loading, setLoading] = useState<boolean>(false)
   const [userId, setUserId] = useState(0)
   const [userRole, setUserRole] = useState('')
-  const [jumlahDibayar, setJumlahDibayar] = useState(0)
-  const [jumlahDibayarError, setJumlahDibayarError] = useState('')
+  const [dataSelectSeragam, setDataSelectSeragam] = useState<ISelect[]>(
+    [] as ISelect[],
+  )
+  const [seragamId, setSeragamId] = useState<number | undefined>(undefined)
+  const [seragamError, setSeragamError] = useState('')
 
   const getUserData = async () => {
     const user = await getUserInfoWithNullCheck()
@@ -45,57 +48,54 @@ export function ModalTambahHistorySeragam({
   }
 
   useEffect(() => {
+    setDataSelectSeragam(
+      dataInputFilteredSeragam.map(seragam => ({
+        value: seragam.id,
+        label: seragam.nama,
+      })),
+    )
     getUserData()
   }, [dataInputFilteredSeragam])
 
+  const handleSeragamSelect = (value: number) => {
+    // console.log('Selected Option:', value)
+    setSeragamId(value)
+    setSeragamError(value === 0 || value === undefined ? 'Required' : '')
+  }
+
   const handleOk = () => {
-    if (jumlahDibayar === 0 || jumlahDibayar === undefined) {
-      setJumlahDibayarError(
-        jumlahDibayar === 0 || jumlahDibayar === undefined ? 'Required' : '',
-      )
+    if (seragamId === undefined) {
+      setSeragamError(seragamId === undefined ? 'Required' : '')
 
       return
     }
 
     const pembayaranSeragamId = dataPembayaranSeragamInput.id
 
-    const currentDate = new Date().toISOString()
-
-    const newHistorySeragam: IDataHistorySeragamModal = {
+    const newDetailHistorySeragam: IDataDetailHistorySeragamModal = {
       pembayaranSeragamId: Number(pembayaranSeragamId),
-      tanggalPembayaran: currentDate,
-      jumlahDiBayar: Number(jumlahDibayar),
+      seragamId: Number(seragamId),
       updatedBy: userId,
     }
 
-    // console.log('newHistorySeragam', newHistorySeragam)
-
     setConfirmLoading(true)
-    tambahHistoryPembayaranSeragam(
-      newHistorySeragam,
-      dataPembayaranSeragamInput.siswaId,
-      dataPembayaranSeragamInput.tunggakan,
-      dataPembayaranSeragamInput.totalBayar,
-    )
+    tambahDetailHistoryPembayaranSeragam(newDetailHistorySeragam)
       .then((response: any) => {
+        setSeragamId(undefined)
         let dataInput = {
-          id: response.data.updatePembayaranSeragam.id,
-          siswaId: response.data.updatePembayaranSeragam.siswaId,
-          tunggakan: response.data.updatePembayaranSeragam.tunggakan,
-          totalBayar: response.data.updatePembayaranSeragam.totalBayar,
+          id: response.data.getPembayaranSeragam.id,
+          siswaId: response.data.getPembayaranSeragam.siswaId,
+          tunggakan: response.data.getPembayaranSeragam.tunggakan,
+          totalBayar: response.data.getPembayaranSeragam.totalBayar,
           siswa: dataPembayaranSeragamInput.siswa,
           kelas: dataPembayaranSeragamInput.siswa.kelas,
           jurusan: dataPembayaranSeragamInput.siswa?.kelas.jurusan,
-          updatedAt: response.data.updatePembayaranSeragam.updatedAt,
-          updatedBy: response.data.updatePembayaranSeragam.updatedBy,
+          updatedAt: response.data.getPembayaranSeragam.updatedAt,
+          updatedBy: response.data.getPembayaranSeragam.updatedBy,
           user: dataPembayaranSeragamInput.user,
         }
         showModal(action, dataInput)
         getData()
-        // getHistoryPembayaranSeragamByPembayaranSeragamId(
-        //   pembayaranSeragamId,
-        //   action,
-        // )
         setConfirmLoading(false)
       })
       .then((response: any) => {
@@ -109,24 +109,13 @@ export function ModalTambahHistorySeragam({
   }
 
   const handleCancel = () => {
-    setJumlahDibayarError('')
     setOpen(false)
     // console.log('CANCEL CLICKED')
   }
 
-  const handleJumlahDibayar = (e: any) => {
-    // console.log('VALUE E', e.target.value)
-    setJumlahDibayar(e.target.value)
-    setJumlahDibayarError(
-      e.target.value.trim() === '' || e.target.value.trim() === 0
-        ? 'Required'
-        : '',
-    )
-  }
-
   return (
     <Modal
-      title="Tambah Pembayaran Seragam"
+      title="Tambah Seragam"
       open={open}
       onOk={handleOk}
       okButtonProps={{ className: 'bg-blue-500' }}
@@ -135,21 +124,28 @@ export function ModalTambahHistorySeragam({
       <Spin spinning={loading}>
         <div className="my-8">
           <div className="my-4 flex items-center">
-            <div className="w-[25%]">Jumlah Dibayar:</div>
+            <div className="w-[25%]">Nama Seragam:</div>
             <div>
-              <Input
-                placeholder="Masukkan Jumlah Dibayar"
-                name="jumlahDibayar"
-                onChange={e => handleJumlahDibayar(e)}
-                className="w-60 my-1"
-                status={jumlahDibayarError ? 'error' : undefined}
-                required
+              <Select
+                showSearch
+                placeholder="Pilih Seragam"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.label ?? '')
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+                onChange={handleSeragamSelect}
+                options={dataSelectSeragam}
+                value={seragamId}
+                status={seragamError ? 'error' : undefined}
+                className="ml-2 w-60"
               />
             </div>
-            {jumlahDibayarError && (
+            {seragamError && (
               <p style={{ color: 'red' }} className="ml-4">
                 {' '}
-                {jumlahDibayarError}
+                {seragamError}
               </p>
             )}
           </div>

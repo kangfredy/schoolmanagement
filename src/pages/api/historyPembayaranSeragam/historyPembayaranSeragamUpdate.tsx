@@ -11,9 +11,8 @@ export default async function handler(
     const {
       id,
       pembayaranSeragamId,
-      seragamId,
       tanggalPembayaran,
-      sudahDibayar,
+      jumlahDiBayar,
       updatedBy,
       siswaId,
       tunggakan,
@@ -28,21 +27,15 @@ export default async function handler(
         },
         data: {
           pembayaranSeragamId: pembayaranSeragamId,
-          seragamId: seragamId,
           tanggalPembayaran: tanggalPembayaran,
-          sudahDibayar: sudahDibayar,
+          jumlahDiBayar: jumlahDiBayar,
           updatedBy: Number(updatedBy),
-        },
-        include: {
-          seragam: true,
         },
       })
 
     // Calculate the updated values
-    const updatedTunggakan =
-      tunggakan - updateHistoryPembayaranSeragam.seragam.harga
-    const updatedTotalBayar =
-      totalBayar + updateHistoryPembayaranSeragam.seragam.harga
+    const updatedTunggakan = tunggakan - jumlahDiBayar
+    const updatedTotalBayar = totalBayar + jumlahDiBayar
 
     const updatePembayaranSeragam = await prisma.pembayaranSeragam.update({
       where: {
@@ -55,7 +48,7 @@ export default async function handler(
         updatedBy: Number(updatedBy),
       },
       include: {
-        siswa: true,
+        user: true,
       },
     })
     // Return a success or failed message

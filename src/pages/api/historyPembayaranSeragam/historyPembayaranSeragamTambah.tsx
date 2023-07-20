@@ -10,7 +10,8 @@ export default async function handler(
   if (req.method === 'POST') {
     const {
       pembayaranSeragamId,
-      seragamId,
+      tanggalPembayaran,
+      jumlahDiBayar,
       updatedBy,
       siswaId,
       tunggakan,
@@ -22,16 +23,15 @@ export default async function handler(
       await prisma.historyPembayaranSeragam.create({
         data: {
           pembayaranSeragamId: pembayaranSeragamId,
-          seragamId: seragamId,
+          jumlahDiBayar: jumlahDiBayar,
+          tanggalPembayaran: tanggalPembayaran,
           updatedBy: Number(updatedBy),
-        },
-        include: {
-          seragam: true,
         },
       })
 
-    const updatedTunggakan =
-      tunggakan + tambahHistoryPembayaranSeragam.seragam.harga
+    // Calculate the updated values
+    const updatedTunggakan = tunggakan - jumlahDiBayar
+    const updatedTotalBayar = totalBayar + jumlahDiBayar
 
     const updatePembayaranSeragam = await prisma.pembayaranSeragam.update({
       where: {
@@ -40,11 +40,11 @@ export default async function handler(
       data: {
         siswaId: siswaId,
         tunggakan: updatedTunggakan,
-        totalBayar: totalBayar,
+        totalBayar: updatedTotalBayar,
         updatedBy: Number(updatedBy),
       },
       include: {
-        siswa: true,
+        user: true,
       },
     })
     // Return a success or failed message

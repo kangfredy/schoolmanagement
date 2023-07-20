@@ -88,11 +88,9 @@ export const DataSiswa = () => {
                 const objectHistorySeragam: IHistorySeragam = {
                   id: datas?.id,
                   pembayaranSeragamId: datas?.pembayaranSeragamId,
-                  seragamId: datas?.seragamId,
-                  sudahDibayar: datas?.sudahDibayar,
+                  jumlahDiBayar: datas?.jumlahDiBayar,
                   tanggalPembayaran: datas?.tanggalPembayaran,
                   pembayaranSeragam: datas?.pembayaranSeragam,
-                  seragam: datas?.seragam,
                   updatedAt: datas?.updatedAt,
                   updatedBy: datas?.updatedBy,
                   user: datas?.user,
@@ -161,7 +159,7 @@ export const DataSiswa = () => {
             kelas: datas?.kelas,
             jenisKelamin: datas?.jenisKelamin,
             jenisKelaminDisplay:
-            datas?.jenisKelamin === 1 ? 'laki-laki' : 'perempuan',
+              datas?.jenisKelamin === 1 ? 'laki-laki' : 'perempuan',
             agama: datas?.agama,
             agamaDisplay: checkAgama(datas?.agama),
             updatedAt: datas?.updatedAt,

@@ -34,8 +34,6 @@ import { convertMoney } from '@/helper/util/money'
 //////////// BORDER /////////
 
 import { historyPembayaranSppByPembayaranSppId } from '@/helper/apiHelper/historyPembayaranSpp'
-import { TableSPPHistory } from './TableSppHistory'
-import { TableSeragamHistory } from './TableSeragamHistory'
 
 type DataIndexHistorySpp = keyof IHistorySpp
 type DataIndexHistorySeragam = keyof IHistorySeragam
@@ -273,15 +271,15 @@ export function ModalDetailSiswa({
   })
 
   const columnsHistorySpp: ColumnsType<IHistorySpp> = [
-    // {
-    //   title: 'Id',
-    //   dataIndex: 'id',
-    //   key: 'id',
-    //   width: '13%',
-    //   ...getColumnHistorySppSearchProps('id'),
-    //   sorter: (a, b) => a.id - b.id,
-    //   sortDirections: ['descend', 'ascend'],
-    // },
+    {
+      title: 'No',
+      dataIndex: 'index',
+      key: 'index',
+      width: '13%',
+      render: (text, record, index) => index + 1,
+      sorter: (a, b) => a.id - b.id,
+      sortDirections: ['descend', 'ascend'],
+    },
     {
       title: 'Jumlah',
       dataIndex: 'jumlah',
@@ -330,33 +328,33 @@ export function ModalDetailSiswa({
   ]
 
   const columnsHistorySeragam: ColumnsType<IHistorySeragam> = [
+    {
+      title: 'No',
+      dataIndex: 'index',
+      key: 'index',
+      width: '13%',
+      render: (text, record, index) => index + 1,
+      sorter: (a, b) => a.id - b.id,
+      sortDirections: ['descend', 'ascend'],
+    },
     // {
-    //   title: 'Nomor',
-    //   dataIndex: 'id',
-    //   key: 'id',
-    //   width: '13%',
-    //   ...getColumnHistorySeragamSearchProps('id'),
-    //   sorter: (a, b) => a.id - b.id,
+    //   title: 'Seragam',
+    //   dataIndex: ['seragam', 'nama'],
+    //   key: 'seragam',
+    //   width: '20%',
+    //   ...getColumnHistorySeragamSearchProps('seragam'),
+    //   sorter: (a, b) => a.seragam.nama.localeCompare(b.seragam.nama),
     //   sortDirections: ['descend', 'ascend'],
     // },
     {
-      title: 'Seragam',
-      dataIndex: ['seragam', 'nama'],
-      key: 'seragam',
-      width: '20%',
-      ...getColumnHistorySeragamSearchProps('seragam'),
-      sorter: (a, b) => a.seragam.nama.localeCompare(b.seragam.nama),
-      sortDirections: ['descend', 'ascend'],
-    },
-    {
       title: 'Jumlah Dibayar',
-      dataIndex: ['seragam', 'harga'],
-      key: 'seragam',
+      dataIndex: 'jumlahDiBayar',
+      key: 'jumlahDiBayar',
       width: '23%',
-      ...getColumnHistorySeragamSearchProps('seragam'),
-      sorter: (a, b) => a.seragam.harga - b.seragam.harga,
+      ...getColumnHistorySeragamSearchProps('jumlahDiBayar'),
+      sorter: (a, b) => a.jumlahDiBayar - b.jumlahDiBayar,
       sortDirections: ['descend', 'ascend'],
-      render: harga => convertMoney(harga),
+      render: jumlahDiBayar => convertMoney(jumlahDiBayar),
     },
     {
       title: 'Tanggal Pembayaran',
@@ -368,21 +366,21 @@ export function ModalDetailSiswa({
       sortDirections: ['descend', 'ascend'],
       render: tanggalPembayaran => convertDate(tanggalPembayaran),
     },
-    {
-      title: 'Sudah Dibayar',
-      dataIndex: 'sudahDibayar',
-      key: 'sudahDibayar',
-      width: '30%',
-      render: (_, record) => (
-        <>
-          {record.sudahDibayar ? (
-            <Tag color="#87d068">Terbayar</Tag>
-          ) : (
-            <Tag color="#f50">Belum Dibayar</Tag>
-          )}
-        </>
-      ),
-    },
+    // {
+    //   title: 'Sudah Dibayar',
+    //   dataIndex: 'sudahDibayar',
+    //   key: 'sudahDibayar',
+    //   width: '30%',
+    //   render: (_, record) => (
+    //     <>
+    //       {record.sudahDibayar ? (
+    //         <Tag color="#87d068">Terbayar</Tag>
+    //       ) : (
+    //         <Tag color="#f50">Belum Dibayar</Tag>
+    //       )}
+    //     </>
+    //   ),
+    // },
   ]
 
   return (

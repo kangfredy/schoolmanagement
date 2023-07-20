@@ -98,7 +98,7 @@ export function ModalSpp({
 
     const currentDate = new Date()
     const printedDateTime = convertDateTime(currentDate.toString())
-    const qrData = `Printed By ${userName}, \nPrinted Date: ${printedDateTime}, \nNama: ${dataSppInput.siswa.nama}, \nNIM: ${dataSppInput.siswa.nim}, \nKelas: ${dataSppInput.siswa.kelas.namaKelas}, \nJurusan: ${dataSppInput.siswa.kelas.jurusan.namaJurusan}, \nAsal Sekolah: ${dataSppInput.siswa.asalSekolah}`
+    const qrData = `PEMBAYARAN SPP \nPrinted By ${userName}, \nPrinted Date: ${printedDateTime}, \nNama: ${dataSppInput.siswa.nama}, \nNIM: ${dataSppInput.siswa.nim}, \nKelas: ${dataSppInput.siswa.kelas.namaKelas}, \nJurusan: ${dataSppInput.siswa.kelas.jurusan.namaJurusan}, \nAsal Sekolah: ${dataSppInput.siswa.asalSekolah}`
 
     const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(
       qrData,

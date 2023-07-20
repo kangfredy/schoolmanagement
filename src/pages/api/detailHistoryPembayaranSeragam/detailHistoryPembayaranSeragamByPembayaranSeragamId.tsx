@@ -7,19 +7,18 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { siswaId }: any = req.query
+  const { pembayaranSeragamId }: any = req.query
   if (req.method === 'GET') {
     // Get Data
-    const getHistoryPembayaranSeragamBySiswaId =
-      await prisma.historyPembayaranSeragam.findMany({
+    const getDetailHistoryPembayaranSeragamById =
+      await prisma.detailHistoryPembayaranSeragam.findMany({
         where: {
-          pembayaranSeragam: {
-            siswaId: Number(siswaId),
-          },
+          pembayaranSeragamId: parseInt(pembayaranSeragamId),
           isDeleted: false,
         },
         include: {
           pembayaranSeragam: true,
+          seragam: true,
           user: {
             select: {
               id: true,
@@ -34,10 +33,12 @@ export default async function handler(
       })
 
     // Return a success or failed message
-    res.status(200).json({
-      message: 'Get Data successful',
-      getHistoryPembayaranSeragamBySiswaId,
-    })
+    res
+      .status(200)
+      .json({
+        message: 'Get Data successful',
+        getDetailHistoryPembayaranSeragamById,
+      })
   } else {
     res.status(405).json({ message: 'Method not allowed' })
   }
