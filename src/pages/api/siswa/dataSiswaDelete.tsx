@@ -23,8 +23,82 @@ export default async function handler(
       },
     })
 
+    const getPembayaranSeragamIdBySiswaId =
+      await prisma.pembayaranSeragam.findMany({
+        where: {
+          siswa: {
+            id: id,
+          },
+        },
+        select: {
+          id: true,
+        },
+      })
+
+    const pembayaranSeragamId = Number(getPembayaranSeragamIdBySiswaId[0].id)
+
+    const deletePembayaranSeragam = await prisma.pembayaranSeragam.update({
+      where: {
+        id: pembayaranSeragamId,
+      },
+      data: {
+        updatedBy: Number(updatedBy),
+        isDeleted: {
+          set: true,
+        },
+      },
+    })
+
+    const getPembayaranSppIdBySiswaId = await prisma.pembayaranSpp.findMany({
+      where: {
+        siswa: {
+          id: id,
+        },
+      },
+      select: {
+        id: true,
+      },
+    })
+
+    const pembayaranSppId = Number(getPembayaranSppIdBySiswaId[0].id)
+
+    const deletePembayaranSpp = await prisma.pembayaranSpp.update({
+      where: {
+        id: pembayaranSppId,
+      },
+      data: {
+        updatedBy: Number(updatedBy),
+        isDeleted: {
+          set: true,
+        },
+      },
+    })
+
+    const deleteHistoryPembayaranSppByPembayaranSppId =
+      await prisma.historyPembayaranSpp.updateMany({
+        where: {
+          pembayaranSpp: {
+            id: pembayaranSppId,
+          },
+        },
+        data: {
+          updatedBy: Number(updatedBy),
+          isDeleted: {
+            set: true,
+          },
+        },
+      })
+
     // Return a success or failed message
-    res.status(200).json({ message: 'Delete successful', deleteSiswaData })
+    res.status(200).json({
+      message: 'Delete successful',
+      deleteSiswaData,
+      getPembayaranSeragamIdBySiswaId,
+      deletePembayaranSeragam,
+      getPembayaranSppIdBySiswaId,
+      deletePembayaranSpp,
+      deleteHistoryPembayaranSppByPembayaranSppId,
+    })
   } else {
     res.status(405).json({ message: 'Method not allowed' })
   }

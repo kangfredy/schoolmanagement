@@ -1,13 +1,22 @@
-import { getSiswaBelumBayarService } from "@/helper/apiHelper/historyPembayaranSpp"
-import { getUserService, dataUserDeleteService } from "@/helper/apiHelper/user"
-import { getUserInfoWithNullCheck } from "@/helper/util/userInfo"
-import { IReminderSPP } from "@/interface/ui/state/IReminderSPP"
-import { SearchOutlined } from "@ant-design/icons"
-import { InputRef, message, Input, Space, Button, Popconfirm, Spin, Table } from "antd"
-import { ColumnType, ColumnsType } from "antd/es/table"
-import { FilterConfirmProps } from "antd/es/table/interface"
-import React, { useEffect, useRef, useState } from "react"
-import Highlighter from "react-highlight-words"
+import { getSiswaBelumBayarService } from '@/helper/apiHelper/historyPembayaranSpp'
+import { getUserService, dataUserDeleteService } from '@/helper/apiHelper/user'
+import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
+import { IReminderSPP } from '@/interface/ui/state/IReminderSPP'
+import { SearchOutlined } from '@ant-design/icons'
+import {
+  InputRef,
+  message,
+  Input,
+  Space,
+  Button,
+  Popconfirm,
+  Spin,
+  Table,
+} from 'antd'
+import { ColumnType, ColumnsType } from 'antd/es/table'
+import { FilterConfirmProps } from 'antd/es/table/interface'
+import React, { useEffect, useRef, useState } from 'react'
+import Highlighter from 'react-highlight-words'
 
 type DataIndex = keyof IReminderSPP
 
@@ -70,22 +79,20 @@ export const ReminderSPP = () => {
     confirm()
   }
 
-  function  getNestedValue(obj: any, key: string): any {
-    const keys = key.split('.');
-    let nestedValue = obj;
+  function getNestedValue(obj: any, key: string): any {
+    const keys = key.split('.')
+    let nestedValue = obj
     for (const nestedKey of keys) {
-      nestedValue = nestedValue?.[nestedKey];
+      nestedValue = nestedValue?.[nestedKey]
       if (nestedValue === undefined) {
-        break;
+        break
       }
     }
-  
-    return nestedValue;
+
+    return nestedValue
   }
 
-  const getColumnSearchProps = (
-    dataIndex: any,
-  ): ColumnType<any> => ({
+  const getColumnSearchProps = (dataIndex: any): ColumnType<any> => ({
     filterDropdown: ({
       setSelectedKeys,
       selectedKeys,
@@ -98,10 +105,9 @@ export const ReminderSPP = () => {
           ref={searchInput}
           placeholder={`Search ${dataIndex}`}
           value={selectedKeys[0]}
-          onChange={e =>{
+          onChange={e => {
             setSelectedKeys(e.target.value ? [e.target.value] : [])
-          }
-          }
+          }}
           onPressEnter={() =>
             handleSearch(selectedKeys as string[], confirm, dataIndex)
           }
@@ -110,14 +116,12 @@ export const ReminderSPP = () => {
         <Space>
           <Button
             type="primary"
-            onClick={() =>
-              {
+            onClick={() => {
               handleSearch(selectedKeys as string[], confirm, dataIndex)
               console.log(selectedKeys)
               console.log(confirm)
               console.log(dataIndex)
-            }
-            }
+            }}
             icon={<SearchOutlined />}
             size="small"
             style={{ width: 90 }}
@@ -154,22 +158,21 @@ export const ReminderSPP = () => {
     filterIcon: (filtered: boolean) => (
       <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />
     ),
-    onFilter: (value, record) =>
-    {
+    onFilter: (value, record) => {
       var nestedValue = record
-      for (let i = 0; i < dataIndex.length; i+=2) {
-        const nestedObjectKey = dataIndex[i];
-        const nestedPropertyKey = dataIndex[i + 1];
-    
-        const nestedObject = getNestedValue(nestedValue, nestedObjectKey);
-        nestedValue = nestedObject ? nestedObject[nestedPropertyKey] : undefined;
+      for (let i = 0; i < dataIndex.length; i += 2) {
+        const nestedObjectKey = dataIndex[i]
+        const nestedPropertyKey = dataIndex[i + 1]
+
+        const nestedObject = getNestedValue(nestedValue, nestedObjectKey)
+        nestedValue = nestedObject ? nestedObject[nestedPropertyKey] : undefined
         if (nestedValue == undefined && nestedObject.startsWith(value)) {
-          return true;
+          return true
         }
-       // return true;
+        // return true;
       }
-    
-      return false;
+
+      return false
     },
     onFilterDropdownOpenChange: visible => {
       if (visible) {
@@ -205,7 +208,8 @@ export const ReminderSPP = () => {
       key: 'nama',
       width: '30%',
       ...getColumnSearchProps(['pembayaranSpp', 'siswa', 'nama']),
-      sorter: (a, b) => a.pembayaranSpp.siswa.nama.localeCompare(b.pembayaranSpp.siswa.nama),
+      sorter: (a, b) =>
+        a.pembayaranSpp.siswa.nama.localeCompare(b.pembayaranSpp.siswa.nama),
       sortDirections: ['descend', 'ascend'],
     },
     {
@@ -213,8 +217,17 @@ export const ReminderSPP = () => {
       dataIndex: ['pembayaranSpp', 'siswa', 'kelas', 'jurusan', 'namaJurusan'],
       key: 'updatedBy',
       width: '20%',
-      ...getColumnSearchProps( ['pembayaranSpp', 'siswa', 'kelas', 'jurusan', 'namaJurusan']),
-      sorter: (a, b) => a.pembayaranSpp.siswa.kelas.jurusan.namaJurusan.localeCompare(b.pembayaranSpp.siswa.kelas.jurusan.namaJurusan),
+      ...getColumnSearchProps([
+        'pembayaranSpp',
+        'siswa',
+        'kelas',
+        'jurusan',
+        'namaJurusan',
+      ]),
+      sorter: (a, b) =>
+        a.pembayaranSpp.siswa.kelas.jurusan.namaJurusan.localeCompare(
+          b.pembayaranSpp.siswa.kelas.jurusan.namaJurusan,
+        ),
       sortDirections: ['descend', 'ascend'],
     },
     {
@@ -223,9 +236,12 @@ export const ReminderSPP = () => {
       key: 'updatedBy',
       width: '20%',
       ...getColumnSearchProps(['pembayaranSpp', 'siswa', 'kelas', 'namaKelas']),
-      sorter: (a, b) => a.pembayaranSpp.siswa.kelas.namaKelas.localeCompare(b.pembayaranSpp.siswa.kelas.namaKelas),
+      sorter: (a, b) =>
+        a.pembayaranSpp.siswa.kelas.namaKelas.localeCompare(
+          b.pembayaranSpp.siswa.kelas.namaKelas,
+        ),
       sortDirections: ['descend', 'ascend'],
-    }
+    },
   ]
 
   if (userRole !== 'admin') {
@@ -239,10 +255,11 @@ export const ReminderSPP = () => {
       <div className="rounded-md bg-white p-2 h-[100%] overflow-scroll">
         <div className="my-4 flex items-center justify-between px-4">
           <div className="flex items-center">
-            <h2 className="text-xl font-bold text-black">Data Siswa yang belum bayar bulan ini</h2>
+            <h2 className="text-xl font-bold text-black">
+              Data Siswa yang belum bayar bulan ini
+            </h2>
           </div>
-          <div className="flex items-center">
-          </div>
+          <div className="flex items-center"></div>
         </div>
         <Table
           columns={columns}
@@ -253,4 +270,4 @@ export const ReminderSPP = () => {
       </div>
     </Spin>
   )
-    }
+}
