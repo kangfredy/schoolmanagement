@@ -69,7 +69,7 @@ export function ModalTambahHistorySeragam({
       updatedBy: userId,
     }
 
-    console.log('newHistorySeragam', newHistorySeragam)
+    // console.log('newHistorySeragam', newHistorySeragam)
 
     setConfirmLoading(true)
     tambahHistoryPembayaranSeragam(
