@@ -107,6 +107,7 @@ model Seragam {
   id                      Int                              @id @default(autoincrement())
   nama                    String
   isDeleted               Boolean                          @default(false)
+  harga                   Int
   createdAt               DateTime                         @default(now())
   updatedAt               DateTime                         @updatedAt
   updatedBy               Int

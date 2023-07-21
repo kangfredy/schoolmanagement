@@ -189,6 +189,7 @@ export const PembayaranSeragam = () => {
         const object2: ISeragam = {
           id: datas?.id,
           nama: datas?.nama,
+          harga: datas?.harga,
           updatedAt: datas?.updatedAt,
           updatedBy: datas?.updatedBy,
           user: datas?.user,
@@ -196,7 +197,7 @@ export const PembayaranSeragam = () => {
         arrayTemp2.push(object2)
       })
       setDataSeragam(arrayTemp2)
-      // console.log('setDataAllHistorySpp', arrayTemp2)
+      // console.log('DATA SERAGAM', arrayTemp2)
 
       const response3 = await getHistoryPembayaranSeragam()
       const arrayTemp3: IHistorySeragam[] = []

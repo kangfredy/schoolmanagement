@@ -70,7 +70,7 @@ export function ModalSeragam({
   const [searchedColumn, setSearchedColumn] = useState('')
   const [searchText, setSearchText] = useState('')
   const searchInput = useRef<InputRef>(null)
-  const [harga, setHarga] = useState<number>(0)
+  const [harga, setHarga] = useState<number | undefined>(0)
   const [hargaParsed, setHargaParsed] = useState('')
   const [namaSeragam, setNamaSeragam] = useState('')
   const [loading, setLoading] = useState<boolean>(false)
@@ -87,6 +87,7 @@ export function ModalSeragam({
   const [userRole, setUserRole] = useState('')
   const [userName, setUserName] = useState('')
   const [namaSeragamError, setNamaSeragamError] = useState('')
+  const [hargaSeragamError, setHargaSeragamError] = useState('')
 
   const handleGeneratePdf = () => {
     const doc = new jsPDF({
@@ -335,7 +336,7 @@ export function ModalSeragam({
 
   useEffect(() => {
     getUserData()
-    // console.log('FROM MODAL SERAGAM', dataDetailHistoryPembayaranSeragam)
+    // console.log('FROM MODAL SERAGAM', dataSeragam)
   }, [])
 
   const handleReset = (
@@ -555,9 +556,10 @@ export function ModalSeragam({
 
   const handleCancel = () => {
     // console.log('Clicked cancel button')
-    setHarga(0)
+    setHarga(undefined)
     setNamaSeragam('')
     setNamaSeragamError('')
+    setHargaSeragamError('')
     setOpen(false)
     setHargaParsed('')
   }
@@ -582,6 +584,7 @@ export function ModalSeragam({
     let dataInput = {
       id: data?.id,
       nama: data?.nama,
+      harga: data?.harga,
       updatedBy: data?.updatedBy,
     }
     setDataSeragamInput(dataInput)
@@ -598,15 +601,15 @@ export function ModalSeragam({
   }
 
   let columnsSeragam: ColumnsType<ISeragam> = [
-    // {
-    //   title: 'Nomor',
-    //   dataIndex: 'id',
-    //   key: 'id',
-    //   width: '13%',
-    //   ...getSeragamColumnSearchProps('id'),
-    //   sorter: (a, b) => a.id - b.id,
-    //   sortDirections: ['descend', 'ascend'],
-    // },
+    {
+      title: 'No',
+      dataIndex: 'index',
+      key: 'index',
+      width: '10%',
+      render: (text, record, index) => index + 1,
+      sorter: (a, b) => a.id - b.id,
+      sortDirections: ['descend', 'ascend'],
+    },
     {
       title: 'Seragam',
       dataIndex: 'nama',
@@ -616,16 +619,16 @@ export function ModalSeragam({
       sorter: (a, b) => a.nama.localeCompare(b.nama),
       sortDirections: ['descend', 'ascend'],
     },
-    // {
-    //   title: 'Harga',
-    //   dataIndex: 'harga',
-    //   key: 'harga',
-    //   width: '23%',
-    //   ...getSeragamColumnSearchProps('harga'),
-    //   sorter: (a, b) => a.harga - b.harga,
-    //   sortDirections: ['descend', 'ascend'],
-    //   render: harga => convertMoney(harga),
-    // },
+    {
+      title: 'Harga',
+      dataIndex: 'harga',
+      key: 'harga',
+      width: '23%',
+      ...getSeragamColumnSearchProps('harga'),
+      sorter: (a, b) => a.harga - b.harga,
+      sortDirections: ['descend', 'ascend'],
+      render: harga => convertMoney(harga),
+    },
     {
       title: 'Updated By',
       dataIndex: ['user', 'username'],
@@ -945,16 +948,34 @@ export function ModalSeragam({
     setNamaSeragamError(e.target.value.trim() === '' ? 'Required' : '')
   }
 
+  const handleHargaInput = (e: any) => {
+    setHargaParsed(addDecimalPoints(e.target.value))
+    setHarga(Number(e.target.value.replace('.', '')))
+    setHargaSeragamError(
+      Number(e.target.value.replace('.', '')) === 0 ||
+        Number(e.target.value.replace('.', '')) === undefined
+        ? 'Required'
+        : '',
+    )
+  }
+
   const handleTambahSeragam = () => {
-    if (namaSeragam === '' || namaSeragam === undefined) {
+    if (
+      namaSeragam === '' ||
+      namaSeragam === undefined ||
+      harga === 0 ||
+      harga === undefined
+    ) {
       setNamaSeragamError(
         namaSeragam === '' || namaSeragam === undefined ? 'Required' : '',
       )
+      setHargaSeragamError(harga === 0 || harga === undefined ? 'Required' : '')
       return
     }
 
     const newSeragam: IDataSeragamnModal = {
       nama: namaSeragam,
+      harga: Number(harga),
       updatedBy: userId,
     }
     // console.log('DATA KE API', newSeragam)
@@ -962,8 +983,11 @@ export function ModalSeragam({
     tambahSeragam(newSeragam)
       .then((response: any) => {
         getData()
-        setHarga(0)
+        setHarga(undefined)
+        setHargaParsed('')
         setNamaSeragam('')
+        setNamaSeragamError('')
+        setHargaSeragamError('')
         message.success('Sukses Tambah Seragam')
       })
       .catch((error: any) => {
@@ -993,7 +1017,7 @@ export function ModalSeragam({
             </p>
           )}
         </div>
-        {/* <div className="flex items-center">
+        <div className="flex items-center">
           <Input
             placeholder="Harga"
             name="harga"
@@ -1009,7 +1033,7 @@ export function ModalSeragam({
               {hargaSeragamError}
             </p>
           )}
-        </div> */}
+        </div>
         <Button
           type="primary"
           size="middle"
@@ -1025,13 +1049,15 @@ export function ModalSeragam({
             scroll={{ x: 400 }}
             className="h-[100%]"
           />
-          <ModalTambahSeragamBaru
-            getData={getData}
-            open={openTambah}
-            setOpen={setOpenTambah}
-            dataSeragamInput={dataSeragamInput}
-            setDataSeragamInput={setDataSeragamInput}
-          />
+          {openTambah && (
+            <ModalTambahSeragamBaru
+              getData={getData}
+              open={openTambah}
+              setOpen={setOpenTambah}
+              dataSeragamInput={dataSeragamInput}
+              setDataSeragamInput={setDataSeragamInput}
+            />
+          )}
         </Spin>
       </div>
     </>

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Input, Modal, Spin, message } from 'antd'
 import { useEffect, useState } from 'react'
 import { IDataSeragamnModal } from '@/interface/ui/state/dataSeragamModal'
@@ -5,6 +6,7 @@ import { ModalTambahSeragamBaruProps } from '@/interface/ui/props/ModalTambahSer
 import { dataSeragamUpdate } from '@/helper/apiHelper/seragam'
 import { RiShirtLine } from 'react-icons/ri'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
+import { addDecimalPoints } from '@/helper/util/number'
 
 export function ModalTambahSeragamBaru({
   open,
@@ -15,7 +17,11 @@ export function ModalTambahSeragamBaru({
 }: ModalTambahSeragamBaruProps) {
   const [confirmLoading, setConfirmLoading] = useState(false)
   const [loading, setLoading] = useState<boolean>(false)
+  const [namaSeragam, setNamaSeragam] = useState('')
+  const [harga, setHarga] = useState<number | undefined>(0)
+  const [hargaParsed, setHargaParsed] = useState('')
   const [namaSeragamError, setNamaSeragamError] = useState('')
+  const [hargaSeragamError, setHargaSeragamError] = useState('')
   const [userData, setUserData] = useState<any>()
 
   const getUserData = async () => {
@@ -25,42 +31,52 @@ export function ModalTambahSeragamBaru({
 
   useEffect(() => {
     getUserData()
+    setNamaSeragam(dataSeragamInput.nama)
+    setHarga(dataSeragamInput.harga)
+    setHargaParsed(addDecimalPoints(dataSeragamInput?.harga?.toString()))
   }, [])
 
-  const handleChange = (e: { target: { name: string; value: string } }) => {
-    const { name, value } = e.target
-    setDataSeragamInput((prevState: any) => ({
-      ...prevState,
-      nama: value,
-      updatedBy: userData.id,
-    }))
+  const handleSeragamInput = (e: any) => {
+    // console.log('VALUE E', e.target.value)
+    setNamaSeragam(e.target.value)
+    setNamaSeragamError(e.target.value.trim() === '' ? 'Required' : '')
+  }
 
-    // Perform validation for the input field
-    if (e.target.name === 'nama') {
-      setNamaSeragamError(e.target.value.trim() === '' ? 'Required' : '')
-    }
+  const handleHargaInput = (e: any) => {
+    setHargaParsed(addDecimalPoints(e.target.value))
+    setHarga(Number(e.target.value.replace('.', '')))
+    setHargaSeragamError(
+      Number(e.target.value.replace('.', '')) === 0 ||
+        Number(e.target.value.replace('.', '')) === undefined
+        ? 'Required'
+        : '',
+    )
   }
 
   const handleOk = () => {
     if (
-      dataSeragamInput?.nama === '' ||
-      dataSeragamInput?.nama === undefined
-
-      // Add additional checks for other required fields
+      namaSeragam === '' ||
+      namaSeragam === undefined ||
+      harga === 0 ||
+      harga === undefined
     ) {
-      // Set the corresponding error state variables for the empty fields
       setNamaSeragamError(
-        dataSeragamInput?.nama === '' || dataSeragamInput?.nama === undefined
-          ? 'Required'
-          : '',
+        namaSeragam === '' || namaSeragam === undefined ? 'Required' : '',
       )
-
-      // Return early without submitting the form
+      setHargaSeragamError(harga === 0 || harga === undefined ? 'Required' : '')
       return
     }
 
+    const editSeragam: IDataSeragamnModal = {
+      id: dataSeragamInput.id,
+      nama: namaSeragam,
+      harga: Number(harga),
+      updatedBy: userData.id,
+    }
+    // console.log('DATA KE API', editSeragam)
+
     setConfirmLoading(true)
-    dataSeragamUpdate(dataSeragamInput)
+    dataSeragamUpdate(editSeragam)
       .then((response: any) => {
         getData()
         setDataSeragamInput({} as IDataSeragamnModal)
@@ -98,9 +114,9 @@ export function ModalTambahSeragamBaru({
               <Input
                 placeholder="Seragam RPL (L)"
                 name="nama"
-                value={dataSeragamInput.nama}
+                value={namaSeragam}
                 prefix={<RiShirtLine />}
-                onChange={e => handleChange(e)}
+                onChange={e => handleSeragamInput(e)}
                 className="ml-2 w-60"
                 status={namaSeragamError ? 'error' : undefined}
                 required
@@ -113,17 +129,15 @@ export function ModalTambahSeragamBaru({
               </p>
             )}
           </div>
-          {/* <div className="my-4 flex items-center">
+          <div className="my-4 flex items-center">
             <div className="w-[25%]">Harga:</div>
             <div>
               <Input
                 placeholder="Harga"
                 name="harga"
-                value={
-                  dataSeragamInput.harga !== 0 ? dataSeragamInput.harga : ''
-                }
+                value={hargaParsed}
                 prefix={<RiShirtLine />}
-                onChange={e => handleChange(e)}
+                onChange={e => handleHargaInput(e)}
                 className="ml-2 w-60"
                 status={hargaSeragamError ? 'error' : undefined}
                 required
@@ -135,7 +149,7 @@ export function ModalTambahSeragamBaru({
                 {hargaSeragamError}
               </p>
             )}
-          </div> */}
+          </div>
         </div>
       </Spin>
     </Modal>
