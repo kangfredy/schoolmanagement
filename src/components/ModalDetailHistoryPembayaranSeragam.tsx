@@ -25,6 +25,7 @@ import { IDetailHistorySeragam } from '@/interface/ui/state/dataDetailHistorySer
 import { IDataHistorySeragamModal } from '@/interface/ui/state/dataHistorySeragamModal'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 import { convertDateTime } from '@/helper/util/time'
+import { convertMoney } from '@/helper/util/money'
 import { ModalTambahDetailHistorySeragam } from '../components/ModalTambahDetailHistorySeragam'
 
 type DataIndex = keyof IDetailHistorySeragam
@@ -205,6 +206,16 @@ export function ModalDetailHistoryPembayaranSeragam({
       ...getColumnSearchProps('seragam'),
       sorter: (a, b) => a.seragam.nama.localeCompare(b.seragam.nama),
       sortDirections: ['descend', 'ascend'],
+    },
+    {
+      title: 'Harga',
+      dataIndex: ['seragam', 'harga'],
+      key: 'harga',
+      width: '23%',
+      ...getColumnSearchProps('seragam'),
+      sorter: (a, b) => a.seragam.harga - b.seragam.harga,
+      sortDirections: ['descend', 'ascend'],
+      render: harga => convertMoney(harga),
     },
     {
       title: 'Updated By',
