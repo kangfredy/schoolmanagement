@@ -10,6 +10,7 @@ import { RiShirtLine } from 'react-icons/ri'
 import { ISelect } from '@/interface/ui/component/dropdown'
 import { IDataHistorySeragamModal } from '@/interface/ui/state/dataHistorySeragamModal'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
+import { addDecimalPoints } from '@/helper/util/number'
 
 export function ModalTambahHistorySeragam({
   open,
@@ -29,7 +30,8 @@ export function ModalTambahHistorySeragam({
   const [loading, setLoading] = useState<boolean>(false)
   const [userId, setUserId] = useState(0)
   const [userRole, setUserRole] = useState('')
-  const [jumlahDibayar, setJumlahDibayar] = useState(0)
+  const [jumlahDibayar, setJumlahDibayar] = useState<number | undefined>(0)
+  const [jumlahDibayarParsed, setJumlahDibayarParsed] = useState('')
   const [jumlahDibayarError, setJumlahDibayarError] = useState('')
 
   const getUserData = async () => {
@@ -53,7 +55,6 @@ export function ModalTambahHistorySeragam({
       setJumlahDibayarError(
         jumlahDibayar === 0 || jumlahDibayar === undefined ? 'Required' : '',
       )
-
       return
     }
 
@@ -99,6 +100,9 @@ export function ModalTambahHistorySeragam({
         setConfirmLoading(false)
       })
       .then((response: any) => {
+        setJumlahDibayarError('')
+        setJumlahDibayar(undefined)
+        setJumlahDibayarParsed('')
         setOpen(false)
         message.success('Tambah Data Sukses')
       })
@@ -110,15 +114,19 @@ export function ModalTambahHistorySeragam({
 
   const handleCancel = () => {
     setJumlahDibayarError('')
+    setJumlahDibayar(undefined)
+    setJumlahDibayarParsed('')
     setOpen(false)
     // console.log('CANCEL CLICKED')
   }
 
   const handleJumlahDibayar = (e: any) => {
     // console.log('VALUE E', e.target.value)
-    setJumlahDibayar(e.target.value)
+    setJumlahDibayarParsed(addDecimalPoints(e.target.value))
+    setJumlahDibayar(Number(e.target.value.replace('.', '')))
     setJumlahDibayarError(
-      e.target.value.trim() === '' || e.target.value.trim() === 0
+      Number(e.target.value.replace('.', '')) === 0 ||
+        Number(e.target.value.replace('.', '')) === undefined
         ? 'Required'
         : '',
     )
@@ -142,6 +150,7 @@ export function ModalTambahHistorySeragam({
                 name="jumlahDibayar"
                 onChange={e => handleJumlahDibayar(e)}
                 className="w-60 my-1"
+                value={jumlahDibayarParsed ? jumlahDibayarParsed : ''}
                 status={jumlahDibayarError ? 'error' : undefined}
                 required
               />

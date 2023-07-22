@@ -1,6 +1,7 @@
 export interface IDataSeragamnModal {
   id?: number
   nama: string
+  harga: number
   updatedAt?: string
   updatedBy: number
 }
@@ -8,6 +9,7 @@ export interface IDataSeragamnModal {
 export interface ISeragam {
   id: number
   nama: string
+  harga: number
   updatedBy: number
   updatedAt: string
   user: Iuser
