@@ -6,7 +6,10 @@ import { ISelect } from '@/interface/ui/component/dropdown'
 import { MdWarehouse } from 'react-icons/md'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 import { IUserModal, ModalTambahUserProps } from '@/interface/ui/state/dataUser'
-import { dataUserUpdateService, tambahUserService } from '@/helper/apiHelper/user'
+import {
+  dataUserUpdateService,
+  tambahUserService,
+} from '@/helper/apiHelper/user'
 import { BsKey, BsPeople } from 'react-icons/bs'
 
 export function ModalTambahUser({
@@ -22,7 +25,6 @@ export function ModalTambahUser({
   const [userError, setUserError] = useState('')
 
   const handleChange = async (e: any) => {
-
     setDataUserInput((prevState: any) => ({
       ...prevState,
       [e.target.name]: e.target.value,
@@ -32,25 +34,23 @@ export function ModalTambahUser({
   }
 
   const handleSelect = (e: any) => {
-    setDataUserInput({...dataUserInput, role: e})
+    setDataUserInput({ ...dataUserInput, role: e })
   }
 
   const roleList = [
-    {value: 'admin', label: 'Admin'},
-    {value: 'user', label: 'User'}
+    { value: 'admin', label: 'Admin' },
+    { value: 'user', label: 'User' },
   ]
 
   useEffect(() => {}, [])
 
   const handleOk = () => {
-
     if (
       dataUserInput?.username === '' ||
       dataUserInput?.username === undefined
     ) {
       setUserError(
-        dataUserInput?.username === '' ||
-          dataUserInput?.username === undefined
+        dataUserInput?.username === '' || dataUserInput?.username === undefined
           ? 'Required'
           : '',
       )
@@ -136,9 +136,9 @@ export function ModalTambahUser({
             <div className="w-[25%]">Password:</div>
             <div>
               <Input
-                placeholder="Nama User"
+                placeholder="Password"
                 name="password"
-                type='password'
+                type="password"
                 disabled={action === 'detail' ? true : false}
                 value={dataUserInput.password}
                 prefix={<BsKey />}
@@ -152,7 +152,7 @@ export function ModalTambahUser({
           <div className="my-4 flex items-center">
             <div className="w-[25%]">Role:</div>
             <div>
-            <Select
+              <Select
                 showSearch
                 placeholder="Pilih Role"
                 onChange={e => handleSelect(e)}

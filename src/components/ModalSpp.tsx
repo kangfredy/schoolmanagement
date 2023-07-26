@@ -111,7 +111,7 @@ export function ModalSpp({
       const printedDateTime = convertDateTime(currentDate.toString())
       const qrData = `PEMBAYARAN SPP \nPrinted By ${userName}, \nPrinted Date: ${printedDateTime}, \nNama: ${
         dataSppInput.siswa.nama
-      }, \nNIM: ${dataSppInput.siswa.nim}, \nKelas: ${
+      }, \nNISN: ${dataSppInput.siswa.nim}, \nKelas: ${
         dataSppInput.siswa.kelas.namaKelas
       }, \nJurusan: ${
         dataSppInput.siswa.kelas.jurusan.namaJurusan
@@ -282,7 +282,7 @@ export function ModalSpp({
 
       doc.setFontSize(12)
       doc.setFont('helvetica', 'bold')
-      doc.text('SPP', docWidth - docHorizontalMargin, currentY, {
+      doc.text('SPP', horizontalMargin + 25, docHeight - 20, {
         align: 'right',
       })
 
@@ -317,7 +317,7 @@ export function ModalSpp({
           doc.text(
             `Disahkan`,
             docWidth - horizontalMargin - imgWidth2 - 20,
-            docHeight - imgHeight2,
+            docHeight - 30,
             {
               align: 'center',
             },

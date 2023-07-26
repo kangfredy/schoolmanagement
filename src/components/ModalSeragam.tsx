@@ -114,7 +114,7 @@ export function ModalSeragam({
       const printedDateTime = convertDateTime(currentDate.toString())
       const qrData = `PEMBAYARAN SERAGAM \nPrinted By ${userName}, \nPrinted Date: ${printedDateTime}, \nNama: ${
         dataPembayaranSeragamInput.siswa.nama
-      }, \nNIM: ${dataPembayaranSeragamInput.siswa.nim}, \nKelas: ${
+      }, \nNISN: ${dataPembayaranSeragamInput.siswa.nim}, \nKelas: ${
         dataPembayaranSeragamInput.siswa.kelas.namaKelas
       }, \nJurusan: ${
         dataPembayaranSeragamInput.siswa.kelas.jurusan.namaJurusan
@@ -204,6 +204,7 @@ export function ModalSeragam({
             backName += ' '
           }
         }
+
         shortenedNama = frontName + ' ' + backName
         shortenedNama = shortenedNama.replace(/\s{2,}/g, ' ')
         shortenedNama = shortenedNama.trim()
@@ -282,7 +283,7 @@ export function ModalSeragam({
 
       doc.setFontSize(12)
       doc.setFont('helvetica', 'bold')
-      doc.text('Seragam', docWidth - docHorizontalMargin, currentY, {
+      doc.text('Seragam', horizontalMargin + 50, docHeight - 20, {
         align: 'right',
       })
       currentY += 8
@@ -310,7 +311,7 @@ export function ModalSeragam({
           doc.text(
             `Disahkan`,
             docWidth - horizontalMargin - imgWidth2 - 20,
-            docHeight - imgHeight2,
+            docHeight - 30,
             {
               align: 'center',
             },
