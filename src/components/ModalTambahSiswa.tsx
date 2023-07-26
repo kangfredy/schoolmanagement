@@ -41,7 +41,7 @@ export function ModalTambahSiswa({
   const [dataKelas, setDataKelas] = useState<ISelect[]>([] as ISelect[])
   const [loading, setLoading] = useState<boolean>(false)
   const [namaError, setNamaError] = useState('')
-  // const [nimError, setNimError] = useState('')
+  const [nimError, setNimError] = useState('')
   const [asalSekolahError, setAsalSekolahError] = useState('')
   const [alamatError, setAlamatError] = useState('')
   const [tanggalLahirError, setTanggalLahirError] = useState<
@@ -61,7 +61,6 @@ export function ModalTambahSiswa({
   const [userData, setUserData] = useState<any>()
 
   const handleChange = (e: { target: { name: string; value: any } }) => {
-
     setDataSiswaInput((prevState: any) => ({
       ...prevState,
       [e.target.name]: e.target.value,
@@ -73,9 +72,9 @@ export function ModalTambahSiswa({
       case 'nama':
         setNamaError(e.target.value.trim() === '' ? 'Required' : '')
         break
-      // case 'nim':
-      //   setNimError(e.target.value.trim() === '' ? 'Required' : '')
-      //   break
+      case 'nim':
+        setNimError(e.target.value.trim() === '' ? 'Required' : '')
+        break
       case 'asalSekolah':
         setAsalSekolahError(e.target.value.trim() === '' ? 'Required' : '')
         break
@@ -136,6 +135,8 @@ export function ModalTambahSiswa({
     if (
       dataSiswaInput?.nama === '' ||
       dataSiswaInput?.nama === undefined ||
+      dataSiswaInput?.nim === '' ||
+      dataSiswaInput?.nim === undefined ||
       dataSiswaInput?.asalSekolah === '' ||
       dataSiswaInput?.asalSekolah === undefined ||
       dataSiswaInput?.alamat === '' ||
@@ -154,11 +155,11 @@ export function ModalTambahSiswa({
           ? 'Required'
           : '',
       )
-      // setNimError(
-      //   dataSiswaInput?.nim?.trim() === '' || dataSiswaInput?.nim === undefined
-      //     ? 'Required'
-      //     : '',
-      // )
+      setNimError(
+        dataSiswaInput?.nim?.trim() === '' || dataSiswaInput?.nim === undefined
+          ? 'Required'
+          : '',
+      )
       setAsalSekolahError(
         dataSiswaInput?.asalSekolah?.trim() === '' ||
           dataSiswaInput?.asalSekolah === undefined
@@ -253,7 +254,7 @@ export function ModalTambahSiswa({
   const handleCancel = () => {
     setDataSiswaInput({} as IDataSiswaModal)
     setNamaError('')
-    // setNimError('')
+    setNimError('')
     setAlamatError('')
     setAsalSekolahError('')
     setTanggalLahirError(undefined)
@@ -333,6 +334,8 @@ export function ModalTambahSiswa({
     if (
       dataSiswaInput?.nama === '' ||
       dataSiswaInput?.nama === undefined ||
+      dataSiswaInput?.nim === '' ||
+      dataSiswaInput?.nim === undefined ||
       dataSiswaInput?.asalSekolah === '' ||
       dataSiswaInput?.asalSekolah === undefined ||
       dataSiswaInput?.alamat === '' ||
@@ -351,11 +354,11 @@ export function ModalTambahSiswa({
           ? 'Required'
           : '',
       )
-      // setNimError(
-      //   dataSiswaInput?.nim?.trim() === '' || dataSiswaInput?.nim === undefined
-      //     ? 'Required'
-      //     : '',
-      // )
+      setNimError(
+        dataSiswaInput?.nim?.trim() === '' || dataSiswaInput?.nim === undefined
+          ? 'Required'
+          : '',
+      )
       setAsalSekolahError(
         dataSiswaInput?.asalSekolah?.trim() === '' ||
           dataSiswaInput?.asalSekolah === undefined
@@ -506,9 +509,16 @@ export function ModalTambahSiswa({
                 prefix={<IdcardOutlined />}
                 onChange={e => handleChange(e)}
                 className="ml-2 w-60"
+                status={nimError ? 'error' : undefined}
                 required
               />
             </div>
+            {nimError && (
+              <p style={{ color: 'red' }} className="ml-4">
+                {' '}
+                {nimError}
+              </p>
+            )}
           </div>
           <div className="my-4 flex items-center">
             <div className="w-[25%]">Asal Sekolah:</div>
@@ -687,7 +697,7 @@ export function ModalTambahSiswa({
           </div>
           <div className="my-4 flex items-center">
             <div className="w-[25%]">Kelas:</div>
-            <div className='w-[75%]'>
+            <div className="w-[75%]">
               <Select
                 showSearch
                 placeholder="Pilih Kelas"
