@@ -198,6 +198,8 @@ export function ModalTambahSiswa({
       }
     }
 
+    // console.log('DATA TAMABAH', dataSiswaInput)
+
     setConfirmLoading(true)
     if (action === 'tambah') {
       // console.log('UNTUK TAMBAH', dataSiswaInput)
@@ -215,9 +217,14 @@ export function ModalTambahSiswa({
           // console.log('RESPONSE DATA', response)
 
           const generatedSiswaId = response.data.tambahSiswaData.id
+          const dateSiswaMasuk = response.data.tambahSiswaData.tanggalMasuk
           const updatedByUserId = response.data.tambahSiswaData.updatedBy
 
-          pembayaranSppGenerate(generatedSiswaId, updatedByUserId)
+          pembayaranSppGenerate(
+            generatedSiswaId,
+            dateSiswaMasuk,
+            updatedByUserId,
+          )
             .then((response: any) => {
               // console.log('pembayaranSppGenerate', response)
             })

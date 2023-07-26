@@ -27,12 +27,18 @@ export const tambahPembayaranSpp = (payload: any) => {
   })
 }
 
-export const pembayaranSppGenerate = (idSiswa: number, updatedBy: number) => {
+export const pembayaranSppGenerate = (
+  idSiswa: number,
+  dateSiwwaMasuk: string,
+  updatedBy: number,
+) => {
   return new Promise<any>((resolve, reject) => {
     axios
       .get(
         '/api/pembayaranSpp/pembayaranSppGenerate?idSiswa=' +
           idSiswa +
+          '&dateSiwwaMasuk=' +
+          dateSiwwaMasuk +
           '&updatedBy=' +
           updatedBy,
       )
