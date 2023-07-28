@@ -9,9 +9,10 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { idSiswa, updatedBy }: any = req.query
+  const { idSiswa, dateSiwwaMasuk, updatedBy }: any = req.query
   const jumlahspp: any = process.env.SPP_BULANAN
   const tunggakanseragam: any = process.env.TOTAL_SERAGAM
+
   if (req.method === 'GET') {
     const generatePembayaranSpp = await prisma.pembayaranSpp.create({
       data: {
@@ -22,7 +23,7 @@ export default async function handler(
       },
     })
 
-    const startDate = new Date() // Set the start date
+    const startDate = new Date(dateSiwwaMasuk) // Set the start date
     const numberOfMonths = 12 // Define the number of months
 
     // Loop through each month
