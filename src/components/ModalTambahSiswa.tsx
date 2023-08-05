@@ -59,6 +59,15 @@ export function ModalTambahSiswa({
     undefined,
   )
   const [userData, setUserData] = useState<any>()
+  const [tanggalLahirFormatted, setTanggalLahirFormatted] =
+    useState<dayjs.Dayjs | null>(
+      dataSiswaInput.tanggalLahir ? dayjs(dataSiswaInput.tanggalLahir) : null,
+    )
+
+  const [tanggalMasukFormatted, setTanggalMasukFormatted] =
+    useState<dayjs.Dayjs | null>(
+      dataSiswaInput.tanggalMasuk ? dayjs(dataSiswaInput.tanggalMasuk) : null,
+    )
 
   const handleChange = (e: { target: { name: string; value: any } }) => {
     setDataSiswaInput((prevState: any) => ({
@@ -121,7 +130,15 @@ export function ModalTambahSiswa({
   useEffect(() => {
     getKelasData()
     getUserData()
-  }, [])
+
+    if (dataSiswaInput.tanggalLahir) {
+      setTanggalLahirFormatted(dayjs(dataSiswaInput.tanggalLahir))
+    }
+
+    if (dataSiswaInput.tanggalMasuk) {
+      setTanggalMasukFormatted(dayjs(dataSiswaInput.tanggalMasuk))
+    }
+  }, [dataSiswaInput.tanggalLahir, dataSiswaInput.tanggalMasuk])
 
   const handleOk = () => {
     // if (action === 'tambah') {
@@ -270,6 +287,8 @@ export function ModalTambahSiswa({
     setTanggalMasukError(undefined)
     setKelasError(undefined)
     setNaikKelasError(undefined)
+    setTanggalLahirFormatted(null)
+    setTanggalMasukFormatted(null)
     setOpen(false)
   }
 
@@ -300,6 +319,8 @@ export function ModalTambahSiswa({
     setTanggalLahirError('')
 
     const formattedDate = date?.toISOString()
+    setTanggalLahirFormatted(date)
+
     setDataSiswaInput((prevState: any) => ({
       ...prevState,
       tanggalLahir: formattedDate,
@@ -314,6 +335,8 @@ export function ModalTambahSiswa({
     setTanggalMasukError('')
 
     const formattedDate = date?.toISOString()
+    setTanggalMasukFormatted(date)
+
     setDataSiswaInput(prevState => ({
       ...prevState,
       tanggalMasuk: formattedDate,
@@ -558,11 +581,8 @@ export function ModalTambahSiswa({
                 className="ml-2 w-60"
                 allowClear={false}
                 status={tanggalLahirError ? 'error' : undefined}
-                value={
-                  dataSiswaInput?.tanggalLahir
-                    ? dayjs(dataSiswaInput.tanggalLahir)
-                    : null
-                }
+                value={tanggalLahirFormatted}
+                format="DD-MM-YYYY"
               />
             </div>
             {tanggalLahirError && (
@@ -688,11 +708,8 @@ export function ModalTambahSiswa({
                 className="ml-2 w-60"
                 allowClear={false}
                 status={tanggalMasukError ? 'error' : undefined}
-                value={
-                  dataSiswaInput?.tanggalMasuk
-                    ? dayjs(dataSiswaInput.tanggalMasuk)
-                    : null
-                }
+                value={tanggalMasukFormatted}
+                format="DD-MM-YYYY"
               />
             </div>
             {tanggalMasukError && (
