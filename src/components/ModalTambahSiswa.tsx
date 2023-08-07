@@ -1,7 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react'
+import 'react-widgets/styles.css'
+import DatePicker from 'react-widgets/DatePicker'
+import Localization from 'react-widgets/Localization'
+import { DateLocalizer } from 'react-widgets/IntlLocalizer'
 import {
-  DatePicker,
   DatePickerProps,
   Form,
   Input,
@@ -59,15 +62,6 @@ export function ModalTambahSiswa({
     undefined,
   )
   const [userData, setUserData] = useState<any>()
-  const [tanggalLahirFormatted, setTanggalLahirFormatted] =
-    useState<dayjs.Dayjs | null>(
-      dataSiswaInput.tanggalLahir ? dayjs(dataSiswaInput.tanggalLahir) : null,
-    )
-
-  const [tanggalMasukFormatted, setTanggalMasukFormatted] =
-    useState<dayjs.Dayjs | null>(
-      dataSiswaInput.tanggalMasuk ? dayjs(dataSiswaInput.tanggalMasuk) : null,
-    )
 
   const handleChange = (e: { target: { name: string; value: any } }) => {
     setDataSiswaInput((prevState: any) => ({
@@ -130,15 +124,7 @@ export function ModalTambahSiswa({
   useEffect(() => {
     getKelasData()
     getUserData()
-
-    if (dataSiswaInput.tanggalLahir) {
-      setTanggalLahirFormatted(dayjs(dataSiswaInput.tanggalLahir))
-    }
-
-    if (dataSiswaInput.tanggalMasuk) {
-      setTanggalMasukFormatted(dayjs(dataSiswaInput.tanggalMasuk))
-    }
-  }, [dataSiswaInput.tanggalLahir, dataSiswaInput.tanggalMasuk])
+  }, [])
 
   const handleOk = () => {
     // if (action === 'tambah') {
@@ -287,8 +273,6 @@ export function ModalTambahSiswa({
     setTanggalMasukError(undefined)
     setKelasError(undefined)
     setNaikKelasError(undefined)
-    setTanggalLahirFormatted(null)
-    setTanggalMasukFormatted(null)
     setOpen(false)
   }
 
@@ -312,14 +296,22 @@ export function ModalTambahSiswa({
     }))
   }
 
-  const onChangeTanggalLahir: DatePickerProps['onChange'] = (
-    date,
-    dateString,
-  ) => {
+  const onChangeTanggalLahir = (date: any) => {
     setTanggalLahirError('')
 
-    const formattedDate = date?.toISOString()
-    setTanggalLahirFormatted(date)
+    // const formattedDate = date?.toISOString() // Tanggal jadi tidak sama setelah diformat
+    const formattedDate = date
+      ? new Date(
+          Date.UTC(
+            date.getFullYear(),
+            date.getMonth(),
+            date.getDate(),
+            0,
+            0,
+            0,
+          ),
+        ).toISOString()
+      : null
 
     setDataSiswaInput((prevState: any) => ({
       ...prevState,
@@ -328,16 +320,24 @@ export function ModalTambahSiswa({
     }))
   }
 
-  const onChangeTanggalMasuk: DatePickerProps['onChange'] = (
-    date,
-    dateString,
-  ) => {
+  const onChangeTanggalMasuk = (date: any) => {
     setTanggalMasukError('')
 
-    const formattedDate = date?.toISOString()
-    setTanggalMasukFormatted(date)
+    // const formattedDate = date?.toISOString() // Tanggal jadi tidak sama setelah diformat
+    const formattedDate = date
+      ? new Date(
+          Date.UTC(
+            date.getFullYear(),
+            date.getMonth(),
+            date.getDate(),
+            0,
+            0,
+            0,
+          ),
+        ).toISOString()
+      : null
 
-    setDataSiswaInput(prevState => ({
+    setDataSiswaInput((prevState: any) => ({
       ...prevState,
       tanggalMasuk: formattedDate,
       updatedBy: userData.id,
@@ -575,15 +575,26 @@ export function ModalTambahSiswa({
           <div className="my-4 flex items-center">
             <div className="w-[25%]">Tanggal Lahir:</div>
             <div>
-              <DatePicker
-                onChange={onChangeTanggalLahir}
-                name="tanggal_lahir"
-                className="ml-2 w-60"
-                allowClear={false}
-                status={tanggalLahirError ? 'error' : undefined}
-                value={tanggalLahirFormatted}
-                format="DD-MM-YYYY"
-              />
+              <Localization
+                date={new DateLocalizer({ culture: 'en-gb', firstOfWeek: 1 })}>
+                <div
+                  style={tanggalLahirError ? { border: '1px solid red' } : {}}>
+                  <DatePicker
+                    value={
+                      dataSiswaInput?.tanggalLahir
+                        ? new Date(dataSiswaInput?.tanggalLahir)
+                        : null
+                    }
+                    dropUp={true}
+                    onKeyDown={event => event.preventDefault()}
+                    onKeyPress={event => event.preventDefault()}
+                    valueEditFormat={{ dateStyle: 'medium' }}
+                    valueDisplayFormat={{ dateStyle: 'medium' }}
+                    placeholder="Pilih Tanggal Lahir"
+                    onChange={value => onChangeTanggalLahir(value)}
+                  />
+                </div>
+              </Localization>
             </div>
             {tanggalLahirError && (
               <p style={{ color: 'red' }} className="ml-4">
@@ -702,7 +713,27 @@ export function ModalTambahSiswa({
           <div className="my-4 flex items-center">
             <div className="w-[25%]">Tanggal Masuk:</div>
             <div>
-              <DatePicker
+              <Localization
+                date={new DateLocalizer({ culture: 'en-gb', firstOfWeek: 1 })}>
+                <div
+                  style={tanggalMasukError ? { border: '1px solid red' } : {}}>
+                  <DatePicker
+                    value={
+                      dataSiswaInput?.tanggalMasuk
+                        ? new Date(dataSiswaInput?.tanggalMasuk)
+                        : null
+                    }
+                    dropUp={true}
+                    onKeyDown={event => event.preventDefault()}
+                    onKeyPress={event => event.preventDefault()}
+                    valueEditFormat={{ dateStyle: 'medium' }}
+                    valueDisplayFormat={{ dateStyle: 'medium' }}
+                    placeholder="Pilih Tanggal Masuk"
+                    onChange={value => onChangeTanggalMasuk(value)}
+                  />
+                </div>
+              </Localization>
+              {/* <DatePicker
                 onChange={onChangeTanggalMasuk}
                 name="tanggal_masuk"
                 className="ml-2 w-60"
@@ -710,7 +741,7 @@ export function ModalTambahSiswa({
                 status={tanggalMasukError ? 'error' : undefined}
                 value={tanggalMasukFormatted}
                 format="DD-MM-YYYY"
-              />
+              /> */}
             </div>
             {tanggalMasukError && (
               <p style={{ color: 'red' }} className="ml-4">
