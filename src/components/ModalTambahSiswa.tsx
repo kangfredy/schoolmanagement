@@ -574,7 +574,7 @@ export function ModalTambahSiswa({
           </div>
           <div className="my-4 flex items-center">
             <div className="w-[25%]">Tanggal Lahir:</div>
-            <div>
+            <div className="pl-2">
               <Localization
                 date={new DateLocalizer({ culture: 'en-gb', firstOfWeek: 1 })}>
                 <div
@@ -712,7 +712,7 @@ export function ModalTambahSiswa({
           </div>
           <div className="my-4 flex items-center">
             <div className="w-[25%]">Tanggal Masuk:</div>
-            <div>
+            <div className="pl-2">
               <Localization
                 date={new DateLocalizer({ culture: 'en-gb', firstOfWeek: 1 })}>
                 <div
