@@ -105,7 +105,7 @@ export const DataKelas = () => {
       })
   }
 
-  const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<Ikelas> => ({
+  const getColumnSearchProps = (dataIndex: any): ColumnType<Ikelas> => ({
     filterDropdown: ({
       setSelectedKeys,
       selectedKeys,
@@ -116,7 +116,7 @@ export const DataKelas = () => {
       <div style={{ padding: 8 }} onKeyDown={e => e.stopPropagation()}>
         <Input
           ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
+          placeholder={`Input Search`}
           value={selectedKeys[0]}
           onChange={e =>
             setSelectedKeys(e.target.value ? [e.target.value] : [])
@@ -168,11 +168,19 @@ export const DataKelas = () => {
     filterIcon: (filtered: boolean) => (
       <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />
     ),
-    onFilter: (value, record) =>
-      record[dataIndex]
+    onFilter: (value, record) => {
+      let data = record
+      for (const key of dataIndex) {
+        data = (data as any)[key]
+        if (data === undefined) {
+          return false // If any nested key is undefined, no need to continue
+        }
+      }
+      return data
         .toString()
         .toLowerCase()
-        .includes((value as string).toLowerCase()),
+        .includes(value.toString().toLowerCase())
+    },
     onFilterDropdownOpenChange: visible => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100)
@@ -206,16 +214,16 @@ export const DataKelas = () => {
       dataIndex: 'namaKelas',
       key: 'nama',
       width: '50%',
-      ...getColumnSearchProps('namaKelas'),
+      ...getColumnSearchProps(['namaKelas']),
       sorter: (a, b) => a.namaKelas.localeCompare(b.namaKelas),
       sortDirections: ['descend', 'ascend'],
     },
     {
-      title: 'jurusan',
+      title: 'Jurusan',
       dataIndex: ['jurusan', 'namaJurusan'],
       key: 'jurusan',
       width: '40%',
-      ...getColumnSearchProps('jurusan'),
+      ...getColumnSearchProps(['jurusan', 'namaJurusan']),
       sorter: (a, b) =>
         a.jurusan.namaJurusan.localeCompare(b.jurusan.namaJurusan),
       sortDirections: ['descend', 'ascend'],
@@ -225,7 +233,7 @@ export const DataKelas = () => {
       dataIndex: ['user', 'username'],
       key: 'updatedBy',
       width: '10%',
-      ...getColumnSearchProps('user'),
+      ...getColumnSearchProps(['user', 'username']),
       sorter: (a, b) => a.user.username.localeCompare(b.user.username),
       sortDirections: ['descend', 'ascend'],
     },
@@ -234,7 +242,7 @@ export const DataKelas = () => {
       dataIndex: 'updatedAt',
       key: 'updatedAt',
       width: '40%',
-      ...getColumnSearchProps('updatedAt'),
+      ...getColumnSearchProps(['updatedAt']),
       sorter: (a, b) => a.updatedAt.localeCompare(b.updatedAt),
       sortDirections: ['descend', 'ascend'],
       render: updatedAt => convertDateTime(updatedAt),
@@ -281,7 +289,7 @@ export const DataKelas = () => {
 
   return (
     <Spin tip="Loading Data" spinning={loading}>
-      <div className="rounded-md bg-white p-2 h-[100%] overflow-scroll">
+      <div className="rounded-md bg-white p-2 h-[100%]">
         <div className="my-4 flex items-center justify-between px-4">
           <div className="flex items-center">
             <h2 className="text-xl font-bold text-black">Data Kelas</h2>

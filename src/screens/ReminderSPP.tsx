@@ -106,7 +106,7 @@ export const ReminderSPP = () => {
       <div style={{ padding: 8 }} onKeyDown={e => e.stopPropagation()}>
         <Input
           ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
+          placeholder={`Input Search`}
           value={selectedKeys[0]}
           onChange={e => {
             setSelectedKeys(e.target.value ? [e.target.value] : [])
@@ -161,21 +161,34 @@ export const ReminderSPP = () => {
     filterIcon: (filtered: boolean) => (
       <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />
     ),
+    // onFilter: (value, record) => {
+    //   var nestedValue = record
+    //   for (let i = 0; i < dataIndex.length; i += 2) {
+    //     const nestedObjectKey = dataIndex[i]
+    //     const nestedPropertyKey = dataIndex[i + 1]
+
+    //     const nestedObject = getNestedValue(nestedValue, nestedObjectKey)
+    //     nestedValue = nestedObject ? nestedObject[nestedPropertyKey] : undefined
+    //     if (nestedValue == undefined && nestedObject.startsWith(value)) {
+    //       return true
+    //     }
+    //     // return true;
+    //   }
+
+    //   return false
+    // },
     onFilter: (value, record) => {
-      var nestedValue = record
-      for (let i = 0; i < dataIndex.length; i += 2) {
-        const nestedObjectKey = dataIndex[i]
-        const nestedPropertyKey = dataIndex[i + 1]
-
-        const nestedObject = getNestedValue(nestedValue, nestedObjectKey)
-        nestedValue = nestedObject ? nestedObject[nestedPropertyKey] : undefined
-        if (nestedValue == undefined && nestedObject.startsWith(value)) {
-          return true
+      let data = record
+      for (const key of dataIndex) {
+        data = (data as any)[key]
+        if (data === undefined) {
+          return false // If any nested key is undefined, no need to continue
         }
-        // return true;
       }
-
-      return false
+      return data
+        .toString()
+        .toLowerCase()
+        .includes(value.toString().toLowerCase())
     },
     onFilterDropdownOpenChange: visible => {
       if (visible) {
@@ -218,7 +231,7 @@ export const ReminderSPP = () => {
     {
       title: 'Jurusan',
       dataIndex: ['pembayaranSpp', 'siswa', 'kelas', 'jurusan', 'namaJurusan'],
-      key: 'updatedBy',
+      key: 'jurusan',
       width: '20%',
       ...getColumnSearchProps([
         'pembayaranSpp',
@@ -236,7 +249,7 @@ export const ReminderSPP = () => {
     {
       title: 'Kelas',
       dataIndex: ['pembayaranSpp', 'siswa', 'kelas', 'namaKelas'],
-      key: 'updatedBy',
+      key: 'kelas',
       width: '20%',
       ...getColumnSearchProps(['pembayaranSpp', 'siswa', 'kelas', 'namaKelas']),
       sorter: (a, b) =>

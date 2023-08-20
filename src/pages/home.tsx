@@ -181,7 +181,7 @@ export const Home = () => {
             </Dropdown>
           </div>
         </Header>
-        <Content className="mt-2 mx-5 h-[90%] overflow-scroll">
+        <Content className="mt-2 mx-5 h-[100%] overflow-scroll">
           {componentToRender}
         </Content>
         <Footer style={{ textAlign: 'center' }}>
