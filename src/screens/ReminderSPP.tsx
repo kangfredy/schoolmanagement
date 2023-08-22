@@ -17,6 +17,9 @@ import { ColumnType, ColumnsType } from 'antd/es/table'
 import { FilterConfirmProps } from 'antd/es/table/interface'
 import React, { useEffect, useRef, useState } from 'react'
 import Highlighter from 'react-highlight-words'
+import { jsPDF } from 'jspdf'
+import autoTable from 'jspdf-autotable'
+import { convertDateTime } from '@/helper/util/time'
 
 type DataIndex = keyof IReminderSPP
 
@@ -103,7 +106,7 @@ export const ReminderSPP = () => {
       <div style={{ padding: 8 }} onKeyDown={e => e.stopPropagation()}>
         <Input
           ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
+          placeholder={`Input Search`}
           value={selectedKeys[0]}
           onChange={e => {
             setSelectedKeys(e.target.value ? [e.target.value] : [])
@@ -158,21 +161,34 @@ export const ReminderSPP = () => {
     filterIcon: (filtered: boolean) => (
       <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />
     ),
+    // onFilter: (value, record) => {
+    //   var nestedValue = record
+    //   for (let i = 0; i < dataIndex.length; i += 2) {
+    //     const nestedObjectKey = dataIndex[i]
+    //     const nestedPropertyKey = dataIndex[i + 1]
+
+    //     const nestedObject = getNestedValue(nestedValue, nestedObjectKey)
+    //     nestedValue = nestedObject ? nestedObject[nestedPropertyKey] : undefined
+    //     if (nestedValue == undefined && nestedObject.startsWith(value)) {
+    //       return true
+    //     }
+    //     // return true;
+    //   }
+
+    //   return false
+    // },
     onFilter: (value, record) => {
-      var nestedValue = record
-      for (let i = 0; i < dataIndex.length; i += 2) {
-        const nestedObjectKey = dataIndex[i]
-        const nestedPropertyKey = dataIndex[i + 1]
-
-        const nestedObject = getNestedValue(nestedValue, nestedObjectKey)
-        nestedValue = nestedObject ? nestedObject[nestedPropertyKey] : undefined
-        if (nestedValue == undefined && nestedObject.startsWith(value)) {
-          return true
+      let data = record
+      for (const key of dataIndex) {
+        data = (data as any)[key]
+        if (data === undefined) {
+          return false // If any nested key is undefined, no need to continue
         }
-        // return true;
       }
-
-      return false
+      return data
+        .toString()
+        .toLowerCase()
+        .includes(value.toString().toLowerCase())
     },
     onFilterDropdownOpenChange: visible => {
       if (visible) {
@@ -215,7 +231,7 @@ export const ReminderSPP = () => {
     {
       title: 'Jurusan',
       dataIndex: ['pembayaranSpp', 'siswa', 'kelas', 'jurusan', 'namaJurusan'],
-      key: 'updatedBy',
+      key: 'jurusan',
       width: '20%',
       ...getColumnSearchProps([
         'pembayaranSpp',
@@ -233,7 +249,7 @@ export const ReminderSPP = () => {
     {
       title: 'Kelas',
       dataIndex: ['pembayaranSpp', 'siswa', 'kelas', 'namaKelas'],
-      key: 'updatedBy',
+      key: 'kelas',
       width: '20%',
       ...getColumnSearchProps(['pembayaranSpp', 'siswa', 'kelas', 'namaKelas']),
       sorter: (a, b) =>
@@ -250,6 +266,154 @@ export const ReminderSPP = () => {
     columns = columns.filter(column => column.key !== 'updatedAt')
   }
 
+  const handleGeneratePdf = () => {
+    try {
+      const doc = new jsPDF({
+        format: 'a4',
+        unit: 'px',
+      })
+
+      const tableData = dataUser.map((item, index) => [
+        index + 1,
+        item.pembayaranSpp.siswa.nama,
+        item.pembayaranSpp.siswa.kelas.namaKelas,
+        item.pembayaranSpp.siswa.kelas.jurusan.namaJurusan,
+      ])
+
+      const docWidth = doc.internal.pageSize.getWidth()
+      // const docHeight = doc.internal.pageSize.getHeight()
+      const contentWidth = docWidth * 0.96
+      // const horizontalMargin = (docWidth - contentWidth) / 2
+      const topDocMargin = 6
+      const lineSpacing = 10
+      let currentY = topDocMargin
+
+      doc.setFontSize(5)
+      doc.setFont('helvetica')
+      doc.setTextColor('#6C6C6C')
+      doc.text(
+        'YAYASAN PEMBINA LEMBAGA PENDIDIKAN PROVINSI',
+        docWidth / 2,
+        currentY,
+        {
+          align: 'center',
+        },
+      )
+      currentY += 7
+
+      doc.setFontSize(5)
+      doc.setFont('helvetica', 'bold')
+      doc.setTextColor('#6C6C6C')
+      doc.text(
+        'PERSATUAN GURU REPUBLIK INDONESIA (YPLP PROVINSI PGRI) SUMATERA SELATAN',
+        docWidth / 2,
+        currentY,
+        { align: 'center' },
+      )
+      currentY += 10
+
+      doc.setFontSize(8)
+      doc.setFont('helvetica', 'bold')
+      doc.setTextColor('#6C6C6C')
+      doc.text('SMK PGRI 2 LAHAT', docWidth / 2, currentY, { align: 'center' })
+      currentY += lineSpacing
+
+      doc.setFontSize(6)
+      doc.setFont('helvetica', 'normal')
+      doc.setTextColor('#6C6C6C')
+      doc.text(
+        'Jalan Kirab Remaja, Kelurahan RD. PT. KAI Lahat\nHP : 0821 7955 4241',
+        docWidth / 2,
+        currentY,
+        { align: 'center' },
+      )
+      currentY += 16
+
+      const middleDocX = doc.internal.pageSize.getWidth() / 2
+
+      const currentDate = new Date()
+      const monthNames = [
+        'Januari',
+        'Februari',
+        'Maret',
+        'April',
+        'Mei',
+        'Juni',
+        'Juli',
+        'Agustus',
+        'September',
+        'Oktober',
+        'November',
+        'Desember',
+      ]
+      const month = monthNames[currentDate.getMonth()]
+      const year = currentDate.getFullYear()
+
+      const formattedDate = `${month} ${year}`
+
+      doc.setFontSize(7)
+      doc.setFont('helvetica', 'normal')
+      doc.text(
+        `DATA SISWA BELUM BAYAR SPP BULAN ${formattedDate.toUpperCase()}`,
+        middleDocX,
+        currentY,
+        {
+          align: 'center',
+        },
+      )
+      currentY += 3
+
+      // Add the first image below the texts
+      const image1 = new Image()
+      const imagePath1 = '/assets/images/PGRILogo.png'
+
+      image1.onload = function () {
+        const imgWidth1 = 40
+        const imgHeight1 = (image1.height * imgWidth1) / image1.width
+        const imgX1 = 3
+        const imgY1 = 12
+
+        // Generate the table
+        const tableWidth = doc.internal.pageSize.getWidth() * 0.9
+        const tableStartY = currentY + 4
+        const tableHorizontalMargin =
+          (doc.internal.pageSize.getWidth() - tableWidth) / 2
+
+        doc.addImage(
+          image1,
+          'PNG',
+          tableHorizontalMargin, // pengganti imgX1
+          imgY1,
+          imgWidth1,
+          imgHeight1,
+        )
+
+        const options = {
+          headStyles: { fillColor: '#696969' },
+          startY: tableStartY,
+          head: [['No', 'Nama', 'Jurusan', 'Kelas']],
+          body: tableData,
+          tableWidth: tableWidth,
+          margin: {
+            left: tableHorizontalMargin,
+            right: tableHorizontalMargin,
+          },
+          styles: { cellWidth: undefined, fontSize: 6 },
+        }
+
+        // Generate the table with the options
+        autoTable(doc, options)
+
+        doc.save(`data_siswa_spp.pdf`)
+      }
+
+      image1.src = imagePath1
+    } catch (error: any) {
+      // Handle the error here
+      message.error(error.message)
+    }
+  }
+
   return (
     <Spin tip="Loading Data" spinning={loading}>
       <div className="rounded-md bg-white p-2 h-[100%] overflow-scroll">
@@ -259,7 +423,15 @@ export const ReminderSPP = () => {
               Data Siswa yang belum bayar bulan ini
             </h2>
           </div>
-          <div className="flex items-center"></div>
+          <div className="flex items-center">
+            <Button
+              type="primary"
+              size="middle"
+              className="bg-red-500"
+              onClick={() => handleGeneratePdf()}>
+              CETAK
+            </Button>
+          </div>
         </div>
         <Table
           columns={columns}

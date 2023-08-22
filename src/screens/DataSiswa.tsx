@@ -171,6 +171,7 @@ export const DataSiswa = () => {
         })
 
         //Assign the mapped array to the state
+        // console.log('DATA SISWA', arrayTemp)
         setDataSiswa(arrayTemp)
       })
       .then(() => {
@@ -232,7 +233,7 @@ export const DataSiswa = () => {
       })
   }
 
-  const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<Isiswa> => ({
+  const getColumnSearchProps = (dataIndex: any): ColumnType<Isiswa> => ({
     filterDropdown: ({
       setSelectedKeys,
       selectedKeys,
@@ -243,7 +244,7 @@ export const DataSiswa = () => {
       <div style={{ padding: 8 }} onKeyDown={e => e.stopPropagation()}>
         <Input
           ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
+          placeholder={`Input Search`}
           value={selectedKeys[0]}
           onChange={e =>
             setSelectedKeys(e.target.value ? [e.target.value] : [])
@@ -295,11 +296,19 @@ export const DataSiswa = () => {
     filterIcon: (filtered: boolean) => (
       <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />
     ),
-    onFilter: (value, record) =>
-      record[dataIndex]
+    onFilter: (value, record) => {
+      let data = record
+      for (const key of dataIndex) {
+        data = (data as any)[key]
+        if (data === undefined) {
+          return false // If any nested key is undefined, no need to continue
+        }
+      }
+      return data
         .toString()
         .toLowerCase()
-        .includes((value as string).toLowerCase()),
+        .includes(value.toString().toLowerCase())
+    },
     onFilterDropdownOpenChange: visible => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100)
@@ -333,7 +342,7 @@ export const DataSiswa = () => {
       dataIndex: 'nim',
       key: 'nim',
       width: '13%',
-      ...getColumnSearchProps('nim'),
+      ...getColumnSearchProps(['nim']),
       sorter: (a, b) => a.nim.localeCompare(b.nim),
       sortDirections: ['descend', 'ascend'],
     },
@@ -342,7 +351,7 @@ export const DataSiswa = () => {
       dataIndex: 'nama',
       key: 'nama',
       width: '25%',
-      ...getColumnSearchProps('nama'),
+      ...getColumnSearchProps(['nama']),
       sorter: (a, b) => a.nama.localeCompare(b.nama),
       sortDirections: ['descend', 'ascend'],
     },
@@ -351,7 +360,7 @@ export const DataSiswa = () => {
       dataIndex: ['kelas', 'namaKelas'],
       key: 'kelas',
       width: '10%',
-      ...getColumnSearchProps('kelas'),
+      ...getColumnSearchProps(['kelas', 'namaKelas']),
       sorter: (a, b) => a.kelas.namaKelas.localeCompare(b.kelas.namaKelas),
       sortDirections: ['descend', 'ascend'],
     },
@@ -360,7 +369,7 @@ export const DataSiswa = () => {
       dataIndex: ['kelas', 'jurusan', 'namaJurusan'],
       key: 'jurusan',
       width: '10%',
-      ...getColumnSearchProps('kelas'),
+      ...getColumnSearchProps(['kelas', 'jurusan', 'namaJurusan']),
       sorter: (a, b) =>
         a.kelas.jurusan.namaJurusan.localeCompare(b.kelas.jurusan.namaJurusan),
       sortDirections: ['descend', 'ascend'],
@@ -370,7 +379,7 @@ export const DataSiswa = () => {
       dataIndex: 'alamat',
       key: 'alamat',
       width: '30%',
-      ...getColumnSearchProps('alamat'),
+      ...getColumnSearchProps(['alamat']),
       sorter: (a, b) => a.alamat.localeCompare(b.alamat),
       sortDirections: ['descend', 'ascend'],
     },
@@ -379,7 +388,7 @@ export const DataSiswa = () => {
       dataIndex: 'jenisKelaminDisplay',
       key: 'jenisKelaminDisplay',
       width: '15%',
-      ...getColumnSearchProps('jenisKelaminDisplay'),
+      ...getColumnSearchProps(['jenisKelaminDisplay']),
       sorter: (a, b) =>
         a.jenisKelamin.toString().localeCompare(b.jenisKelamin.toString()),
       sortDirections: ['descend', 'ascend'],
@@ -389,7 +398,7 @@ export const DataSiswa = () => {
       dataIndex: 'agamaDisplay',
       key: 'agamaDisplay',
       width: '15%',
-      ...getColumnSearchProps('agamaDisplay'),
+      ...getColumnSearchProps(['agamaDisplay']),
       sorter: (a, b) => a.agama.toString().localeCompare(b.agama.toString()),
       sortDirections: ['descend', 'ascend'],
     },
@@ -398,7 +407,7 @@ export const DataSiswa = () => {
       dataIndex: ['user', 'username'],
       key: 'updatedBy',
       width: '20%',
-      ...getColumnSearchProps('user'),
+      ...getColumnSearchProps(['user', 'username']),
       sorter: (a, b) => a.user.username.localeCompare(b.user.username),
       sortDirections: ['descend', 'ascend'],
     },
@@ -407,7 +416,7 @@ export const DataSiswa = () => {
       dataIndex: 'updatedAt',
       key: 'updatedAt',
       width: '40%',
-      ...getColumnSearchProps('updatedAt'),
+      ...getColumnSearchProps(['updatedAt']),
       sorter: (a, b) => a.updatedAt.localeCompare(b.updatedAt),
       sortDirections: ['descend', 'ascend'],
       render: updatedAt => convertDateTime(updatedAt),
@@ -471,7 +480,7 @@ export const DataSiswa = () => {
         dataHistorySeragam={dataHistorySeragam}
         getHistoryPembayaranSppBySiswaId={getHistoryPembayaranSppBySiswaId}
       />
-      <div className="rounded-md bg-white p-2 h-[100%] overflow-scroll">
+      <div className="rounded-md bg-white p-2 h-[100%]">
         <div className="my-4 flex items-center justify-between px-4">
           <div className="flex items-center">
             <h2 className="text-xl font-bold text-black">Data Siswa</h2>

@@ -258,7 +258,7 @@ export const PembayaranSeragam = () => {
   }
 
   const getColumnSearchProps = (
-    dataIndex: DataIndex,
+    dataIndex: any,
   ): ColumnType<IPembayaranSeragam> => ({
     filterDropdown: ({
       setSelectedKeys,
@@ -270,7 +270,7 @@ export const PembayaranSeragam = () => {
       <div style={{ padding: 8 }} onKeyDown={e => e.stopPropagation()}>
         <Input
           ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
+          placeholder={`Input Search`}
           value={selectedKeys[0]}
           onChange={e =>
             setSelectedKeys(e.target.value ? [e.target.value] : [])
@@ -322,11 +322,19 @@ export const PembayaranSeragam = () => {
     filterIcon: (filtered: boolean) => (
       <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />
     ),
-    onFilter: (value, record) =>
-      record[dataIndex]
+    onFilter: (value, record) => {
+      let data = record
+      for (const key of dataIndex) {
+        data = (data as any)[key]
+        if (data === undefined) {
+          return false // If any nested key is undefined, no need to continue
+        }
+      }
+      return data
         .toString()
         .toLowerCase()
-        .includes((value as string).toLowerCase()),
+        .includes(value.toString().toLowerCase())
+    },
     onFilterDropdownOpenChange: visible => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100)
@@ -351,7 +359,7 @@ export const PembayaranSeragam = () => {
       dataIndex: ['siswa', 'nim'],
       key: 'nim',
       width: '13%',
-      ...getColumnSearchProps('siswa'),
+      ...getColumnSearchProps(['siswa', 'nim']),
       sorter: (a, b) => a.siswa.nim.localeCompare(b.siswa.nim),
       sortDirections: ['descend', 'ascend'],
     },
@@ -360,7 +368,7 @@ export const PembayaranSeragam = () => {
       dataIndex: ['siswa', 'nama'],
       key: 'nama',
       width: '40%',
-      ...getColumnSearchProps('siswa'),
+      ...getColumnSearchProps(['siswa', 'nama']),
       sorter: (a, b) => a.siswa.nama.localeCompare(b.siswa.nama),
       sortDirections: ['descend', 'ascend'],
     },
@@ -369,7 +377,7 @@ export const PembayaranSeragam = () => {
       dataIndex: ['siswa', 'kelas', 'namaKelas'],
       key: 'kelas',
       width: '20%',
-      ...getColumnSearchProps('siswa'),
+      ...getColumnSearchProps(['siswa', 'kelas', 'namaKelas']),
       sorter: (a, b) =>
         a.siswa.kelas.namaKelas.localeCompare(b.siswa.kelas.namaKelas),
       sortDirections: ['descend', 'ascend'],
@@ -379,7 +387,7 @@ export const PembayaranSeragam = () => {
       dataIndex: ['siswa', 'kelas', 'jurusan', 'namaJurusan'],
       key: 'jurusan',
       width: '20%',
-      ...getColumnSearchProps('siswa'),
+      ...getColumnSearchProps(['siswa', 'kelas', 'jurusan', 'namaJurusan']),
       sorter: (a, b) =>
         a.siswa.kelas.jurusan.namaJurusan.localeCompare(
           b.siswa.kelas.jurusan.namaJurusan,
@@ -391,7 +399,7 @@ export const PembayaranSeragam = () => {
       dataIndex: 'tunggakan',
       key: 'tunggakan',
       width: '20%',
-      ...getColumnSearchProps('tunggakan'),
+      ...getColumnSearchProps(['tunggakan']),
       sorter: (a: any, b: any) => a.tunggakan - b.tunggakan,
       sortDirections: ['descend', 'ascend'],
       render: tunggakan => convertMoney(tunggakan),
@@ -401,7 +409,7 @@ export const PembayaranSeragam = () => {
       dataIndex: 'totalBayar',
       key: 'totalBayar',
       width: '20%',
-      ...getColumnSearchProps('totalBayar'),
+      ...getColumnSearchProps(['totalBayar']),
       sorter: (a: any, b: any) => a.totalBayar - b.totalBayar,
       sortDirections: ['descend', 'ascend'],
       render: totalBayar => convertMoney(totalBayar),
@@ -411,7 +419,7 @@ export const PembayaranSeragam = () => {
       dataIndex: ['user', 'username'],
       key: 'updatedBy',
       width: '20%',
-      ...getColumnSearchProps('user'),
+      ...getColumnSearchProps(['user', 'username']),
       sorter: (a, b) => a.user.username.localeCompare(b.user.username),
       sortDirections: ['descend', 'ascend'],
     },
@@ -420,7 +428,7 @@ export const PembayaranSeragam = () => {
       dataIndex: 'updatedAt',
       key: 'updatedAt',
       width: '40%',
-      ...getColumnSearchProps('updatedAt'),
+      ...getColumnSearchProps(['updatedAt']),
       sorter: (a, b) => a.updatedAt.localeCompare(b.updatedAt),
       sortDirections: ['descend', 'ascend'],
       render: updatedAt => convertDateTime(updatedAt),
