@@ -482,19 +482,28 @@ export function ModalSpp({
       ),
   })
 
-  const handleConfirmBayarHistorySpp = (currentData: IHistorySpp) => {
+  const handleConfirmBayarHistorySpp = (
+    currentData: IHistorySpp,
+    useFor: string,
+  ) => {
     // console.log('DATA TO CONFIRM', currentData)
     // const user = await getUserInfoWithNullCheck()
     // const updatedBy = user ? user.id : 0
+    // console.log('USE FOR', useFor)
 
     //Untuk dilepar ke api
-    const currentDate = new Date().toISOString()
-    if (currentData && currentData.sudahDibayar !== undefined) {
+    if (currentData && useFor === 'tambah') {
       currentData.sudahDibayar = true
+    } else if (currentData && useFor === 'undo') {
+      currentData.sudahDibayar = false
     }
 
-    if (currentData && currentData.tanggalPembayaran !== undefined) {
+    const currentDate = new Date().toISOString()
+
+    if (currentData && useFor === 'tambah') {
       currentData.tanggalPembayaran = currentDate
+    } else if (currentData && useFor === 'undo') {
+      currentData.tanggalPembayaran = ''
     }
 
     // Add the updatedBy property to currentData
@@ -540,7 +549,11 @@ export function ModalSpp({
         // getHistoryPembayaranSppByPembayaranSppId(currentPembayaranSppId)
         getData()
         setConfirmLoading(false)
-        message.success('Pembayaran Sukses')
+        if (useFor == 'tambah') {
+          message.success('Pembayaran Sukses')
+        } else if (useFor == 'undo') {
+          message.success('Undo Pembayaran Sukses')
+        }
       })
       .then(response => {
         // setOpen(false)
@@ -633,17 +646,38 @@ export function ModalSpp({
       key: 'action',
       render: (_: any, record: any) => (
         <Space size="small" split>
-          {!record.sudahDibayar && (
+          {record.sudahDibayar === false && (
             <Popconfirm
               title={`Konfirmasi Pembayaran`}
               description={`Anda Yakin ingin Konfirmasi Pembayaran?`}
-              onConfirm={e => handleConfirmBayarHistorySpp(record)}
+              onConfirm={e => handleConfirmBayarHistorySpp(record, 'tambah')}
               onCancel={handleCancelBayarHistorySpp}
               okText="Yes"
               okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
               cancelText="No">
               <Button type="primary" size="middle" className="bg-blue-500">
                 BAYAR
+              </Button>
+            </Popconfirm>
+          )}
+          {userRole === 'admin' && record.sudahDibayar === true && (
+            <Popconfirm
+              title={`Konfirmasi UNDO`}
+              description={`Anda Yakin ingin Konfirmasi UNDO?`}
+              onConfirm={e => handleConfirmBayarHistorySpp(record, 'undo')}
+              onCancel={handleCancelBayarHistorySpp}
+              okText="Yes"
+              okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
+              cancelText="No">
+              <Button
+                type="primary"
+                size="middle"
+                style={{
+                  backgroundColor: '#FFBF00',
+                  borderColor: '#FFBF00',
+                  color: '#ffffff',
+                }}>
+                UNDO
               </Button>
             </Popconfirm>
           )}

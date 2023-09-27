@@ -33,15 +33,34 @@ export default async function handler(
           jatuhTempo: jatuhTempo,
           jumlah: jumlah,
           sudahDibayar: sudahDibayar,
-          tanggalPembayaran: tanggalPembayaran,
+          tanggalPembayaran:
+            tanggalPembayaran === '' ? null : tanggalPembayaran, // Kalau Undo, jadinya null
           updatedBy: Number(updatedBy),
         },
       },
     )
 
+    const getListHistoryPembayaranSpp =
+      await prisma.historyPembayaranSpp.findMany({
+        where: {
+          pembayaranSppId: pembayaranSppId,
+        },
+      })
+
+    let bayarCount = 0
+    let belumCount = 0
+
+    getListHistoryPembayaranSpp.forEach(item => {
+      if (item.sudahDibayar === true) {
+        bayarCount++
+      } else {
+        belumCount++
+      }
+    })
+
     // Calculate the updated values
-    const updatedTunggakan = tunggakan - Number(sppbulanan)
-    const updatedTotalBayar = totalBayar + Number(sppbulanan)
+    const updatedTunggakan = belumCount * Number(sppbulanan)
+    const updatedTotalBayar = bayarCount * Number(sppbulanan)
 
     const updatePembayaranSpp = await prisma.pembayaranSpp.update({
       where: {
@@ -63,6 +82,7 @@ export default async function handler(
       message: 'Update successful',
       updateHistoryPembayaranSpp,
       updatePembayaranSpp,
+      getListHistoryPembayaranSpp,
     })
   } else {
     res.status(405).json({ message: 'Method not allowed' })
