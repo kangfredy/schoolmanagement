@@ -73,3 +73,12 @@ export const dataPembayaranSppUpdate = (payload: any) => {
       .catch(error => reject(error))
   })
 }
+
+export const dataPembayaranSppReCalculate = (payload: any) => {
+  return new Promise<any>((resolve, reject) => {
+    axios
+      .post('/api/pembayaranSpp/pembayaranSppReCalculate', payload)
+      .then(response => resolve(response))
+      .catch(error => reject(error))
+  })
+}

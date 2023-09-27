@@ -6,7 +6,10 @@ import type { FilterConfirmProps } from 'antd/es/table/interface'
 import React, { useEffect, useRef, useState } from 'react'
 import Highlighter from 'react-highlight-words'
 import { ModalSpp } from '../components/ModalSpp'
-import { getPembayaranSpp } from '@/helper/apiHelper/pembayaranSpp'
+import {
+  getPembayaranSpp,
+  dataPembayaranSppReCalculate,
+} from '@/helper/apiHelper/pembayaranSpp'
 import { getHistoryPembayaranSpp } from '@/helper/apiHelper/historyPembayaranSpp'
 import { IDataSppModal } from '@/interface/ui/state/dataSppModal'
 import { ISpp } from '@/interface/ui/state/dataSppTable'
@@ -38,6 +41,24 @@ export const PembayaranSpp = () => {
   const [dataAllHistorySpp, setDataAllHistorySpp] = useState<IHistorySpp[]>([])
   const [userId, setUserId] = useState(0)
   const [userRole, setUserRole] = useState('')
+
+  const reCalculate = (data: ISpp) => {
+    // console.log('DATA TO RECALCULATE', data)
+    dataPembayaranSppReCalculate({
+      pembayaranSppId: data.id,
+      updatedBy: userId,
+    })
+      .then(response => {
+        initiateData()
+      })
+      .then(() => {
+        // setLoading(false)
+      })
+      .catch(error => {
+        // setLoading(false)
+        message.error(error.message)
+      })
+  }
 
   const showModal = (data: ISpp) => {
     let dataInput = {
@@ -374,13 +395,24 @@ export const PembayaranSpp = () => {
       title: 'Action',
       key: 'action',
       render: (_, record) => (
-        <Space size="middle" split>
+        <Space size="small" split>
           <Button
             type="primary"
             size="middle"
             className="bg-blue-500"
             onClick={() => showModal(record)}>
             Pembayaran
+          </Button>
+          <Button
+            type="primary"
+            size="middle"
+            style={{
+              backgroundColor: '#4CAF50',
+              borderColor: '#4CAF50',
+              color: '#ffffff',
+            }}
+            onClick={() => reCalculate(record)}>
+            Kalkulasi Ulang
           </Button>
         </Space>
       ),
