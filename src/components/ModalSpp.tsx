@@ -620,7 +620,9 @@ export function ModalSpp({
       ...getColumnSearchProps('tanggalPembayaran'),
       sorter: (a, b) => a.tanggalPembayaran.localeCompare(b.tanggalPembayaran),
       sortDirections: ['descend', 'ascend'],
-      render: tanggalPembayaran => convertDate(tanggalPembayaran),
+      render: tanggalPembayaran => (
+        <span>{tanggalPembayaran ? convertDate(tanggalPembayaran) : '-'}</span>
+      ),
     },
     {
       title: 'Updated By',
@@ -673,8 +675,8 @@ export function ModalSpp({
                 type="primary"
                 size="middle"
                 style={{
-                  backgroundColor: '#FFBF00',
-                  borderColor: '#FFBF00',
+                  backgroundColor: '#DF8634',
+                  borderColor: '#DF8634',
                   color: '#ffffff',
                 }}>
                 UNDO
