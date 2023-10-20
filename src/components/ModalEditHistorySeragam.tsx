@@ -119,7 +119,7 @@ export function ModalEditHistorySeragam({
   }
 
   const handleJumlahDibayar = (e: any) => {
-    console.log('VALUE E', e.target.value)
+    // console.log('VALUE E', e.target.value)
     setJumlahDibayarParsed(addDecimalPoints(e.target.value))
     setJumlahDibayar(Number(e.target.value.replace('.', '')))
     setJumlahDibayarError(

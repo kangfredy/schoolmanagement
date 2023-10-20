@@ -715,7 +715,7 @@ export function ModalSeragam({
   ]
 
   const handleEditHistoryPembayaranSeragam = (currentData: IHistorySeragam) => {
-    console.log('DATA TO CONFIRM', currentData)
+    // console.log('DATA TO CONFIRM', currentData)
     let dataInput = {
       id: currentData?.id,
       jumlahDiBayar: currentData?.jumlahDiBayar,
@@ -764,7 +764,7 @@ export function ModalSeragam({
           user: dataPembayaranSeragamInput.user,
         }
 
-        console.log('dataInput', dataInput)
+        // console.log('dataInput', dataInput)
 
         showModal(action, dataInput)
 
