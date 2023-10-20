@@ -22,7 +22,7 @@ import { convertDate } from '@/helper/util/time'
 import { convertMoney } from '@/helper/util/money'
 import { RiShirtLine } from 'react-icons/ri'
 import { IoIosResize } from 'react-icons/io'
-import { dataHistoryPembayaranSeragamUpdate } from '@/helper/apiHelper/historyPembayaranSeragam'
+import { dataHistoryPembayaranSeragamDelete } from '@/helper/apiHelper/historyPembayaranSeragam'
 import { ModalTambahSeragamProps } from '@/interface/ui/props/ModalTambahSeragam'
 import { IDataHistorySeragamModal } from '@/interface/ui/state/dataHistorySeragamModal'
 import { IHistorySeragam } from '@/interface/ui/state/dataHistorySeragamTable'
@@ -37,6 +37,7 @@ import {
 } from '@/helper/apiHelper/seragam'
 import { ModalTambahSeragamBaru } from '../components/ModalTambahSeragamBaru'
 import { ModalTambahHistorySeragam } from '../components/ModalTambahHistorySeragam'
+import { ModalEditHistorySeragam } from '../components/ModalEditHistorySeragam'
 import { ModalDetailHistoryPembayaranSeragam } from '../components/ModalDetailHistoryPembayaranSeragam'
 import { ISelect } from '@/interface/ui/component/dropdown'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
@@ -77,8 +78,12 @@ export function ModalSeragam({
   const [dataSeragamInput, setDataSeragamInput] = useState<IDataSeragamnModal>(
     {} as IDataSeragamnModal,
   )
+  const [dataRowHistorySeragam, setDataRowHistorySeragam] =
+    useState<IHistorySeragam>({} as IHistorySeragam)
+
   const [openTambah, setOpenTambah] = useState(false)
   const [openHistoryTambah, setOpenHistoryTambah] = useState(false)
+  const [openHistoryEdit, setOpenHistoryEdit] = useState(false)
   const [
     openDetailPembayaranHistorySeragam,
     setOpenDetailPembayaranHistorySeragam,
@@ -709,68 +714,73 @@ export function ModalSeragam({
     },
   ]
 
-  // const handleConfirmBayarHistorySeragam = (currentData: IHistorySeragam) => {
-  //   // console.log('DATA TO CONFIRM', currentData)
-  //   // const user = await getUserInfoWithNullCheck()
-  //   // const updatedBy = user ? user.id : 0
+  const handleEditHistoryPembayaranSeragam = (currentData: IHistorySeragam) => {
+    console.log('DATA TO CONFIRM', currentData)
+    let dataInput = {
+      id: currentData?.id,
+      jumlahDiBayar: currentData?.jumlahDiBayar,
+      pembayaranSeragam: currentData?.pembayaranSeragam,
+      pembayaranSeragamId: currentData?.pembayaranSeragamId,
+      tanggalPembayaran: currentData?.tanggalPembayaran,
+      user: currentData?.user,
+      updatedBy: currentData?.updatedBy,
+      updatedAt: currentData?.updatedAt,
+    }
+    setDataRowHistorySeragam(dataInput)
+    setOpenHistoryEdit(true)
+  }
 
-  //   //Untuk dilepar ke api
-  //   const currentDate = new Date().toISOString()
-  //   if (currentData && currentData.sudahDibayar !== undefined) {
-  //     currentData.sudahDibayar = true
-  //   }
+  const handleDeleteHistoryPembayaranSeragam = (
+    currentData: IHistorySeragam,
+  ) => {
+    // console.log('DATA TO DELETE', currentData)
 
-  //   if (currentData && currentData.tanggalPembayaran !== undefined) {
-  //     currentData.tanggalPembayaran = currentDate
-  //   }
+    // Add the updatedBy property to currentData
+    currentData.updatedBy = userId
 
-  //   // Add the updatedBy property to currentData
-  //   currentData.updatedBy = userId
+    dataHistoryPembayaranSeragamDelete(
+      currentData,
+      dataPembayaranSeragamInput.siswaId,
+      dataPembayaranSeragamInput.tunggakan,
+      dataPembayaranSeragamInput.totalBayar,
+    )
+      .then((response: any) => {
+        // getData()
+        // console.log(
+        //   'dataHistoryPembayaranSppUpdate',
+        //   response.data.updatePembayaranSpp,
+        // )
 
-  //   // console.log('BAYAR DATA', currentData)
+        let dataInput = {
+          id: response.data.updatePembayaranSeragam.id,
+          siswaId: response.data.updatePembayaranSeragam.siswaId,
+          tunggakan: response.data.updatePembayaranSeragam.tunggakan,
+          totalBayar: response.data.updatePembayaranSeragam.totalBayar,
+          siswa: dataPembayaranSeragamInput.siswa,
+          kelas: dataPembayaranSeragamInput.siswa.kelas,
+          jurusan: dataPembayaranSeragamInput.siswa?.kelas.jurusan,
+          updatedAt: response.data.updatePembayaranSeragam.updatedAt,
+          updatedBy: response.data.updatePembayaranSeragam.updatedBy,
+          user: dataPembayaranSeragamInput.user,
+        }
 
-  //   let currentPembayaranSeragamId: number
-  //   if (currentData && currentData.pembayaranSeragamId !== undefined) {
-  //     currentPembayaranSeragamId = currentData.pembayaranSeragamId
-  //     // console.log('currentPembayaranSeragamId', currentPembayaranSeragamId)
-  //   }
+        console.log('dataInput', dataInput)
 
-  //   dataHistoryPembayaranSeragamUpdate(
-  //     currentData,
-  //     dataPembayaranSeragamInput.siswaId,
-  //     dataPembayaranSeragamInput.tunggakan,
-  //     dataPembayaranSeragamInput.totalBayar,
-  //   )
-  //     .then((response: any) => {
-  //       let dataInput = {
-  //         id: response.data.updatePembayaranSeragam.id,
-  //         siswaId: response.data.updatePembayaranSeragam.siswaId,
-  //         tunggakan: response.data.updatePembayaranSeragam.tunggakan,
-  //         totalBayar: response.data.updatePembayaranSeragam.totalBayar,
-  //         siswa: dataPembayaranSeragamInput.siswa,
-  //         kelas: dataPembayaranSeragamInput.siswa.kelas,
-  //         jurusan: dataPembayaranSeragamInput.siswa?.kelas.jurusan,
-  //         updatedAt: response.data.updatePembayaranSeragam.updatedAt,
-  //         updatedBy: response.data.updatePembayaranSeragam.updatedBy,
-  //         user: dataPembayaranSeragamInput.user,
-  //       }
-  //       showModal(action, dataInput)
-  //       getData()
-  //       // getHistoryPembayaranSeragamByPembayaranSeragamId(
-  //       //   currentPembayaranSeragamId,
-  //       //   action,
-  //       // )
-  //       setConfirmLoading(false)
-  //     })
-  //     .then(response => {
-  //       // setOpen(false)
-  //       setOpen(true)
-  //     })
-  //     .catch((error: any) => {
-  //       // setOpen(false)
-  //       setOpen(true)
-  //     })
-  // }
+        showModal(action, dataInput)
+
+        getData()
+        setConfirmLoading(false)
+        message.success('Delete Sukses')
+      })
+      .then(response => {
+        // setOpen(false)
+        setOpen(true)
+      })
+      .catch((error: any) => {
+        // setOpen(false)
+        setOpen(true)
+      })
+  }
 
   const handleCancelBayarHistorySeragam = () => {}
 
@@ -823,28 +833,41 @@ export function ModalSeragam({
       sortDirections: ['descend', 'ascend'],
       render: updatedAt => convertDateTime(updatedAt),
     },
-    // {
-    //   title: 'Action',
-    //   key: 'action',
-    //   render: (_: any, record: any) => (
-    //     <Space size="small" split>
-    //       {!record.sudahDibayar && (
-    //         <Popconfirm
-    //           title={`Pembayaran No ${record.id} ?`}
-    //           description={`Anda Yakin ingin Konfirmasi Pembayaran No ${record.id} ?`}
-    //           onConfirm={e => handleConfirmBayarHistorySeragam(record)}
-    //           onCancel={handleCancelBayarHistorySeragam}
-    //           okText="Yes"
-    //           okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
-    //           cancelText="No">
-    //           <Button type="primary" size="middle" className="bg-blue-500">
-    //             BAYAR
-    //           </Button>
-    //         </Popconfirm>
-    //       )}
-    //     </Space>
-    //   ),
-    // },
+    {
+      title: 'Action',
+      key: 'action',
+      render: (_: any, record: any) => (
+        <Space size="small" split>
+          {userRole === 'admin' && (
+            <>
+              <Button
+                type="primary"
+                size="middle"
+                className="bg-blue-500"
+                onClick={e => handleEditHistoryPembayaranSeragam(record)}>
+                EDIT
+              </Button>
+              <Popconfirm
+                title={`Delete Pembayaran Seragam`}
+                description={`Anda Yakin ingin Delete ?`}
+                onConfirm={e => handleDeleteHistoryPembayaranSeragam(record)}
+                onCancel={handleCancelBayarHistorySeragam}
+                okText="Yes"
+                okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
+                cancelText="No">
+                <Button
+                  danger
+                  type="primary"
+                  size="middle"
+                  className="bg-blue-500">
+                  DELETE
+                </Button>
+              </Popconfirm>
+            </>
+          )}
+        </Space>
+      ),
+    },
   ]
 
   if (userRole !== 'admin') {
@@ -946,6 +969,19 @@ export function ModalSeragam({
           getHistoryPembayaranSeragamByPembayaranSeragamId
         }
       />
+      {openHistoryEdit && (
+        <ModalEditHistorySeragam
+          getData={getData}
+          action={action}
+          open={openHistoryEdit}
+          setOpen={setOpenHistoryEdit}
+          dataRowHistorySeragam={dataRowHistorySeragam}
+          setDataRowHistorySeragam={setDataRowHistorySeragam}
+          setDataPembayaranSeragamInput={setDataPembayaranSeragamInput}
+          dataPembayaranSeragamInput={dataPembayaranSeragamInput}
+          showModal={showModal}
+        />
+      )}
       <ModalDetailHistoryPembayaranSeragam
         getData={getData}
         action={action}

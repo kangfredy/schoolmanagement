@@ -8,7 +8,15 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   if (req.method === 'POST') {
-    const { id, updatedBy } = req.body
+    const {
+      id,
+      pembayaranSeragamId,
+      jumlahDiBayar,
+      updatedBy,
+      siswaId,
+      tunggakan,
+      totalBayar,
+    } = req.body
 
     // Delete Data
     const deleteHistoryPembayaranSeragam =
@@ -24,10 +32,31 @@ export default async function handler(
         },
       })
 
+    // Calculate the updated values
+    const updatedTunggakan = tunggakan + jumlahDiBayar
+    const updatedTotalBayar = totalBayar - jumlahDiBayar
+
+    const updatePembayaranSeragam = await prisma.pembayaranSeragam.update({
+      where: {
+        id: pembayaranSeragamId,
+      },
+      data: {
+        siswaId: siswaId,
+        tunggakan: updatedTunggakan,
+        totalBayar: updatedTotalBayar,
+        updatedBy: Number(updatedBy),
+      },
+      include: {
+        siswa: true,
+      },
+    })
+
     // Return a success or failed message
-    res
-      .status(200)
-      .json({ message: 'Delete successful', deleteHistoryPembayaranSeragam })
+    res.status(200).json({
+      message: 'Delete Successful',
+      deleteHistoryPembayaranSeragam,
+      updatePembayaranSeragam,
+    })
   } else {
     res.status(405).json({ message: 'Method not allowed' })
   }

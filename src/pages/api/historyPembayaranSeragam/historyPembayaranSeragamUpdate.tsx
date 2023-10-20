@@ -11,12 +11,13 @@ export default async function handler(
     const {
       id,
       pembayaranSeragamId,
-      tanggalPembayaran,
       jumlahDiBayar,
+      tanggalPembayaran,
       updatedBy,
       siswaId,
       tunggakan,
       totalBayar,
+      jumlahDiBayarAwal,
     } = req.body
 
     // Update Data
@@ -34,8 +35,17 @@ export default async function handler(
       })
 
     // Calculate the updated values
-    const updatedTunggakan = tunggakan - jumlahDiBayar
-    const updatedTotalBayar = totalBayar + jumlahDiBayar
+    let updatedTunggakan
+    let updatedTotalBayar
+    if (jumlahDiBayarAwal > jumlahDiBayar) {
+      const sisa = jumlahDiBayarAwal - jumlahDiBayar
+      updatedTunggakan = tunggakan + sisa
+      updatedTotalBayar = totalBayar - sisa
+    } else if (jumlahDiBayarAwal < jumlahDiBayar) {
+      const sisa = jumlahDiBayar - jumlahDiBayarAwal
+      updatedTunggakan = tunggakan - sisa
+      updatedTotalBayar = totalBayar + sisa
+    }
 
     const updatePembayaranSeragam = await prisma.pembayaranSeragam.update({
       where: {

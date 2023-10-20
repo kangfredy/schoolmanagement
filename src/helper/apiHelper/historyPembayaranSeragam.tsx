@@ -54,13 +54,20 @@ export const tambahHistoryPembayaranSeragam = (
   })
 }
 
-export const dataHistoryPembayaranSeragamDelete = (payload: any) => {
+export const dataHistoryPembayaranSeragamDelete = (
+  payload: any,
+  siswaId: number,
+  tunggakan: number,
+  totalBayar: number,
+) => {
   return new Promise<any>((resolve, reject) => {
     axios
-      .post(
-        '/api/historyPembayaranSeragam/historyPembayaranSeragamDelete',
-        payload,
-      )
+      .post('/api/historyPembayaranSeragam/historyPembayaranSeragamDelete', {
+        ...payload,
+        siswaId: siswaId,
+        tunggakan: tunggakan,
+        totalBayar: totalBayar,
+      })
       .then(response => resolve(response))
       .catch(error => reject(error))
   })
@@ -71,6 +78,7 @@ export const dataHistoryPembayaranSeragamUpdate = (
   siswaId: number,
   tunggakan: number,
   totalBayar: number,
+  jumlahDiBayarAwal: number,
 ) => {
   return new Promise<any>((resolve, reject) => {
     axios
@@ -79,6 +87,7 @@ export const dataHistoryPembayaranSeragamUpdate = (
         siswaId: siswaId,
         tunggakan: tunggakan,
         totalBayar: totalBayar,
+        jumlahDiBayarAwal: jumlahDiBayarAwal,
       })
       .then(response => resolve(response))
       .catch(error => reject(error))

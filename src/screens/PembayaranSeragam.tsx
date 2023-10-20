@@ -71,7 +71,7 @@ export const PembayaranSeragam = () => {
       }
 
       setDataPembayaranSeragamInput(dataInput)
-      // console.log('dataInput PembayaranSeragam', dataInput)
+      console.log('dataInput PembayaranSeragam', dataInput)
       getHistoryPembayaranSeragamByPembayaranSeragamId(data?.id, action)
     } else {
       setActions(action)
