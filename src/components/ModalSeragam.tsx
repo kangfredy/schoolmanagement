@@ -1012,8 +1012,10 @@ export function ModalSeragam({
   }
 
   const handleHargaInput = (e: any) => {
+    // console.log('VALUE E', e.target.value)
     setHargaParsed(addDecimalPoints(e.target.value))
-    setHarga(Number(e.target.value.replace('.', '')))
+    const hargaWithoutDots = e.target.value.replace(/\./g, '')
+    setHarga(hargaWithoutDots)
     setHargaSeragamError(
       Number(e.target.value.replace('.', '')) === 0 ||
         Number(e.target.value.replace('.', '')) === undefined

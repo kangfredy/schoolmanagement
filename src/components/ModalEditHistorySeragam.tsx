@@ -63,7 +63,7 @@ export function ModalEditHistorySeragam({
 
     const currentData: IHistorySeragam = dataRowHistorySeragam
     currentData.updatedBy = userId
-    currentData.jumlahDiBayar = jumlahDibayar
+    currentData.jumlahDiBayar = Number(jumlahDibayar)
 
     dataHistoryPembayaranSeragamUpdate(
       currentData,
@@ -121,7 +121,8 @@ export function ModalEditHistorySeragam({
   const handleJumlahDibayar = (e: any) => {
     // console.log('VALUE E', e.target.value)
     setJumlahDibayarParsed(addDecimalPoints(e.target.value))
-    setJumlahDibayar(Number(e.target.value.replace('.', '')))
+    const hargaWithoutDots = e.target.value.replace(/\./g, '')
+    setJumlahDibayar(hargaWithoutDots)
     setJumlahDibayarError(
       Number(e.target.value.replace('.', '')) === 0 ||
         Number(e.target.value.replace('.', '')) === undefined
