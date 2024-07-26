@@ -48,7 +48,7 @@ export default async function handler(
     })
 
     const startDate = new Date() // Set the start date
-    const numberOfMonths = 12 // Define the number of months
+    const numberOfMonths = 11 // Define the number of months
 
     if (pembayaranSpp) {
       const updatedTunggakan = pembayaranSpp?.tunggakan + jumlahspp * 12
