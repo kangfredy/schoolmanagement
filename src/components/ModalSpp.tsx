@@ -760,20 +760,20 @@ export function ModalSpp({
         <DatePicker
           placeholder="Tanggal Mulai"
           format="DD MMMM YYYY"
-          onChange={e =>
+          onChange={(e, dateString) =>
             setTanggalPembayaran({
               ...tanggalPembayaran,
-              mulai: dayjs(e).format('DD MMMM YYYY'),
+              mulai: dateString as string,
             })
           }
         />
         <DatePicker
           format="DD MMMM YYYY"
           placeholder="Tanggal Akhir"
-          onChange={e =>
+          onChange={(e, dateString) =>
             setTanggalPembayaran({
               ...tanggalPembayaran,
-              akhir: dayjs(e).format('DD MMMM YYYY'),
+              akhir: dateString as string,
             })
           }
         />
