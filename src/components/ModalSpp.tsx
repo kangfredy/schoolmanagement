@@ -10,6 +10,7 @@ import {
   Popconfirm,
   Tag,
   message,
+  DatePicker,
 } from 'antd'
 import type { ColumnType, ColumnsType } from 'antd/es/table'
 import type { FilterConfirmProps } from 'antd/es/table/interface'
@@ -35,6 +36,7 @@ import { convertMoney } from '@/helper/util/money'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
+import dayjs from 'dayjs'
 
 const currentDate = new Date().toISOString()
 // console.log('currentDate', currentDate)
@@ -68,6 +70,10 @@ export function ModalSpp({
   const [userName, setUserName] = useState('')
   const [userRole, setUserRole] = useState('')
   const [openPrint, setOpenPrint] = useState(false)
+  const [tanggalPembayaran, setTanggalPembayaran] = useState({
+    mulai: '',
+    akhir: '',
+  })
 
   const handleGeneratePdf = () => {
     try {
@@ -76,16 +82,26 @@ export function ModalSpp({
         unit: 'px',
       })
 
-      const chunkSize = 12
-      const totalChunks = Math.ceil(dataHistorySpp.length / chunkSize)
+      // const chunkSize = 12
+      // const totalChunks = Math.ceil(dataHistorySpp.length / chunkSize)
 
-      let filteredList
-      if (totalChunks === 1) {
-        filteredList = dataHistorySpp.slice(0)
-      } else {
-        const startIndex = (totalChunks - 1) * chunkSize
-        filteredList = dataHistorySpp.slice(startIndex)
-      }
+      // let filteredList
+      // if (totalChunks === 1) {
+      //   filteredList = dataHistorySpp.slice(0)
+      // } else {
+      //   const startIndex = (totalChunks - 1) * chunkSize
+      //   filteredList = dataHistorySpp.slice(startIndex)
+      // }
+      const filteredList = dataHistorySpp.filter(item => {
+        const jatuhTempo = dayjs(item.jatuhTempo)
+        const startDate = dayjs(tanggalPembayaran.mulai, 'DD MMMM YYYY')
+        const endDate = dayjs(tanggalPembayaran.akhir, 'DD MMMM YYYY')
+
+        return (
+          (jatuhTempo.isAfter(startDate) || jatuhTempo.isSame(startDate)) &&
+          (jatuhTempo.isBefore(endDate) || jatuhTempo.isSame(endDate))
+        )
+      })
 
       const dataForPrint = filteredList.filter(
         item => item.sudahDibayar === true,
@@ -740,7 +756,27 @@ export function ModalSpp({
           <Spin size="large" />
         )}
       </div>
-      <div className="flex justify-end my-5">
+      <div className="flex justify-end my-5 gap-5">
+        <DatePicker
+          placeholder="Tanggal Mulai"
+          format="DD MMMM YYYY"
+          onChange={e =>
+            setTanggalPembayaran({
+              ...tanggalPembayaran,
+              mulai: dayjs(e).format('DD MMMM YYYY'),
+            })
+          }
+        />
+        <DatePicker
+          format="DD MMMM YYYY"
+          placeholder="Tanggal Akhir"
+          onChange={e =>
+            setTanggalPembayaran({
+              ...tanggalPembayaran,
+              akhir: dayjs(e).format('DD MMMM YYYY'),
+            })
+          }
+        />
         <Button
           type="primary"
           size="large"
