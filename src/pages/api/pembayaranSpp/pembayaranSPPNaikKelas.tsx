@@ -65,20 +65,35 @@ export default async function handler(
         },
       })
 
-      // Loop through each month
-      for (let i = -1; i < numberOfMonths; i++) {
-        const currentMonth = startDate.getMonth() + i + 1
-        const currentDate = new Date(startDate.getFullYear(), currentMonth, 1)
-        await prisma.historyPembayaranSpp.create({
-          data: {
-            pembayaranSppId: pembayaranSpp.id,
-            jatuhTempo: currentDate,
-            jumlah: parseInt(jumlahspp),
-            sudahDibayar: false,
-            updatedBy: Number(updatedBy),
-          },
-        })
+      const getLastMonthPayment = await prisma.historyPembayaranSpp.findFirst({
+        where: {
+          pembayaranSppId: pembayaranSpp.id,
+        },
+        orderBy: {
+          jatuhTempo: 'desc',
+        },
+      })
+
+      if (getLastMonthPayment) {
+        const lastPaymentDate = new Date(getLastMonthPayment.jatuhTempo)
+        // Loop through each month
+        for (let i = -1; i < numberOfMonths; i++) {
+          const currentMonth = startDate.getMonth() + i + 1
+          const currentDate = new Date(startDate.getFullYear(), currentMonth, 1)
+          await prisma.historyPembayaranSpp.create({
+            data: {
+              pembayaranSppId: pembayaranSpp.id,
+              jatuhTempo: currentDate,
+              jumlah: parseInt(jumlahspp),
+              sudahDibayar: false,
+              updatedBy: Number(updatedBy),
+            },
+          })
+        }
+      } else {
+        res.status(500).json({ message: 'Last Month Payment Not Found' })
       }
+
       res.status(200).json({ message: 'Generate successful' })
     } else if (!pembayaranSpp) {
       res.status(500).json({ message: 'pembayaran SPP Id Not Found' })
