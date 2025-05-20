@@ -77,15 +77,12 @@ export default async function handler(
     const deleteHistoryPembayaranSppByPembayaranSppId =
       await prisma.historyPembayaranSpp.updateMany({
         where: {
-          pembayaranSpp: {
-            id: pembayaranSppId,
-          },
+          pembayaranSppId: pembayaranSppId,
+          isDeleted: false,
         },
         data: {
           updatedBy: Number(updatedBy),
-          isDeleted: {
-            set: true,
-          },
+          isDeleted: true,
         },
       })
 
