@@ -78,7 +78,7 @@ export default async function handler(
         const lastPaymentDate = new Date(getLastMonthPayment.jatuhTempo)
         // Loop through each month
         for (let i = -1; i < numberOfMonths; i++) {
-          const currentMonth = startDate.getMonth() + i + 1
+          const currentMonth = lastPaymentDate.getMonth() + i + 1
           const currentDate = new Date(startDate.getFullYear(), currentMonth, 1)
           await prisma.historyPembayaranSpp.create({
             data: {
