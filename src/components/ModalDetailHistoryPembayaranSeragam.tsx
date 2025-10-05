@@ -12,7 +12,6 @@ import {
 } from 'antd'
 import type { ColumnType, ColumnsType } from 'antd/es/table'
 import type { FilterConfirmProps } from 'antd/es/table/interface'
-import Highlighter from 'react-highlight-words'
 import { useEffect, useState, useRef } from 'react'
 import { Select, Space } from 'antd'
 import { SiGoogleclassroom } from 'react-icons/si'
@@ -177,12 +176,15 @@ export function ModalDetailHistoryPembayaranSeragam({
     },
     render: text =>
       searchedColumn === dataIndex ? (
-        <Highlighter
-          highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-          searchWords={[searchText]}
-          autoEscape
-          textToHighlight={text ? text.toString() : ''}
-        />
+        <span>
+          {text ? text.toString().split(new RegExp(`(${searchText})`, 'gi')).map((part: string, index: number) => 
+            part.toLowerCase() === searchText.toLowerCase() ? (
+              <span key={index} style={{ backgroundColor: '#ffc069', padding: 0 }}>
+                {part}
+              </span>
+            ) : part
+          ) : ''}
+        </span>
       ) : (
         text
       ),

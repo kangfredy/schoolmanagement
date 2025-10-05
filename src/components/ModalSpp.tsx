@@ -16,7 +16,7 @@ import type { ColumnType, ColumnsType } from 'antd/es/table'
 import type { FilterConfirmProps } from 'antd/es/table/interface'
 import { SearchOutlined, UserOutlined, IdcardOutlined } from '@ant-design/icons'
 import { Dispatch, SetStateAction, useRef } from 'react'
-import Highlighter from 'react-highlight-words'
+  // import Highlighter from 'react-highlight-words'
 import {
   historyPembayaranSppByPembayaranSppId,
   dataHistoryPembayaranSppUpdate,
@@ -487,12 +487,15 @@ export function ModalSpp({
     },
     render: text =>
       searchedColumn === dataIndex ? (
-        <Highlighter
-          highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-          searchWords={[searchText]}
-          autoEscape
-          textToHighlight={text ? text.toString() : ''}
-        />
+        <span>
+          {text ? text.toString().split(new RegExp(`(${searchText})`, 'gi')).map((part: string, index: number) => 
+            part.toLowerCase() === searchText.toLowerCase() ? (
+              <span key={index} style={{ backgroundColor: '#ffc069', padding: 0 }}>
+                {part}
+              </span>
+            ) : part
+          ) : ''}
+        </span>
       ) : (
         text
       ),

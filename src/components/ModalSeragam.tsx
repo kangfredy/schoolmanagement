@@ -467,12 +467,23 @@ export function ModalSeragam({
     },
     render: text =>
       searchedColumn === dataIndex ? (
-        <Highlighter
-          highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-          searchWords={[searchText]}
-          autoEscape
-          textToHighlight={text ? text.toString() : ''}
-        />
+        <span>
+          {text
+            ? text
+                .toString()
+                .split(new RegExp(`(${searchText})`, 'gi'))
+                .map((part: string, index: number) =>
+                  part.toLowerCase() === searchText.toLowerCase() && searchText ? (
+                    <span key={index} style={{ backgroundColor: '#ffc069', padding: 0 }}>
+                      {part}
+                    </span>
+                  ) : (
+                    // normal part
+                    <span key={index}>{part}</span>
+                  )
+                )
+            : ''}
+        </span>
       ) : (
         text
       ),
@@ -567,12 +578,24 @@ export function ModalSeragam({
     },
     render: text =>
       searchedColumn === dataIndex ? (
-        <Highlighter
-          highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-          searchWords={[searchText]}
-          autoEscape
-          textToHighlight={text ? text.toString() : ''}
-        />
+        <span>
+          {text
+            ? text
+                .toString()
+                .split(new RegExp(`(${searchText})`, 'gi'))
+                .map((part: string, index: number) =>
+                  searchText && part.toLowerCase() === searchText.toLowerCase() ? (
+                    // Highlight bagian yang cocok dengan searchText
+                    <span key={index} style={{ backgroundColor: '#ffc069', padding: 0 }}>
+                      {part}
+                    </span>
+                  ) : (
+                    // Bagian lain tampil biasa
+                    <span key={index}>{part}</span>
+                  )
+                )
+            : ''}
+        </span>
       ) : (
         text
       ),

@@ -27,7 +27,6 @@ import { SetStateAction, useEffect, useState, useRef } from 'react'
 import { IHistorySpp } from '@/interface/ui/state/dataHistorySppTable'
 import { IHistorySeragam } from '@/interface/ui/state/dataHistorySeragamTable'
 import { SearchOutlined, UserOutlined, IdcardOutlined } from '@ant-design/icons'
-import Highlighter from 'react-highlight-words'
 import { convertDate } from '@/helper/util/time'
 import { convertMoney } from '@/helper/util/money'
 
@@ -163,12 +162,22 @@ export function ModalDetailSiswa({
     },
     render: text =>
       searchedColumn === dataIndex ? (
-        <Highlighter
-          highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-          searchWords={[searchText]}
-          autoEscape
-          textToHighlight={text ? text.toString() : ''}
-        />
+        <span>
+          {text
+            ? text
+                .toString()
+                .split(new RegExp(`(${searchText})`, 'gi'))
+                .map((part: string, index: number) =>
+                  part.toLowerCase() === searchText.toLowerCase() && searchText ? (
+                    <span key={index} style={{ backgroundColor: '#ffc069', padding: 0 }}>
+                      {part}
+                    </span>
+                  ) : (
+                    <span key={index}>{part}</span>
+                  )
+                )
+            : ''}
+        </span>
       ) : (
         text
       ),
@@ -258,14 +267,17 @@ export function ModalDetailSiswa({
       }
     },
     render: text =>
-      searchedColumn === dataIndex ? (
-        <Highlighter
-          highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-          searchWords={[searchText]}
-          autoEscape
-          textToHighlight={text ? text.toString() : ''}
-        />
-      ) : (
+      searchedColumn === dataIndex ? ((
+        <span>
+          {text ? text.toString().split(new RegExp(`(${searchText})`, 'gi')).map((part: string, index: number) => 
+            part.toLowerCase() === searchText.toLowerCase() ? (
+              <span key={index} style={{ backgroundColor: '#ffc069', padding: 0 }}>
+                {part}
+              </span>
+            ) : part
+          ) : ''}
+        </span>
+      )) : (
         text
       ),
   })
