@@ -1,21 +1,21 @@
 import { SearchOutlined } from '@ant-design/icons'
-import { InputRef, Modal, Popconfirm, Spin, message } from 'antd'
-import { Button, Input, Space, Table } from 'antd'
+import { InputRef, Popconfirm, message } from 'antd'
+import { Button, Input, Space } from 'antd'
 import type { ColumnType, ColumnsType } from 'antd/es/table'
 import type { FilterConfirmProps } from 'antd/es/table/interface'
-import React, { useEffect, useRef, useState } from 'react'
-import { ModalTambahKelas } from '../components/ModalTambahKelas'
+import { useEffect, useRef, useState } from 'react'
 import { dataKelasDelete, getDataKelas } from '@/helper/apiHelper/kelas'
 import { IDataKelasModal } from '@/interface/ui/state/dataKelasModal'
 import { Ikelas } from '@/interface/ui/state/dataKelasTable'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
+import { useUserSession } from '@/hook/useUserSession'
 import { convertDateTime } from '@/helper/util/time'
 
 type DataIndex = keyof Ikelas
 
-export const DataKelas = () => {
+export function useDataKelasController() {
   const [searchText, setSearchText] = useState('')
-  const [searchedColumn, setSearchedColumn] = useState('')
+  const [searchedColumn, setSearchedColumn] = useState<any>('')
   const searchInput = useRef<InputRef>(null)
   const [open, setOpen] = useState(false)
   const [actions, setActions] = useState('')
@@ -24,11 +24,10 @@ export const DataKelas = () => {
   const [dataKelasInput, setDataKelasInput] = useState<IDataKelasModal>(
     {} as IDataKelasModal,
   )
-  const [userId, setUserId] = useState(0)
-  const [userRole, setUserRole] = useState('')
+  const { userId, userRole } = useUserSession()
 
   const showModal = (action: string, data: Ikelas) => {
-    let dataInput = {
+    const dataInput = {
       id: data?.id,
       namaKelas: data?.namaKelas,
       jurusanId: data?.jurusan?.id,
@@ -40,32 +39,19 @@ export const DataKelas = () => {
   }
 
   const initiateData = async () => {
-    setLoading(true)
-    await getDataKelas()
-      .then(response => {
-        setDataKelas(response.data.getKelas)
-      })
-      .then(() => {
-        setLoading(false)
-      })
-      .catch(error => {
-        setLoading(false)
-      })
-  }
-
-  const getUserData = async () => {
-    const user = await getUserInfoWithNullCheck()
-    if (user) {
-      setUserId(user.id)
-      setUserRole(user.role)
-    } else {
-      console.log('LOCALSTORAGE IS EMPTY')
+    try {
+      setLoading(true)
+      const response = await getDataKelas()
+      setDataKelas(response.data.getKelas)
+    } catch {
+      // ignore
+    } finally {
+      setLoading(false)
     }
   }
 
   useEffect(() => {
     initiateData()
-    getUserData()
   }, [])
 
   const handleSearch = (
@@ -87,21 +73,17 @@ export const DataKelas = () => {
     confirm()
   }
 
-  //handle Popconfrim
   const handleConfirmDelete = async (clickedData: any) => {
-    setLoading(true)
-    await dataKelasDelete({ id: clickedData.id, updatedBy: userId })
-      .then(response => {
-        message.success('Sukses Delete Kelas')
-        initiateData()
-      })
-      .then(() => {
-        setLoading(false)
-      })
-      .catch(error => {
-        setLoading(false)
-        message.error(error.message)
-      })
+    try {
+      setLoading(true)
+      await dataKelasDelete({ id: clickedData.id, updatedBy: userId })
+      message.success('Sukses Delete Kelas')
+      await initiateData()
+    } catch (error: any) {
+      message.error(error.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const getColumnSearchProps = (dataIndex: any): ColumnType<Ikelas> => ({
@@ -153,12 +135,7 @@ export const DataKelas = () => {
             }}>
             Filter
           </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close()
-            }}>
+          <Button type="link" size="small" onClick={() => close()}>
             close
           </Button>
         </Space>
@@ -171,9 +148,7 @@ export const DataKelas = () => {
       let data = record
       for (const key of dataIndex) {
         data = (data as any)[key]
-        if (data === undefined) {
-          return false // If any nested key is undefined, no need to continue
-        }
+        if (data === undefined) return false
       }
       return data
         .toString()
@@ -181,19 +156,18 @@ export const DataKelas = () => {
         .includes(value.toString().toLowerCase())
     },
     onFilterDropdownOpenChange: visible => {
-      if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100)
-      }
+      if (visible) setTimeout(() => searchInput.current?.select(), 100)
     },
     render: text =>
       searchedColumn === dataIndex ? (
-          <span>
+        <span>
           {text
             ? text
                 .toString()
                 .split(new RegExp(`(${searchText})`, 'gi'))
                 .map((part: string, index: number) =>
-                  searchText && part.toLowerCase() === searchText.toLowerCase() ? (
+                  searchText &&
+                  part.toLowerCase() === searchText.toLowerCase() ? (
                     <span key={index} style={{ backgroundColor: '#ffc069', padding: 0 }}>
                       {part}
                     </span>
@@ -264,7 +238,7 @@ export const DataKelas = () => {
           <Button
             type="primary"
             size="middle"
-            className="bg-blue-500"
+            className="btnPrimary"
             onClick={() => showModal('edit', record)}>
             Edit Kelas
           </Button>
@@ -272,15 +246,11 @@ export const DataKelas = () => {
             <Popconfirm
               title="Konfirmasi Delete"
               description="Anda Yakin Ingin Menghapus Data Ini?"
-              onConfirm={e => handleConfirmDelete(record)}
+              onConfirm={() => handleConfirmDelete(record)}
               okText="Yes"
               okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
               cancelText="No">
-              <Button
-                danger
-                type="primary"
-                size="middle"
-                className="bg-blue-500">
+              <Button danger type="primary" size="middle" className="btnPrimary">
                 Delete
               </Button>
             </Popconfirm>
@@ -291,43 +261,20 @@ export const DataKelas = () => {
   ]
 
   if (userRole !== 'admin') {
-    // Remove the Updated At column from the columns array if the userRole is not 'admin'
     columns = columns.filter(column => column.key !== 'updatedBy')
     columns = columns.filter(column => column.key !== 'updatedAt')
   }
 
-  return (
-    <Spin tip="Loading Data" spinning={loading}>
-      <div className="rounded-md bg-white p-2 h-[100%]">
-        <div className="my-4 flex items-center justify-between px-4">
-          <div className="flex items-center">
-            <h2 className="text-xl font-bold text-black">Data Kelas</h2>
-          </div>
-          <div className="flex items-center">
-            <Button
-              type="primary"
-              size="middle"
-              className="bg-blue-500"
-              onClick={() => showModal('tambah', {} as Ikelas)}>
-              Tambah Kelas
-            </Button>
-            <ModalTambahKelas
-              getData={initiateData}
-              action={actions}
-              open={open}
-              setOpen={setOpen}
-              dataKelasInput={dataKelasInput}
-              setDataKelasInput={setDataKelasInput}
-            />
-          </div>
-        </div>
-        <Table
-          columns={columns}
-          dataSource={dataKelas}
-          scroll={{ x: 400 }}
-          className="h-[100%]"
-        />
-      </div>
-    </Spin>
-  )
+  return {
+    loading,
+    columns,
+    dataKelas,
+    open,
+    setOpen,
+    actions,
+    dataKelasInput,
+    setDataKelasInput,
+    showModal,
+    initiateData,
+  }
 }

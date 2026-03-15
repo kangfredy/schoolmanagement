@@ -13,6 +13,6 @@ export const checkAgama = (agamaId: number) => {
     case 6:
       return 'Konghucu'
     default:
-      return 'islam'
+      return 'Islam'
   }
 }

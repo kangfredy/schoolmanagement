@@ -1,6 +1,6 @@
 import { Input, Modal, Spin, message } from 'antd'
 import { useEffect, useState } from 'react'
-import { Select, Space } from 'antd'
+import { Select } from 'antd'
 import { dataKelasUpdate, tambahKelas } from '@/helper/apiHelper/kelas'
 import { SiGoogleclassroom } from 'react-icons/si'
 import { getJurusan } from '@/helper/apiHelper/jurusan'

@@ -1,32 +1,27 @@
 import { SearchOutlined } from '@ant-design/icons'
-import { InputRef, Modal, Popconfirm, message, Spin } from 'antd'
-import { Button, Input, Space, Table } from 'antd'
+import { InputRef, message, Input, Space, Button } from 'antd'
 import type { ColumnType, ColumnsType } from 'antd/es/table'
 import type { FilterConfirmProps } from 'antd/es/table/interface'
-import React, { useEffect, useRef, useState } from 'react'
-import { ModalSpp } from '../components/ModalSpp'
+import { useEffect, useRef, useState } from 'react'
 import {
   getPembayaranSpp,
   dataPembayaranSppReCalculate,
 } from '@/helper/apiHelper/pembayaranSpp'
 import { getHistoryPembayaranSpp } from '@/helper/apiHelper/historyPembayaranSpp'
-import { IDataSppModal } from '@/interface/ui/state/dataSppModal'
+import { historyPembayaranSppByPembayaranSppId } from '@/helper/apiHelper/historyPembayaranSpp'
 import { ISpp } from '@/interface/ui/state/dataSppTable'
-import {
-  historyPembayaranSppByPembayaranSppId,
-  dataHistoryPembayaranSppUpdate,
-} from '@/helper/apiHelper/historyPembayaranSpp'
 import { IHistorySpp } from '@/interface/ui/state/dataHistorySppTable'
 import { ISelect } from '@/interface/ui/component/dropdown'
 import { convertMoney } from '@/helper/util/money'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
+import { useUserSession } from '@/hook/useUserSession'
 import { convertDateTime } from '@/helper/util/time'
 
 type DataIndex = keyof ISpp
 
-export const PembayaranSpp = () => {
+export function usePembayaranSppController() {
   const [searchText, setSearchText] = useState('')
-  const [searchedColumn, setSearchedColumn] = useState('')
+  const [searchedColumn, setSearchedColumn] = useState<any>('')
   const searchInput = useRef<InputRef>(null)
   const [open, setOpen] = useState(false)
   const [actions, setActions] = useState('')
@@ -38,29 +33,22 @@ export const PembayaranSpp = () => {
     [] as ISelect[],
   )
   const [dataAllHistorySpp, setDataAllHistorySpp] = useState<IHistorySpp[]>([])
-  const [userId, setUserId] = useState(0)
-  const [userRole, setUserRole] = useState('')
+  const { userId, userRole } = useUserSession()
 
-  const reCalculate = (data: ISpp) => {
-    // console.log('DATA TO RECALCULATE', data)
-    dataPembayaranSppReCalculate({
-      pembayaranSppId: data.id,
-      updatedBy: userId,
-    })
-      .then(response => {
-        initiateData()
+  const reCalculate = async (data: ISpp) => {
+    try {
+      await dataPembayaranSppReCalculate({
+        pembayaranSppId: data.id,
+        updatedBy: userId,
       })
-      .then(() => {
-        // setLoading(false)
-      })
-      .catch(error => {
-        // setLoading(false)
-        message.error(error.message)
-      })
+      await initiateData()
+    } catch (error: any) {
+      message.error(error.message)
+    }
   }
 
   const showModal = (data: ISpp) => {
-    let dataInput = {
+    const dataInput = {
       id: data?.id,
       siswaId: data?.siswaId,
       tunggakan: data?.tunggakan,
@@ -72,88 +60,17 @@ export const PembayaranSpp = () => {
       updatedBy: data?.updatedBy,
       user: data?.user,
     }
-
-    // console.log('CURRENT tunggakan', convertMoney(data?.tunggakan))
-    // console.log('CURRENT totalBayar', convertMoney(data?.totalBayar))
-
     setDataSppInput(dataInput)
-
     getHistoryPembayaranSppByPembayaranSppId(data?.id)
   }
 
-  const getHistoryPembayaranSppByPembayaranSppId = (id: number) => {
-    historyPembayaranSppByPembayaranSppId(id)
-      .then(response => {
-        // console.log(
-        //   'ID',
-        //   response.data.getHistoryPembayaranSppById[0].pembayaranSppId,
-        // )
-        // console.log('historyPembayaranSppByPembayaranSppId ', response)
-        const arrayDataTemp: IHistorySpp[] = []
-        const arraySelectTemp: any[] = []
-
-        response.data.getHistoryPembayaranSppById?.map((datas: any) => {
-          const object1: IHistorySpp = {
-            id: datas?.id,
-            pembayaranSppId: datas?.pembayaranSppId,
-            jatuhTempo: datas?.jatuhTempo,
-            jumlah: datas?.jumlah,
-            sudahDibayar: datas?.sudahDibayar,
-            tanggalPembayaran: datas?.tanggalPembayaran,
-            pembayaranSpp: datas?.pembayaranSpp,
-            updatedAt: datas?.updatedAt,
-            updatedBy: datas?.updatedBy,
-            user: datas?.user,
-          }
-          arrayDataTemp.push(object1)
-
-          const object2: any = {
-            value: datas.id,
-            label: datas.id,
-          }
-          arraySelectTemp.push(object2)
-        })
-
-        //Assign the mapped array to the state
-        setDataHistorySpp(arrayDataTemp)
-        // console.log('DATA HISTORY SPP', arrayDataTemp)
-        setDataHistorySppSelect(arraySelectTemp)
-
-        setOpen(true)
-      })
-      .then(response => {
-        setLoading(false)
-      })
-      .catch(error => {
-        console.error(error.message)
-        setLoading(false)
-      })
-  }
-
-  const initiateData = async () => {
-    setLoading(true)
+  const getHistoryPembayaranSppByPembayaranSppId = async (id: number) => {
     try {
-      const response1 = await getPembayaranSpp()
-      const arrayTemp1: ISpp[] = []
-      response1.data.getPembayaranSpp?.map((datas: any) => {
-        const object1: ISpp = {
-          id: datas?.id,
-          siswaId: datas?.siswaId,
-          tunggakan: datas?.tunggakan,
-          totalBayar: datas?.totalBayar,
-          siswa: datas?.siswa,
-          updatedAt: datas?.updatedAt,
-          updatedBy: datas?.updatedBy,
-          user: datas?.user,
-        }
-        arrayTemp1.push(object1)
-      })
-      setDataSpp(arrayTemp1)
-
-      const response2 = await getHistoryPembayaranSpp()
-      const arrayTemp2: IHistorySpp[] = []
-      response2.data.getHistoryPembayaranSpp?.map((datas: any) => {
-        const object2: IHistorySpp = {
+      const response = await historyPembayaranSppByPembayaranSppId(id)
+      const arrayDataTemp: IHistorySpp[] = []
+      const arraySelectTemp: any[] = []
+      response.data.getHistoryPembayaranSppById?.map((datas: any) => {
+        arrayDataTemp.push({
           id: datas?.id,
           pembayaranSppId: datas?.pembayaranSppId,
           jatuhTempo: datas?.jatuhTempo,
@@ -164,31 +81,62 @@ export const PembayaranSpp = () => {
           updatedAt: datas?.updatedAt,
           updatedBy: datas?.updatedBy,
           user: datas?.user,
-        }
-        arrayTemp2.push(object2)
+        })
+        arraySelectTemp.push({ value: datas.id, label: datas.id })
       })
-      setDataAllHistorySpp(arrayTemp2)
-      // console.log('setDataAllHistorySpp', arrayTemp2)
-
-      setLoading(false)
-    } catch (error) {
+      setDataHistorySpp(arrayDataTemp)
+      setDataHistorySppSelect(arraySelectTemp)
+      setOpen(true)
+    } catch (error: any) {
+      console.error(error.message)
       setLoading(false)
     }
   }
 
-  const getUserData = async () => {
-    const user = await getUserInfoWithNullCheck()
-    if (user) {
-      setUserId(user.id)
-      setUserRole(user.role)
-    } else {
-      console.log('LOCALSTORAGE IS EMPTY')
+  const initiateData = async () => {
+    setLoading(true)
+    try {
+      const response1 = await getPembayaranSpp()
+      const arrayTemp1: ISpp[] = []
+      response1.data.getPembayaranSpp?.map((datas: any) => {
+        arrayTemp1.push({
+          id: datas?.id,
+          siswaId: datas?.siswaId,
+          tunggakan: datas?.tunggakan,
+          totalBayar: datas?.totalBayar,
+          siswa: datas?.siswa,
+          updatedAt: datas?.updatedAt,
+          updatedBy: datas?.updatedBy,
+          user: datas?.user,
+        })
+      })
+      setDataSpp(arrayTemp1)
+
+      const response2 = await getHistoryPembayaranSpp()
+      const arrayTemp2: IHistorySpp[] = []
+      response2.data.getHistoryPembayaranSpp?.map((datas: any) => {
+        arrayTemp2.push({
+          id: datas?.id,
+          pembayaranSppId: datas?.pembayaranSppId,
+          jatuhTempo: datas?.jatuhTempo,
+          jumlah: datas?.jumlah,
+          sudahDibayar: datas?.sudahDibayar,
+          tanggalPembayaran: datas?.tanggalPembayaran,
+          pembayaranSpp: datas?.pembayaranSpp,
+          updatedAt: datas?.updatedAt,
+          updatedBy: datas?.updatedBy,
+          user: datas?.user,
+        })
+      })
+      setDataAllHistorySpp(arrayTemp2)
+      setLoading(false)
+    } catch {
+      setLoading(false)
     }
   }
 
   useEffect(() => {
     initiateData()
-    getUserData()
   }, [])
 
   const handleSearch = (
@@ -208,12 +156,6 @@ export const PembayaranSpp = () => {
     clearFilters()
     setSearchText('')
     confirm()
-  }
-
-  //handle Popconfrim
-  const handleConfirmDelete = (e: any) => {
-    // console.log(e)
-    message.success('Click on Yes')
   }
 
   const getColumnSearchProps = (dataIndex: any): ColumnType<ISpp> => ({
@@ -265,12 +207,7 @@ export const PembayaranSpp = () => {
             }}>
             Filter
           </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close()
-            }}>
+          <Button type="link" size="small" onClick={() => close()}>
             close
           </Button>
         </Space>
@@ -283,9 +220,7 @@ export const PembayaranSpp = () => {
       let data = record
       for (const key of dataIndex) {
         data = (data as any)[key]
-        if (data === undefined) {
-          return false // If any nested key is undefined, no need to continue
-        }
+        if (data === undefined) return false
       }
       return data
         .toString()
@@ -293,9 +228,7 @@ export const PembayaranSpp = () => {
         .includes(value.toString().toLowerCase())
     },
     onFilterDropdownOpenChange: visible => {
-      if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100)
-      }
+      if (visible) setTimeout(() => searchInput.current?.select(), 100)
     },
     render: text =>
       searchedColumn === dataIndex ? (
@@ -305,7 +238,8 @@ export const PembayaranSpp = () => {
                 .toString()
                 .split(new RegExp(`(${searchText})`, 'gi'))
                 .map((part: string, index: number) =>
-                  searchText && part.toLowerCase() === searchText.toLowerCase() ? (
+                  searchText &&
+                  part.toLowerCase() === searchText.toLowerCase() ? (
                     <span key={index} style={{ backgroundColor: '#ffc069', padding: 0 }}>
                       {part}
                     </span>
@@ -408,18 +342,14 @@ export const PembayaranSpp = () => {
           <Button
             type="primary"
             size="middle"
-            className="bg-blue-500"
+            className="btnPrimary"
             onClick={() => showModal(record)}>
             Pembayaran
           </Button>
           <Button
             type="primary"
             size="middle"
-            style={{
-              backgroundColor: '#4CAF50',
-              borderColor: '#4CAF50',
-              color: '#ffffff',
-            }}
+            className="btnRecalculate"
             onClick={() => reCalculate(record)}>
             Kalkulasi Ulang
           </Button>
@@ -429,54 +359,25 @@ export const PembayaranSpp = () => {
   ]
 
   if (userRole !== 'admin') {
-    // Remove the Updated At column from the columns array if the userRole is not 'admin'
     columns = columns.filter(column => column.key !== 'updatedBy')
     columns = columns.filter(column => column.key !== 'updatedAt')
   }
 
-  return (
-    <>
-      <ModalSpp
-        getData={initiateData}
-        action={actions}
-        open={open}
-        setOpen={setOpen}
-        dataSppInput={dataSppInput}
-        setDataSppInput={setDataSppInput}
-        dataHistorySpp={dataHistorySpp}
-        setDataHistorySpp={setDataHistorySpp}
-        dataHistorySppSelect={dataHistorySppSelect}
-        setDataHistorySppSelect={setDataHistorySppSelect}
-        showModal={showModal}
-        getHistoryPembayaranSppByPembayaranSppId={
-          getHistoryPembayaranSppByPembayaranSppId
-        }
-      />
-
-      <Spin tip="Loading Data" spinning={loading}>
-        <div className="rounded-md bg-white p-2 h-[100%] overflow-scroll">
-          <div className="my-4 flex items-center justify-between px-4">
-            <div className="flex items-center">
-              <h2 className="text-xl font-bold text-black">Pembayaran SPP</h2>
-            </div>
-            <div className="flex items-center">
-              {/* <Button
-            type="primary"
-            size="middle"
-            className="bg-blue-500"
-            onClick={() => showModal('tambah')}>
-            Tambah Pembayaran
-          </Button> */}
-            </div>
-          </div>
-          <Table
-            columns={columns}
-            dataSource={dataSpp}
-            scroll={{ x: 400 }}
-            className="h-[100%]"
-          />
-        </div>
-      </Spin>
-    </>
-  )
+  return {
+    loading,
+    columns,
+    dataSpp,
+    open,
+    setOpen,
+    actions,
+    dataSppInput,
+    setDataSppInput,
+    dataHistorySpp,
+    setDataHistorySpp,
+    dataHistorySppSelect,
+    setDataHistorySppSelect,
+    showModal,
+    initiateData,
+    getHistoryPembayaranSppByPembayaranSppId,
+  }
 }

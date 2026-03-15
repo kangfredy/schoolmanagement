@@ -14,17 +14,13 @@ import {
 } from 'antd'
 import type { ColumnType, ColumnsType } from 'antd/es/table'
 import type { FilterConfirmProps } from 'antd/es/table/interface'
-import { SearchOutlined, UserOutlined, IdcardOutlined } from '@ant-design/icons'
-import { Dispatch, SetStateAction, useRef } from 'react'
+import { SearchOutlined } from '@ant-design/icons'
+import { useRef } from 'react'
   // import Highlighter from 'react-highlight-words'
 import {
-  historyPembayaranSppByPembayaranSppId,
   dataHistoryPembayaranSppUpdate,
 } from '@/helper/apiHelper/historyPembayaranSpp'
-import { ISelect } from '@/interface/ui/component/dropdown'
-import { IDataSppModal } from '@/interface/ui/state/dataSppModal'
 import { ModalTambahSppProps } from '@/interface/ui/props/ModalTambahSpp'
-import { IDataHistorySppModal } from '@/interface/ui/state/dataHistorySppModal'
 import { IHistorySpp } from '@/interface/ui/state/dataHistorySppTable'
 import moment from 'moment'
 import {
@@ -40,26 +36,18 @@ import dayjs from 'dayjs'
 
 const currentDate = new Date().toISOString()
 // console.log('currentDate', currentDate)
-const formatedCurrentDate = moment(currentDate).format('DD MMMM YYYY')
 
 const SPP_BULANAN: number = 200000
-const SPP_BULANAN_FORMAT: string = SPP_BULANAN.toLocaleString('en-US')
 
 type DataIndex = keyof IHistorySpp
 
 export function ModalSpp({
-  action,
   open,
   setOpen,
   getData,
-  setDataSppInput,
   dataSppInput,
-  setDataHistorySpp,
   dataHistorySpp,
-  dataHistorySppSelect,
-  setDataHistorySppSelect,
   showModal,
-  getHistoryPembayaranSppByPembayaranSppId,
 }: ModalTambahSppProps) {
   const [confirmLoading, setConfirmLoading] = useState(false)
   const [searchedColumn, setSearchedColumn] = useState('')
@@ -82,16 +70,6 @@ export function ModalSpp({
         unit: 'px',
       })
 
-      // const chunkSize = 12
-      // const totalChunks = Math.ceil(dataHistorySpp.length / chunkSize)
-
-      // let filteredList
-      // if (totalChunks === 1) {
-      //   filteredList = dataHistorySpp.slice(0)
-      // } else {
-      //   const startIndex = (totalChunks - 1) * chunkSize
-      //   filteredList = dataHistorySpp.slice(startIndex)
-      // }
       const filteredList = dataHistorySpp.filter(item => {
         const jatuhTempo = dayjs(item.jatuhTempo)
         const startDate = dayjs(tanggalPembayaran.mulai, 'DD MMMM YYYY')
@@ -135,9 +113,6 @@ export function ModalSpp({
         dataSppInput.totalBayar,
       )}, \nKeterangan: ${monthsList}`
 
-      // console.log('dataHistorySpp', dataHistorySpp)
-      // console.log('dataSppInput', dataSppInput)
-      // console.log('qrData', qrData)
 
       const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(
         qrData,
@@ -205,11 +180,9 @@ export function ModalSpp({
 
       if (namaSiswa.length > 25) {
         const nameStringList = namaSiswa.split(' ')
-        const spaceCount = nameStringList.length - 1
         // console.log(spaceCount)
 
         const subString = namaSiswa.substring(0, 25)
-        const spaceIndex = subString.lastIndexOf(' ')
         // console.log(spaceIndex)
 
         const subStringSpaceCount = subString.split(' ').length - 1
@@ -380,8 +353,6 @@ export function ModalSpp({
       setUserId(user.id)
       setUserRole(user.role)
       setUserName(user.username)
-      // console.log('USER ID on ModalSpp', user.id)
-      // console.log('USER ROLE on ModalSpp', user.role)
     } else {
       console.log('LOCALSTORAGE IS EMPTY')
     }
@@ -505,10 +476,6 @@ export function ModalSpp({
     currentData: IHistorySpp,
     useFor: string,
   ) => {
-    // console.log('DATA TO CONFIRM', currentData)
-    // const user = await getUserInfoWithNullCheck()
-    // const updatedBy = user ? user.id : 0
-    // console.log('USE FOR', useFor)
 
     //Untuk dilepar ke api
     if (currentData && useFor === 'tambah') {
@@ -574,11 +541,11 @@ export function ModalSpp({
           message.success('Undo Pembayaran Sukses')
         }
       })
-      .then(response => {
+      .then(() => {
         // setOpen(false)
         setOpen(true)
       })
-      .catch((error: any) => {
+      .catch(() => {
         // setOpen(false)
         setOpen(true)
       })
@@ -671,7 +638,7 @@ export function ModalSpp({
             <Popconfirm
               title={`Konfirmasi Pembayaran`}
               description={`Anda Yakin ingin Konfirmasi Pembayaran?`}
-              onConfirm={e => handleConfirmBayarHistorySpp(record, 'tambah')}
+              onConfirm={() => handleConfirmBayarHistorySpp(record, 'tambah')}
               onCancel={handleCancelBayarHistorySpp}
               okText="Yes"
               okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
@@ -685,7 +652,7 @@ export function ModalSpp({
             <Popconfirm
               title={`Konfirmasi UNDO`}
               description={`Anda Yakin ingin Konfirmasi UNDO?`}
-              onConfirm={e => handleConfirmBayarHistorySpp(record, 'undo')}
+              onConfirm={() => handleConfirmBayarHistorySpp(record, 'undo')}
               onCancel={handleCancelBayarHistorySpp}
               okText="Yes"
               okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
@@ -718,9 +685,6 @@ export function ModalSpp({
     setOpen(false)
   }
 
-  const handlePrint = () => {
-    // setOpenPrint(true)
-  }
 
   return (
     <Modal

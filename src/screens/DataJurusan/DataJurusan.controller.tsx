@@ -1,22 +1,22 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { SearchOutlined } from '@ant-design/icons'
-import { InputRef, Modal, Popconfirm, Spin, message } from 'antd'
-import { Button, Input, Space, Table } from 'antd'
+import { InputRef, Popconfirm, message } from 'antd'
+import { Button, Input, Space } from 'antd'
 import type { ColumnType, ColumnsType } from 'antd/es/table'
 import type { FilterConfirmProps } from 'antd/es/table/interface'
-import React, { useEffect, useRef, useState } from 'react'
-import { ModalTambahJurusan } from '../components/ModalTambahJurusan'
+import { useEffect, useRef, useState } from 'react'
 import { dataJurusanDelete, getJurusan } from '@/helper/apiHelper/jurusan'
 import { IDataJurusanModal } from '@/interface/ui/state/dataJurusanModal'
 import { IJurusan } from '@/interface/ui/state/dataJurusanModal'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
+import { useUserSession } from '@/hook/useUserSession'
 import { convertDateTime } from '@/helper/util/time'
 
 type DataIndex = keyof IJurusan
 
-export const DataJurusan = () => {
+export function useDataJurusanController() {
   const [searchText, setSearchText] = useState('')
-  const [searchedColumn, setSearchedColumn] = useState('')
+  const [searchedColumn, setSearchedColumn] = useState<any>('')
   const searchInput = useRef<InputRef>(null)
   const [open, setOpen] = useState(false)
   const [actions, setActions] = useState('')
@@ -25,11 +25,10 @@ export const DataJurusan = () => {
   const [dataJurusanInput, setDataJurusanInput] = useState<IDataJurusanModal>(
     {} as IDataJurusanModal,
   )
-  const [userId, setUserId] = useState(0)
-  const [userRole, setUserRole] = useState('')
+  const { userId, userRole } = useUserSession()
 
   const showModal = (action: string, data: IJurusan) => {
-    let dataInput = {
+    const dataInput = {
       id: data?.id,
       namaJurusan: data?.namaJurusan,
       updatedBy: data?.updatedBy,
@@ -40,32 +39,19 @@ export const DataJurusan = () => {
   }
 
   const initiateData = async () => {
-    setLoading(true)
-    await getJurusan()
-      .then(response => {
-        setDataJurusan(response.data.getJurusan)
-      })
-      .then(() => {
-        setLoading(false)
-      })
-      .catch(error => {
-        setLoading(false)
-      })
-  }
-
-  const checkSession = async () => {
-    initiateData()
-    let user = await getUserInfoWithNullCheck()
-    if (user) {
-      setUserId(user.id)
-      setUserRole(user.role)
-    } else {
-      console.log('LOCALSTORAGE IS EMPTY')
+    try {
+      setLoading(true)
+      const response = await getJurusan()
+      setDataJurusan(response.data.getJurusan)
+    } catch {
+      // ignore
+    } finally {
+      setLoading(false)
     }
   }
 
   useEffect(() => {
-    checkSession()
+    initiateData()
   }, [])
 
   const handleSearch = (
@@ -87,21 +73,17 @@ export const DataJurusan = () => {
     confirm()
   }
 
-  //handle Popconfrim
   const handleConfirmDelete = async (clickedData: any) => {
-    setLoading(true)
-    await dataJurusanDelete({ id: clickedData.id, updatedBy: userId })
-      .then(response => {
-        message.success('Sukses Delete Jurusan')
-        initiateData()
-      })
-      .then(() => {
-        setLoading(false)
-      })
-      .catch(error => {
-        setLoading(false)
-        message.error(error.message)
-      })
+    try {
+      setLoading(true)
+      await dataJurusanDelete({ id: clickedData.id, updatedBy: userId })
+      message.success('Sukses Delete Jurusan')
+      await initiateData()
+    } catch (error: any) {
+      message.error(error.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const getColumnSearchProps = (dataIndex: any): ColumnType<IJurusan> => ({
@@ -153,12 +135,7 @@ export const DataJurusan = () => {
             }}>
             Filter
           </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close()
-            }}>
+          <Button type="link" size="small" onClick={() => close()}>
             close
           </Button>
         </Space>
@@ -171,9 +148,7 @@ export const DataJurusan = () => {
       let data = record
       for (const key of dataIndex) {
         data = (data as any)[key]
-        if (data === undefined) {
-          return false // If any nested key is undefined, no need to continue
-        }
+        if (data === undefined) return false
       }
       return data
         .toString()
@@ -181,9 +156,7 @@ export const DataJurusan = () => {
         .includes(value.toString().toLowerCase())
     },
     onFilterDropdownOpenChange: visible => {
-      if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100)
-      }
+      if (visible) setTimeout(() => searchInput.current?.select(), 100)
     },
     render: text =>
       searchedColumn === dataIndex ? (
@@ -193,7 +166,8 @@ export const DataJurusan = () => {
                 .toString()
                 .split(new RegExp(`(${searchText})`, 'gi'))
                 .map((part: string, index: number) =>
-                  searchText && part.toLowerCase() === searchText.toLowerCase() ? (
+                  searchText &&
+                  part.toLowerCase() === searchText.toLowerCase() ? (
                     <span key={index} style={{ backgroundColor: '#ffc069', padding: 0 }}>
                       {part}
                     </span>
@@ -203,7 +177,7 @@ export const DataJurusan = () => {
                 )
             : ''}
         </span>
-        ) : (
+      ) : (
         text
       ),
   })
@@ -254,7 +228,7 @@ export const DataJurusan = () => {
           <Button
             type="primary"
             size="middle"
-            className="bg-blue-500"
+            className="btnPrimary"
             onClick={() => showModal('edit', record)}>
             Edit Jurusan
           </Button>
@@ -262,15 +236,11 @@ export const DataJurusan = () => {
             <Popconfirm
               title="Konfirmasi Delete"
               description="Anda Yakin Ingin Menghapus Data Ini?"
-              onConfirm={e => handleConfirmDelete(record)}
+              onConfirm={() => handleConfirmDelete(record)}
               okText="Yes"
               okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
               cancelText="No">
-              <Button
-                danger
-                type="primary"
-                size="middle"
-                className="bg-blue-500">
+              <Button danger type="primary" size="middle" className="btnPrimary">
                 Delete
               </Button>
             </Popconfirm>
@@ -281,43 +251,20 @@ export const DataJurusan = () => {
   ]
 
   if (userRole !== 'admin') {
-    // Remove the Updated At column from the columns array if the userRole is not 'admin'
     columns = columns.filter(column => column.key !== 'updatedBy')
     columns = columns.filter(column => column.key !== 'updatedAt')
   }
 
-  return (
-    <Spin tip="Loading Data" spinning={loading}>
-      <div className="rounded-md bg-white p-2 h-[100%]">
-        <div className="my-4 flex items-center justify-between px-4">
-          <div className="flex items-center">
-            <h2 className="text-xl font-bold text-black">Data Jurusan</h2>
-          </div>
-          <div className="flex items-center">
-            <Button
-              type="primary"
-              size="middle"
-              className="bg-blue-500"
-              onClick={() => showModal('tambah', {} as IJurusan)}>
-              Tambah Jurusan
-            </Button>
-            <ModalTambahJurusan
-              getData={initiateData}
-              action={actions}
-              open={open}
-              setOpen={setOpen}
-              dataJurusanInput={dataJurusanInput}
-              setDataJurusanInput={setDataJurusanInput}
-            />
-          </div>
-        </div>
-        <Table
-          columns={columns}
-          dataSource={dataJurusan}
-          scroll={{ x: 400 }}
-          className="h-[100%]"
-        />
-      </div>
-    </Spin>
-  )
+  return {
+    loading,
+    columns,
+    dataJurusan,
+    open,
+    setOpen,
+    actions,
+    dataJurusanInput,
+    setDataJurusanInput,
+    showModal,
+    initiateData,
+  }
 }

@@ -3,36 +3,29 @@ import {
   Input,
   Modal,
   Button,
-  Spin,
   Space,
   Table,
   InputRef,
-  Popconfirm,
   Tag,
-  message,
 } from 'antd'
 import { FormInput } from './FormInput'
 import {
   MdAccountCircle,
-  MdCardMembership,
   MdHomeWork,
-  MdIcecream,
 } from 'react-icons/md'
 import type { ColumnType, ColumnsType } from 'antd/es/table'
 import type { FilterConfirmProps } from 'antd/es/table/interface'
 import { IoIosCard } from 'react-icons/io'
-import { SiGoogleclassroom, SiGooglehome } from 'react-icons/si'
-import { IdataSppHistory } from '@/interface/ui/state/dataSPPHistory'
-import { SetStateAction, useEffect, useState, useRef } from 'react'
+import { SiGoogleclassroom } from 'react-icons/si'
+import { useState, useRef } from 'react'
 import { IHistorySpp } from '@/interface/ui/state/dataHistorySppTable'
 import { IHistorySeragam } from '@/interface/ui/state/dataHistorySeragamTable'
-import { SearchOutlined, UserOutlined, IdcardOutlined } from '@ant-design/icons'
+import { SearchOutlined } from '@ant-design/icons'
 import { convertDate } from '@/helper/util/time'
 import { convertMoney } from '@/helper/util/money'
 
 //////////// BORDER /////////
 
-import { historyPembayaranSppByPembayaranSppId } from '@/helper/apiHelper/historyPembayaranSpp'
 
 type DataIndexHistorySpp = keyof IHistorySpp
 type DataIndexHistorySeragam = keyof IHistorySeragam
@@ -41,11 +34,8 @@ export function ModalDetailSiswa({
   open,
   setOpen,
   DataSiswa,
-  setDataHistorySpp,
   dataHistorySpp,
-  setDataHistorySeragam,
   dataHistorySeragam,
-  getHistoryPembayaranSppBySiswaId,
 }: IModalDetailSiswaProps) {
   const [confirmLoading, setConfirmLoading] = useState(false)
   const [searchedColumn, setSearchedColumn] = useState('')

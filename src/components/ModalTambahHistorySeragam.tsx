@@ -1,13 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Input, Modal, Spin, message } from 'antd'
 import { useEffect, useState } from 'react'
-import { Select, Space } from 'antd'
-import { SiGoogleclassroom } from 'react-icons/si'
-import { IDataSeragamnModal } from '@/interface/ui/state/dataSeragamModal'
 import { ModalTambahHistorySeragamProps } from '@/interface/ui/props/ModalTambahHistorySeragam'
 import { tambahHistoryPembayaranSeragam } from '@/helper/apiHelper/historyPembayaranSeragam'
-import { RiShirtLine } from 'react-icons/ri'
-import { ISelect } from '@/interface/ui/component/dropdown'
 import { IDataHistorySeragamModal } from '@/interface/ui/state/dataHistorySeragamModal'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 import { addDecimalPoints } from '@/helper/util/number'
@@ -17,14 +12,9 @@ export function ModalTambahHistorySeragam({
   action,
   setOpen,
   getData,
-  setDataSeragam,
-  dataSeragam,
-  setDataInputFilteredSeragam,
   dataInputFilteredSeragam,
-  setDataPembayaranSeragamInput,
   dataPembayaranSeragamInput,
   showModal,
-  getHistoryPembayaranSeragamByPembayaranSeragamId,
 }: ModalTambahHistorySeragamProps) {
   const [confirmLoading, setConfirmLoading] = useState(false)
   const [loading, setLoading] = useState<boolean>(false)
@@ -99,7 +89,7 @@ export function ModalTambahHistorySeragam({
         // )
         setConfirmLoading(false)
       })
-      .then((response: any) => {
+      .then(() => {
         setJumlahDibayarError('')
         setJumlahDibayar(undefined)
         setJumlahDibayarParsed('')

@@ -1,27 +1,24 @@
 import { SearchOutlined } from '@ant-design/icons'
-import { InputRef, Modal, Popconfirm, Spin, message } from 'antd'
-import { Button, Input, Space, Table } from 'antd'
+import { InputRef, Spin, Popconfirm, message } from 'antd'
+import { Button, Input, Space } from 'antd'
 import type { ColumnType, ColumnsType } from 'antd/es/table'
 import type { FilterConfirmProps } from 'antd/es/table/interface'
-import React, { useEffect, useRef, useState } from 'react'
-import Highlighter from 'react-highlight-words'
-import { ModalTambahSiswa } from '../components/ModalTambahSiswa'
+import { useEffect, useRef, useState } from 'react'
 import { getDataSiswa, dataSiswaDelete } from '@/helper/apiHelper/dataSiswa'
 import { IDataSiswaModal } from '@/interface/ui/state/dataSiswaModal'
 import { Isiswa } from '@/interface/ui/state/dataSiswaTable'
 import { checkAgama } from '@/helper/util/agama'
-import { ModalDetailSiswa } from '@/components/ModalDetailSiswa'
 import { historyPembayaranSppBySiswaId } from '@/helper/apiHelper/historyPembayaranSpp'
 import { historyPembayaranSeragamBySiswaId } from '@/helper/apiHelper/historyPembayaranSeragam'
 import { IHistorySpp } from '@/interface/ui/state/dataHistorySppTable'
 import { IHistorySeragam } from '@/interface/ui/state/dataHistorySeragamTable'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
+import { useUserSession } from '@/hook/useUserSession'
 import { convertDateTime } from '@/helper/util/time'
-import { encodeData, key } from '@/helper/util/saltPassword'
 
 type DataIndex = keyof Isiswa
 
-export const DataSiswa = () => {
+export function useDataSiswaController() {
   const [searchText, setSearchText] = useState('')
   const [searchedColumn, setSearchedColumn] = useState('')
   const searchInput = useRef<InputRef>(null)
@@ -38,80 +35,55 @@ export const DataSiswa = () => {
   const [initialClassId, setInitialClassId] = useState<number | undefined>(
     undefined,
   )
-
-  const [confirmLoading, setConfirmLoading] = useState(false)
   const [openDetail, setOpenDetail] = useState(false)
   const [dataHistorySpp, setDataHistorySpp] = useState<IHistorySpp[]>([])
   const [dataHistorySeragam, setDataHistorySeragam] = useState<
     IHistorySeragam[]
   >([])
-  const [userId, setUserId] = useState(0)
-  const [userRole, setUserRole] = useState('')
+  const { userId, userRole } = useUserSession()
 
-  const getHistoryPembayaranSppBySiswaId = (siswaId: number) => {
-    // console.log('getHistoryPembayaranSppBySiswaId SISWA ID', siswaId)
+  const getHistoryPembayaranSppBySiswaId = async (siswaId: number) => {
+    try {
+      const responseSpp = await historyPembayaranSppBySiswaId(siswaId)
+      const arrayHistorySppTemp: IHistorySpp[] = []
+      responseSpp.data.getHistoryPembayaranSppBySiswaId?.map((datas: any) => {
+        const objectHistorySpp: IHistorySpp = {
+          id: datas?.id,
+          pembayaranSppId: datas?.pembayaranSppId,
+          jatuhTempo: datas?.jatuhTempo,
+          jumlah: datas?.jumlah,
+          sudahDibayar: datas?.sudahDibayar,
+          tanggalPembayaran: datas?.tanggalPembayaran,
+          pembayaranSpp: datas?.pembayaranSpp,
+          updatedAt: datas?.updatedAt,
+          updatedBy: datas?.updatedBy,
+          user: datas?.user,
+        }
+        arrayHistorySppTemp.push(objectHistorySpp)
+      })
+      setDataHistorySpp(arrayHistorySppTemp)
 
-    historyPembayaranSppBySiswaId(siswaId)
-      .then(response => {
-        // console.log('getHistoryPembayaranSppBySiswaId RESPONSE ', response)
-
-        const arrayHistorySppTemp: IHistorySpp[] = []
-
-        response.data.getHistoryPembayaranSppBySiswaId?.map((datas: any) => {
-          const objectHistorySpp: IHistorySpp = {
+      const responseSeragam = await historyPembayaranSeragamBySiswaId(siswaId)
+      const arrayHistorySeragamTemp: IHistorySeragam[] = []
+      responseSeragam.data.getHistoryPembayaranSeragamBySiswaId?.map(
+        (datas: any) => {
+          const objectHistorySeragam: IHistorySeragam = {
             id: datas?.id,
-            pembayaranSppId: datas?.pembayaranSppId,
-            jatuhTempo: datas?.jatuhTempo,
-            jumlah: datas?.jumlah,
-            sudahDibayar: datas?.sudahDibayar,
+            pembayaranSeragamId: datas?.pembayaranSeragamId,
+            jumlahDiBayar: datas?.jumlahDiBayar,
             tanggalPembayaran: datas?.tanggalPembayaran,
-            pembayaranSpp: datas?.pembayaranSpp,
+            pembayaranSeragam: datas?.pembayaranSeragam,
             updatedAt: datas?.updatedAt,
             updatedBy: datas?.updatedBy,
             user: datas?.user,
           }
-          arrayHistorySppTemp.push(objectHistorySpp)
-        })
-
-        //Assign the mapped array to the state
-        setDataHistorySpp(arrayHistorySppTemp)
-      })
-      .then(() => {
-        historyPembayaranSeragamBySiswaId(siswaId)
-          .then(response => {
-            // console.log('historyPembayaranSeragamBySiswaId RESPONSE ', response)
-
-            const arrayHistorySeragamTemp: IHistorySeragam[] = []
-
-            response.data.getHistoryPembayaranSeragamBySiswaId?.map(
-              (datas: any) => {
-                const objectHistorySeragam: IHistorySeragam = {
-                  id: datas?.id,
-                  pembayaranSeragamId: datas?.pembayaranSeragamId,
-                  jumlahDiBayar: datas?.jumlahDiBayar,
-                  tanggalPembayaran: datas?.tanggalPembayaran,
-                  pembayaranSeragam: datas?.pembayaranSeragam,
-                  updatedAt: datas?.updatedAt,
-                  updatedBy: datas?.updatedBy,
-                  user: datas?.user,
-                }
-                arrayHistorySeragamTemp.push(objectHistorySeragam)
-              },
-            )
-
-            //Assign the mapped array to the state
-            setDataHistorySeragam(arrayHistorySeragamTemp)
-          })
-          .then(response => {})
-          .catch(error => {
-            console.error(error.message)
-            // setLoading(false)
-          })
-      })
-      .catch(error => {
-        console.error(error.message)
-        // setLoading(false)
-      })
+          arrayHistorySeragamTemp.push(objectHistorySeragam)
+        },
+      )
+      setDataHistorySeragam(arrayHistorySeragamTemp)
+    } catch (error: any) {
+      console.error(error.message)
+    }
   }
 
   const showModal = (action: string, data: Isiswa) => {
@@ -120,7 +92,7 @@ export const DataSiswa = () => {
       setDataSiswaSelected(data)
       setOpenDetail(true)
     } else {
-      let dataInput = {
+      const dataInput = {
         id: data?.id,
         nama: data?.nama,
         nim: data?.nim,
@@ -140,61 +112,44 @@ export const DataSiswa = () => {
       setActions(action)
       setOpen(true)
     }
-    // console.log(data)
   }
 
   const initiateData = async () => {
-    setLoading(true)
-    await getDataSiswa()
-      .then(response => {
-        const arrayTemp: Isiswa[] = [] // Define and initialize arrayTemp
-        response.data.dataSiswaData?.map((datas: any) => {
-          const object1: Isiswa = {
-            id: datas?.id,
-            nama: datas?.nama,
-            nim: datas?.nim,
-            tanggalMasuk: datas?.tanggalMasuk,
-            tanggalLahir: datas?.tanggalLahir,
-            alamat: datas?.alamat,
-            kelas: datas?.kelas,
-            jenisKelamin: datas?.jenisKelamin,
-            jenisKelaminDisplay:
-              datas?.jenisKelamin === 1 ? 'Laki-laki' : 'Perempuan',
-            agama: datas?.agama,
-            agamaDisplay: checkAgama(datas?.agama),
-            updatedAt: datas?.updatedAt,
-            updatedBy: datas?.updatedBy,
-            user: datas?.user,
-            asalSekolah: datas?.asalSekolah,
-          }
-          arrayTemp.push(object1)
-        })
-
-        //Assign the mapped array to the state
-        // console.log('DATA SISWA', arrayTemp)
-        setDataSiswa(arrayTemp)
+    try {
+      setLoading(true)
+      const response = await getDataSiswa()
+      const arrayTemp: Isiswa[] = []
+      response.data.dataSiswaData?.map((datas: any) => {
+        const object1: Isiswa = {
+          id: datas?.id,
+          nama: datas?.nama,
+          nim: datas?.nim,
+          tanggalMasuk: datas?.tanggalMasuk,
+          tanggalLahir: datas?.tanggalLahir,
+          alamat: datas?.alamat,
+          kelas: datas?.kelas,
+          jenisKelamin: datas?.jenisKelamin,
+          jenisKelaminDisplay:
+            datas?.jenisKelamin === 1 ? 'Laki-laki' : 'Perempuan',
+          agama: datas?.agama,
+          agamaDisplay: checkAgama(datas?.agama),
+          updatedAt: datas?.updatedAt,
+          updatedBy: datas?.updatedBy,
+          user: datas?.user,
+          asalSekolah: datas?.asalSekolah,
+        }
+        arrayTemp.push(object1)
       })
-      .then(() => {
-        setLoading(false)
-      })
-      .catch(error => {
-        setLoading(false)
-      })
-  }
-
-  const getUserData = async () => {
-    const user = await getUserInfoWithNullCheck()
-    if (user) {
-      setUserId(user.id)
-      setUserRole(user.role)
-    } else {
-      console.log('LOCALSTORAGE IS EMPTY')
+      setDataSiswa(arrayTemp)
+    } catch {
+      // ignore
+    } finally {
+      setLoading(false)
     }
   }
 
   useEffect(() => {
     initiateData()
-    getUserData()
   }, [])
 
   const handleSearch = (
@@ -216,21 +171,17 @@ export const DataSiswa = () => {
     confirm()
   }
 
-  //handle Popconfrim
   const handleConfirmDelete = async (clickedData: any) => {
-    setLoading(true)
-    await dataSiswaDelete({ id: clickedData.id, updatedBy: userId })
-      .then(response => {
-        message.success('Sukses Delete Siswa')
-        initiateData()
-      })
-      .then(() => {
-        setLoading(false)
-      })
-      .catch(error => {
-        setLoading(false)
-        message.error(error.message)
-      })
+    try {
+      setLoading(true)
+      await dataSiswaDelete({ id: clickedData.id, updatedBy: userId })
+      message.success('Sukses Delete Siswa')
+      await initiateData()
+    } catch (error: any) {
+      message.error(error.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const getColumnSearchProps = (dataIndex: any): ColumnType<Isiswa> => ({
@@ -282,12 +233,7 @@ export const DataSiswa = () => {
             }}>
             Filter
           </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close()
-            }}>
+          <Button type="link" size="small" onClick={() => close()}>
             close
           </Button>
         </Space>
@@ -300,9 +246,7 @@ export const DataSiswa = () => {
       let data = record
       for (const key of dataIndex) {
         data = (data as any)[key]
-        if (data === undefined) {
-          return false // If any nested key is undefined, no need to continue
-        }
+        if (data === undefined) return false
       }
       return data
         .toString()
@@ -310,9 +254,7 @@ export const DataSiswa = () => {
         .includes(value.toString().toLowerCase())
     },
     onFilterDropdownOpenChange: visible => {
-      if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100)
-      }
+      if (visible) setTimeout(() => searchInput.current?.select(), 100)
     },
     render: text =>
       searchedColumn === dataIndex ? (
@@ -322,7 +264,8 @@ export const DataSiswa = () => {
                 .toString()
                 .split(new RegExp(`(${searchText})`, 'gi'))
                 .map((part: string, index: number) =>
-                  searchText && part.toLowerCase() === searchText.toLowerCase() ? (
+                  searchText &&
+                  part.toLowerCase() === searchText.toLowerCase() ? (
                     <span key={index} style={{ backgroundColor: '#ffc069', padding: 0 }}>
                       {part}
                     </span>
@@ -338,15 +281,6 @@ export const DataSiswa = () => {
   })
 
   let columns: ColumnsType<Isiswa> = [
-    // {
-    //   title: 'No',
-    //   dataIndex: 'index',
-    //   key: 'index',
-    //   width: '13%',
-    //   render: (text, record, index) => index + 1,
-    //   sorter: (a, b) => a.id - b.id,
-    //   sortDirections: ['descend', 'ascend'],
-    // },
     {
       title: 'NISN',
       dataIndex: 'nim',
@@ -440,13 +374,13 @@ export const DataSiswa = () => {
             type="default"
             size="middle"
             onClick={() => showModal('detail', record)}
-            className="bg-[#A8C698] hover:bg-[#325D55] text-white focus:text-white active:text-white">
+            className="btnDetail">
             Detail
           </Button>
           <Button
             type="primary"
             size="middle"
-            className="bg-blue-500"
+            className="btnPrimary"
             onClick={() => showModal('edit', record)}>
             Edit Siswa
           </Button>
@@ -454,15 +388,11 @@ export const DataSiswa = () => {
             <Popconfirm
               title="Konfirmasi Delete"
               description="Anda Yakin Ingin Menghapus Data Ini?"
-              onConfirm={e => handleConfirmDelete(record)}
+              onConfirm={() => handleConfirmDelete(record)}
               okText="Yes"
               okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
               cancelText="No">
-              <Button
-                danger
-                type="primary"
-                size="middle"
-                className="bg-blue-500">
+              <Button danger type="primary" size="middle" className="btnPrimary">
                 Delete
               </Button>
             </Popconfirm>
@@ -473,54 +403,29 @@ export const DataSiswa = () => {
   ]
 
   if (userRole !== 'admin') {
-    // Remove the Updated At column from the columns array if the userRole is not 'admin'
     columns = columns.filter(column => column.key !== 'updatedBy')
     columns = columns.filter(column => column.key !== 'updatedAt')
   }
 
-  return (
-    <Spin tip="Loading Data" spinning={loading}>
-      <ModalDetailSiswa
-        open={openDetail}
-        setOpen={setOpenDetail}
-        DataSiswa={dataSiswaSelected}
-        setDataHistorySpp={setDataHistorySpp}
-        dataHistorySpp={dataHistorySpp}
-        setDataHistorySeragam={setDataHistorySeragam}
-        dataHistorySeragam={dataHistorySeragam}
-        getHistoryPembayaranSppBySiswaId={getHistoryPembayaranSppBySiswaId}
-      />
-      <div className="rounded-md bg-white p-2 h-[100%]">
-        <div className="my-4 flex items-center justify-between px-4">
-          <div className="flex items-center">
-            <h2 className="text-xl font-bold text-black">Data Siswa</h2>
-          </div>
-          <div className="flex items-center">
-            <Button
-              type="primary"
-              size="middle"
-              className="bg-blue-500"
-              onClick={() => showModal('tambah', {} as Isiswa)}>
-              Tambah Data Siswa
-            </Button>
-            <ModalTambahSiswa
-              getData={initiateData}
-              action={actions}
-              open={open}
-              setOpen={setOpen}
-              dataSiswaInput={dataSiswaInput}
-              setDataSiswaInput={setDataSiswaInput}
-              initialClassId={initialClassId}
-            />
-          </div>
-        </div>
-        <Table
-          columns={columns}
-          dataSource={dataSiswa}
-          scroll={{ x: 400 }}
-          className="h-[100%]"
-        />
-      </div>
-    </Spin>
-  )
+  return {
+    loading,
+    columns,
+    dataSiswa,
+    open,
+    setOpen,
+    actions,
+    dataSiswaInput,
+    setDataSiswaInput,
+    initialClassId,
+    showModal,
+    initiateData,
+    openDetail,
+    setOpenDetail,
+    dataSiswaSelected,
+    dataHistorySpp,
+    setDataHistorySpp,
+    dataHistorySeragam,
+    setDataHistorySeragam,
+    getHistoryPembayaranSppBySiswaId,
+  }
 }
