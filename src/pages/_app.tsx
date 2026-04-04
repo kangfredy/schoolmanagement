@@ -8,7 +8,6 @@ import "@/screens/DataJurusan/DataJurusan.style.css";
 import "@/screens/DataKelas/DataKelas.style.css";
 import "@/screens/UserMenu/UserMenu.style.css";
 import "@/screens/ReminderSPP/ReminderSPP.style.css";
-import "@/screens/ReminderSeragam/ReminderSeragam.style.css";
 import "@/screens/PembayaranSpp/PembayaranSpp.style.css";
 import "@/screens/PembayaranSeragam/PembayaranSeragam.style.css";
 import "@/screens/DataAdministrasi/DataAdministrasi.style.css";
