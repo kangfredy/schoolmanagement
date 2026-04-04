@@ -1,32 +1,29 @@
 import { SearchOutlined } from '@ant-design/icons'
-import { InputRef, Modal, Popconfirm, message } from 'antd'
-import { Button, Input, Space, Table } from 'antd'
+import { InputRef, Input, Space, Button } from 'antd'
 import type { ColumnType, ColumnsType } from 'antd/es/table'
 import type { FilterConfirmProps } from 'antd/es/table/interface'
-import React, { useEffect, useRef, useState } from 'react'
-import { ModalSeragam } from '../components/ModalSeragam'
+import { useEffect, useRef, useState } from 'react'
 import { getPembayaranSeragam } from '@/helper/apiHelper/pembayaranSeragam'
 import { getHistoryPembayaranSeragam } from '@/helper/apiHelper/historyPembayaranSeragam'
-import { IDataPembayaranSeragamModal } from '@/interface/ui/state/dataPembayaranSeragamModal'
-import { IPembayaranSeragam } from '@/interface/ui/state/dataPembayaranSeragamTable'
 import {
   historyPembayaranSeragamByPembayaranSeragamId,
-  dataHistoryPembayaranSeragamUpdate,
 } from '@/helper/apiHelper/historyPembayaranSeragam'
 import { detailHistoryPembayaranSeragamByPembayaranSeragamId } from '@/helper/apiHelper/detailHistoryPembayaranSeragam'
+import { IPembayaranSeragam } from '@/interface/ui/state/dataPembayaranSeragamTable'
 import { IHistorySeragam } from '@/interface/ui/state/dataHistorySeragamTable'
 import { IDetailHistorySeragam } from '@/interface/ui/state/dataDetailHistorySeragamTable'
 import { getDataSeragam } from '@/helper/apiHelper/seragam'
 import { ISeragam } from '@/interface/ui/state/dataSeragamModal'
 import { convertMoney } from '@/helper/util/money'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
+import { useUserSession } from '@/hook/useUserSession'
 import { convertDateTime } from '@/helper/util/time'
 
 type DataIndex = keyof IPembayaranSeragam
 
-export const PembayaranSeragam = () => {
+export function usePembayaranSeragamController() {
   const [searchText, setSearchText] = useState('')
-  const [searchedColumn, setSearchedColumn] = useState('')
+  const [searchedColumn, setSearchedColumn] = useState<any>('')
   const searchInput = useRef<InputRef>(null)
   const [open, setOpen] = useState(false)
   const [actions, setActions] = useState('')
@@ -50,13 +47,11 @@ export const PembayaranSeragam = () => {
   const [dataAllHistorySeragam, setDataAllHistorySeragam] = useState<
     IHistorySeragam[]
   >([])
-  const [userId, setUserId] = useState(0)
-  const [userRole, setUserRole] = useState('')
+  const { userId, userRole } = useUserSession()
 
   const showModal = (action: string, data: IPembayaranSeragam) => {
-    // console.log('TYPE OF DATA', typeof data)
     if (action === 'detail') {
-      let dataInput = {
+      const dataInput = {
         id: data?.id,
         siswaId: data?.siswaId,
         tunggakan: data?.tunggakan,
@@ -68,9 +63,7 @@ export const PembayaranSeragam = () => {
         updatedBy: data?.updatedBy,
         user: data?.user,
       }
-
       setDataPembayaranSeragamInput(dataInput)
-      // console.log('dataInput PembayaranSeragam', dataInput)
       getHistoryPembayaranSeragamByPembayaranSeragamId(data?.id, action)
     } else {
       setActions(action)
@@ -82,84 +75,62 @@ export const PembayaranSeragam = () => {
     id: number,
     action: string,
   ) => {
-    historyPembayaranSeragamByPembayaranSeragamId(id)
-      .then(response => {
-        // console.log('historyPembayaranSppByPembayaranSppId ', response)
+    const fetchData = async () => {
+      try {
+        const responseHistory =
+          await historyPembayaranSeragamByPembayaranSeragamId(id)
         const arrayDataTemp: IHistorySeragam[] = []
-
-        response.data.getHistoryPembayaranSeragamById?.map((datas: any) => {
-          const object1: IHistorySeragam = {
-            id: datas?.id,
-            pembayaranSeragamId: datas?.pembayaranSeragamId,
-            jumlahDiBayar: datas?.jumlahDiBayar,
-            tanggalPembayaran: datas?.tanggalPembayaran,
-            pembayaranSeragam: datas?.pembayaranSeragam,
-            updatedAt: datas?.updatedAt,
-            updatedBy: datas?.updatedBy,
-            user: datas?.user,
-          }
-          arrayDataTemp.push(object1)
-        })
-
-        //Assign the mapped array to the state
-        setDataHistorySeragam(arrayDataTemp)
-      })
-      .then(response => {
-        detailHistoryPembayaranSeragamByPembayaranSeragamId(id)
-          .then(response => {
-            const arrayDataTemp: IDetailHistorySeragam[] = []
-
-            response.data.getDetailHistoryPembayaranSeragamById?.map(
-              (datas: any) => {
-                const object1: IDetailHistorySeragam = {
-                  id: datas?.id,
-                  pembayaranSeragamId: datas?.pembayaranSeragamId,
-                  pembayaranSeragam: datas?.pembayaranSeragam,
-                  seragamId: datas?.seragamId,
-                  seragam: datas?.seragam,
-                  updatedAt: datas?.updatedAt,
-                  updatedBy: datas?.updatedBy,
-                  user: datas?.user,
-                }
-                arrayDataTemp.push(object1)
-              },
-            )
-
-            //Assign the mapped array to the state
-            setDataDetailHistoryPembayaranSeragam(arrayDataTemp)
-            // console.log('FROM PEMBAYARAN SERAGAM ', arrayDataTemp)
-
-            const filteredDataSeragam = dataSeragam.filter(seragam => {
-              // Check if seragamId does not exist in dataHistorySeragam
-              const notExistsInHistory = !arrayDataTemp.some(
-                history => history.seragamId === seragam.id,
-              )
-
-              // Return true if seragamId does not exist in dataHistorySeragam,
-              // false otherwise
-              return notExistsInHistory
+        responseHistory.data.getHistoryPembayaranSeragamById?.map(
+          (datas: any) => {
+            arrayDataTemp.push({
+              id: datas?.id,
+              pembayaranSeragamId: datas?.pembayaranSeragamId,
+              jumlahDiBayar: datas?.jumlahDiBayar,
+              tanggalPembayaran: datas?.tanggalPembayaran,
+              pembayaranSeragam: datas?.pembayaranSeragam,
+              updatedAt: datas?.updatedAt,
+              updatedBy: datas?.updatedBy,
+              user: datas?.user,
             })
-            // console.log('CURRENT filteredDataSeragam', filteredDataSeragam)
-            setDataInputFilteredSeragam(filteredDataSeragam)
-          })
-          .then(response => {
-            setLoading(false)
-            setActions(action)
-          })
-          .finally(() => {
-            setOpen(true)
-          })
-          .catch(error => {
-            console.error(error.message)
-            setLoading(false)
-            setOpen(false)
-          })
-      })
-      .catch(error => {
+          },
+        )
+        setDataHistorySeragam(arrayDataTemp)
+
+        const responseDetail =
+          await detailHistoryPembayaranSeragamByPembayaranSeragamId(id)
+        const arrayDetailTemp: IDetailHistorySeragam[] = []
+        responseDetail.data.getDetailHistoryPembayaranSeragamById?.map(
+          (datas: any) => {
+            arrayDetailTemp.push({
+              id: datas?.id,
+              pembayaranSeragamId: datas?.pembayaranSeragamId,
+              pembayaranSeragam: datas?.pembayaranSeragam,
+              seragamId: datas?.seragamId,
+              seragam: datas?.seragam,
+              updatedAt: datas?.updatedAt,
+              updatedBy: datas?.updatedBy,
+              user: datas?.user,
+            })
+          },
+        )
+        setDataDetailHistoryPembayaranSeragam(arrayDetailTemp)
+        const filteredDataSeragam = dataSeragam.filter(
+          seragam =>
+            !arrayDetailTemp.some(history => history.seragamId === seragam.id),
+        )
+        setDataInputFilteredSeragam(filteredDataSeragam)
+
+        setActions(action)
+        setLoading(false)
+        setOpen(true)
+      } catch (error: any) {
         console.error(error.message)
         setLoading(false)
         setOpen(false)
-      })
+      }
+    }
+
+    fetchData()
   }
 
   const initiateData = async () => {
@@ -168,7 +139,7 @@ export const PembayaranSeragam = () => {
       const response1 = await getPembayaranSeragam()
       const arrayTemp1: IPembayaranSeragam[] = []
       response1.data.getPembayaranSeragam?.map((datas: any) => {
-        const object1: IPembayaranSeragam = {
+        arrayTemp1.push({
           id: datas?.id,
           siswaId: datas?.siswaId,
           tunggakan: datas?.tunggakan,
@@ -177,31 +148,28 @@ export const PembayaranSeragam = () => {
           updatedAt: datas?.updatedAt,
           updatedBy: datas?.updatedBy,
           user: datas?.user,
-        }
-        arrayTemp1.push(object1)
+        })
       })
       setDataPembayaranSeragam(arrayTemp1)
 
       const response2 = await getDataSeragam()
       const arrayTemp2: ISeragam[] = []
       response2.data.getSeragam?.map((datas: any) => {
-        const object2: ISeragam = {
+        arrayTemp2.push({
           id: datas?.id,
           nama: datas?.nama,
           harga: datas?.harga,
           updatedAt: datas?.updatedAt,
           updatedBy: datas?.updatedBy,
           user: datas?.user,
-        }
-        arrayTemp2.push(object2)
+        })
       })
       setDataSeragam(arrayTemp2)
-      // console.log('DATA SERAGAM', arrayTemp2)
 
       const response3 = await getHistoryPembayaranSeragam()
       const arrayTemp3: IHistorySeragam[] = []
       response3.data.getHistoryPembayaranSeragam?.map((datas: any) => {
-        const object3: IHistorySeragam = {
+        arrayTemp3.push({
           id: datas?.id,
           pembayaranSeragamId: datas?.pembayaranSeragamId,
           jumlahDiBayar: datas?.jumlahDiBayar,
@@ -210,31 +178,17 @@ export const PembayaranSeragam = () => {
           updatedAt: datas?.updatedAt,
           updatedBy: datas?.updatedBy,
           user: datas?.user,
-        }
-        arrayTemp3.push(object3)
+        })
       })
       setDataAllHistorySeragam(arrayTemp3)
-      // console.log('setDataAllHistorySeragam', arrayTemp3)
-
       setLoading(false)
-    } catch (error) {
+    } catch {
       setLoading(false)
-    }
-  }
-
-  const getUserData = async () => {
-    const user = await getUserInfoWithNullCheck()
-    if (user) {
-      setUserId(user.id)
-      setUserRole(user.role)
-    } else {
-      console.log('LOCALSTORAGE IS EMPTY')
     }
   }
 
   useEffect(() => {
     initiateData()
-    getUserData()
   }, [])
 
   const handleSearch = (
@@ -307,12 +261,7 @@ export const PembayaranSeragam = () => {
             }}>
             Filter
           </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close()
-            }}>
+          <Button type="link" size="small" onClick={() => close()}>
             close
           </Button>
         </Space>
@@ -325,9 +274,7 @@ export const PembayaranSeragam = () => {
       let data = record
       for (const key of dataIndex) {
         data = (data as any)[key]
-        if (data === undefined) {
-          return false // If any nested key is undefined, no need to continue
-        }
+        if (data === undefined) return false
       }
       return data
         .toString()
@@ -335,9 +282,7 @@ export const PembayaranSeragam = () => {
         .includes(value.toString().toLowerCase())
     },
     onFilterDropdownOpenChange: visible => {
-      if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100)
-      }
+      if (visible) setTimeout(() => searchInput.current?.select(), 100)
     },
     render: text =>
       searchedColumn === dataIndex ? (
@@ -347,7 +292,8 @@ export const PembayaranSeragam = () => {
                 .toString()
                 .split(new RegExp(`(${searchText})`, 'gi'))
                 .map((part: string, index: number) =>
-                  searchText && part.toLowerCase() === searchText.toLowerCase() ? (
+                  searchText &&
+                  part.toLowerCase() === searchText.toLowerCase() ? (
                     <span key={index} style={{ backgroundColor: '#ffc069', padding: 0 }}>
                       {part}
                     </span>
@@ -450,7 +396,7 @@ export const PembayaranSeragam = () => {
           <Button
             type="primary"
             size="middle"
-            className="bg-blue-500"
+            className="btnPrimary"
             onClick={() => showModal('detail', record)}>
             Detail
           </Button>
@@ -460,57 +406,29 @@ export const PembayaranSeragam = () => {
   ]
 
   if (userRole !== 'admin') {
-    // Remove the Updated At column from the columns array if the userRole is not 'admin'
     columns = columns.filter(column => column.key !== 'updatedBy')
     columns = columns.filter(column => column.key !== 'updatedAt')
   }
 
-  return (
-    <div className="rounded-md bg-white p-2 h-[100%] overflow-scroll">
-      <div className="my-4 flex items-center justify-between px-4">
-        <div className="flex items-center">
-          <h2 className="text-xl font-bold text-black">Pembayaran Seragam</h2>
-        </div>
-        <div className="flex items-center">
-          <Button
-            type="primary"
-            size="middle"
-            className="bg-blue-500"
-            onClick={() => showModal('tambah', {} as IPembayaranSeragam)}>
-            Tambah Seragam
-          </Button>
-          <ModalSeragam
-            getData={initiateData}
-            action={actions}
-            open={open}
-            setOpen={setOpen}
-            dataPembayaranSeragamInput={dataPembayaranSeragamInput}
-            setDataPembayaranSeragamInput={setDataPembayaranSeragamInput}
-            dataHistorySeragam={dataHistorySeragam}
-            setDataHistorySeragam={setDataHistorySeragam}
-            dataDetailHistoryPembayaranSeragam={
-              dataDetailHistoryPembayaranSeragam
-            }
-            setDataDetailHistoryPembayaranSeragam={
-              setDataDetailHistoryPembayaranSeragam
-            }
-            dataSeragam={dataSeragam}
-            setDataSeragam={setDataSeragam}
-            dataInputFilteredSeragam={dataInputFilteredSeragam}
-            setDataInputFilteredSeragam={setDataInputFilteredSeragam}
-            showModal={showModal}
-            getHistoryPembayaranSeragamByPembayaranSeragamId={
-              getHistoryPembayaranSeragamByPembayaranSeragamId
-            }
-          />
-        </div>
-      </div>
-      <Table
-        columns={columns}
-        dataSource={dataPembayaranSeragam}
-        scroll={{ x: 400 }}
-        className="h-[100%]"
-      />
-    </div>
-  )
+  return {
+    loading,
+    columns,
+    dataPembayaranSeragam,
+    open,
+    setOpen,
+    actions,
+    dataPembayaranSeragamInput,
+    setDataPembayaranSeragamInput,
+    dataHistorySeragam,
+    setDataHistorySeragam,
+    dataDetailHistoryPembayaranSeragam,
+    setDataDetailHistoryPembayaranSeragam,
+    dataSeragam,
+    setDataSeragam,
+    dataInputFilteredSeragam,
+    setDataInputFilteredSeragam,
+    showModal,
+    initiateData,
+    getHistoryPembayaranSeragamByPembayaranSeragamId,
+  }
 }

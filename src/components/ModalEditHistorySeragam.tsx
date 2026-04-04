@@ -1,14 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Input, Modal, Spin, message } from 'antd'
 import { useEffect, useState } from 'react'
-import { Select, Space } from 'antd'
-import { SiGoogleclassroom } from 'react-icons/si'
 import { IHistorySeragam } from '@/interface/ui/state/dataHistorySeragamTable'
 import { ModalEditHistorySeragamProps } from '@/interface/ui/props/ModalEditHistorySeragam'
 import { dataHistoryPembayaranSeragamUpdate } from '@/helper/apiHelper/historyPembayaranSeragam'
-import { RiShirtLine } from 'react-icons/ri'
-import { ISelect } from '@/interface/ui/component/dropdown'
-import { IDataHistorySeragamModal } from '@/interface/ui/state/dataHistorySeragamModal'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 import { addDecimalPoints } from '@/helper/util/number'
 

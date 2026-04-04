@@ -1,12 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Input, Modal, Spin, message } from 'antd'
+import { Modal, Spin, message } from 'antd'
 import { useEffect, useState } from 'react'
-import { Select, Space } from 'antd'
-import { SiGoogleclassroom } from 'react-icons/si'
-import { IDataSeragamnModal } from '@/interface/ui/state/dataSeragamModal'
+import { Select } from 'antd'
 import { ModalTambahDetailHistorySeragamProps } from '@/interface/ui/props/ModalTambahDetailHistorySeragam'
 import { tambahDetailHistoryPembayaranSeragam } from '@/helper/apiHelper/detailHistoryPembayaranSeragam'
-import { RiShirtLine } from 'react-icons/ri'
 import { ISelect } from '@/interface/ui/component/dropdown'
 import { IDataDetailHistorySeragamModal } from '@/interface/ui/state/dataDetailHistorySeragamModal'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
@@ -16,14 +13,9 @@ export function ModalTambahDetailHistorySeragam({
   action,
   setOpen,
   getData,
-  setDataSeragam,
-  dataSeragam,
-  setDataInputFilteredSeragam,
   dataInputFilteredSeragam,
-  setDataPembayaranSeragamInput,
   dataPembayaranSeragamInput,
   showModal,
-  getHistoryPembayaranSeragamByPembayaranSeragamId,
 }: ModalTambahDetailHistorySeragamProps) {
   const [confirmLoading, setConfirmLoading] = useState(false)
   const [loading, setLoading] = useState<boolean>(false)
@@ -98,7 +90,7 @@ export function ModalTambahDetailHistorySeragam({
         getData()
         setConfirmLoading(false)
       })
-      .then((response: any) => {
+      .then(() => {
         setOpen(false)
         message.success('Tambah Data Sukses')
       })

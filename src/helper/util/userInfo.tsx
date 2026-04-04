@@ -1,35 +1,27 @@
-import { decodeData, key } from "./saltPassword"
+import { useUserStore } from '@/store/userStore'
+import type { UserInfo } from '@/store/userStore'
 
-export interface UserInfo {
-  id: number
-  username: string
-  isLogin: boolean
-  role: string
+export type { UserInfo }
+
+/** Get current user from Zustand store (sync). Use this in components/hooks. */
+export function getUserInfoSync(): UserInfo | null {
+  return useUserStore.getState().user
 }
 
-export async function getUserInfo (): Promise<UserInfo | null> {
-  //const userString = localStorage.getItem('user')
- // const decodeString = decodeData(userString,key)
- const userencrypted = localStorage.getItem('user')
-  let decodeString = await decodeData(userencrypted? userencrypted.toString() : '',key)
-  if (decodeString) {
-    return JSON.parse(decodeString) as UserInfo
-  }
-  return null
+/** Async wrapper for compatibility with existing code that awaits getUserInfo. */
+export async function getUserInfo(): Promise<UserInfo | null> {
+  return Promise.resolve(useUserStore.getState().user)
 }
 
 export async function getUserInfoWithNullCheck(): Promise<UserInfo | null> {
-  const user = await getUserInfo(); // Await the getUserInfo() promise
-
+  const user = useUserStore.getState().user
   if (user) {
-    const { id, username, isLogin, role } = user;
     return {
-      id,
-      username,
-      isLogin,
-      role,
-    };
+      id: user.id,
+      username: user.username,
+      isLogin: user.isLogin,
+      role: user.role,
+    }
   }
-
-  return null;
+  return null
 }

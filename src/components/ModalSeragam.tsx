@@ -3,28 +3,22 @@ import {
   Input,
   Modal,
   Button,
-  Select,
   Space,
   Table,
   InputRef,
   Popconfirm,
-  Switch,
-  Tag,
   message,
   Spin,
 } from 'antd'
 import type { ColumnType, ColumnsType } from 'antd/es/table'
 import type { FilterConfirmProps } from 'antd/es/table/interface'
-import { SearchOutlined, UserOutlined, IdcardOutlined } from '@ant-design/icons'
-import { Dispatch, SetStateAction, useState, useEffect, useRef } from 'react'
-import Highlighter from 'react-highlight-words'
+import { SearchOutlined } from '@ant-design/icons'
+import { useState, useEffect, useRef } from 'react'
 import { convertDate } from '@/helper/util/time'
 import { convertMoney } from '@/helper/util/money'
 import { RiShirtLine } from 'react-icons/ri'
-import { IoIosResize } from 'react-icons/io'
 import { dataHistoryPembayaranSeragamDelete } from '@/helper/apiHelper/historyPembayaranSeragam'
 import { ModalTambahSeragamProps } from '@/interface/ui/props/ModalTambahSeragam'
-import { IDataHistorySeragamModal } from '@/interface/ui/state/dataHistorySeragamModal'
 import { IHistorySeragam } from '@/interface/ui/state/dataHistorySeragamTable'
 import {
   ISeragam,
@@ -32,14 +26,12 @@ import {
 } from '@/interface/ui/state/dataSeragamModal'
 import {
   tambahSeragam,
-  dataSeragamUpdate,
   dataSeragamDelete,
 } from '@/helper/apiHelper/seragam'
 import { ModalTambahSeragamBaru } from '../components/ModalTambahSeragamBaru'
 import { ModalTambahHistorySeragam } from '../components/ModalTambahHistorySeragam'
 import { ModalEditHistorySeragam } from '../components/ModalEditHistorySeragam'
 import { ModalDetailHistoryPembayaranSeragam } from '../components/ModalDetailHistoryPembayaranSeragam'
-import { ISelect } from '@/interface/ui/component/dropdown'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 import { convertDateTime } from '@/helper/util/time'
 import { jsPDF } from 'jspdf'

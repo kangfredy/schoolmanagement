@@ -5,14 +5,11 @@ import DatePicker from 'react-widgets/DatePicker'
 import Localization from 'react-widgets/Localization'
 import { DateLocalizer } from 'react-widgets/IntlLocalizer'
 import {
-  DatePickerProps,
-  Form,
   Input,
   Modal,
   Spin,
   message,
   Select,
-  Space,
   Button,
   Popconfirm,
 } from 'antd'
@@ -26,10 +23,8 @@ import { ISelect } from '@/interface/ui/component/dropdown'
 import { IDataSiswaModal } from '@/interface/ui/state/dataSiswaModal'
 import { ModalTambahSiswaProps } from '@/interface/ui/props/ModalTambahSiswa'
 import { UserOutlined, IdcardOutlined } from '@ant-design/icons'
-import { BiMapAlt } from 'react-icons/bi'
 import { FaSchool } from 'react-icons/fa'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
-import dayjs from 'dayjs'
 
 export function ModalTambahSiswa({
   action,

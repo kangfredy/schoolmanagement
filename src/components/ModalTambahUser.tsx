@@ -1,10 +1,6 @@
 import { Input, Modal, Spin, message } from 'antd'
 import { useEffect, useState } from 'react'
-import { Select, Space } from 'antd'
-import { SiGoogleclassroom } from 'react-icons/si'
-import { ISelect } from '@/interface/ui/component/dropdown'
-import { MdWarehouse } from 'react-icons/md'
-import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
+import { Select } from 'antd'
 import { IUserModal, ModalTambahUserProps } from '@/interface/ui/state/dataUser'
 import {
   dataUserUpdateService,

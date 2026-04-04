@@ -1,21 +1,18 @@
-import { ModalTambahUser } from "@/components/ModalTambahUser"
-import { dataUserDeleteService, getUserService } from "@/helper/apiHelper/user"
-import { convertDateTime } from "@/helper/util/time"
-import { getUserInfoWithNullCheck } from "@/helper/util/userInfo"
-import { IUser, IUserModal } from "@/interface/ui/state/dataUser"
-import { SearchOutlined } from "@ant-design/icons"
-import { InputRef, message, Input, Space, Button, Popconfirm, Spin, Table } from "antd"
-import { ColumnType, ColumnsType } from "antd/es/table"
-import { FilterConfirmProps } from "antd/es/table/interface"
-import React, { useEffect, useRef, useState } from "react"
-import Highlighter from "react-highlight-words"
+import { SearchOutlined } from '@ant-design/icons'
+import { InputRef, message, Input, Space, Button, Popconfirm } from 'antd'
+import { ColumnType, ColumnsType } from 'antd/es/table'
+import { FilterConfirmProps } from 'antd/es/table/interface'
+import { useEffect, useRef, useState } from 'react'
+import { dataUserDeleteService, getUserService } from '@/helper/apiHelper/user'
+import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
+import { useUserSession } from '@/hook/useUserSession'
+import { IUser, IUserModal } from '@/interface/ui/state/dataUser'
 
 type DataIndex = keyof IUser
 
-
-export const UserMenu = () => {
+export function useUserMenuController() {
   const [searchText, setSearchText] = useState('')
-  const [searchedColumn, setSearchedColumn] = useState('')
+  const [searchedColumn, setSearchedColumn] = useState<DataIndex | ''>('')
   const searchInput = useRef<InputRef>(null)
   const [open, setOpen] = useState(false)
   const [actions, setActions] = useState('')
@@ -24,11 +21,10 @@ export const UserMenu = () => {
   const [dataUserInput, setDataUserInput] = useState<IUserModal>(
     {} as IUserModal,
   )
-  const [userId, setUserId] = useState(0)
-  const [userRole, setUserRole] = useState('')
+  const { userId, userRole } = useUserSession()
 
   const showModal = (action: string, data: IUser) => {
-    let dataInput = {
+    const dataInput = {
       id: data?.id,
       username: data?.username,
       role: data?.role,
@@ -39,31 +35,19 @@ export const UserMenu = () => {
   }
 
   const initiateData = async () => {
-    setLoading(true)
-    await getUserService()
-      .then(response => {
-        setDataUser(response.data.userData)
-      })
-      .then(() => {
-        setLoading(false)
-      })
-      .catch(error => {
-        setLoading(false)
-      })
-  }
-  const getUserData = async () => {
-    const user = await getUserInfoWithNullCheck()
-    if (user) {
-      setUserId(user.id)
-      setUserRole(user.role)
-    } else {
-      console.log('LOCALSTORAGE IS EMPTY')
+    try {
+      setLoading(true)
+      const response = await getUserService()
+      setDataUser(response.data.userData)
+    } catch {
+      // ignore
+    } finally {
+      setLoading(false)
     }
   }
 
   useEffect(() => {
     initiateData()
-    getUserData()
   }, [])
 
   const handleSearch = (
@@ -85,26 +69,20 @@ export const UserMenu = () => {
     confirm()
   }
 
-  //handle Popconfrim
   const handleConfirmDelete = async (clickedData: any) => {
-    setLoading(true)
-    await dataUserDeleteService({ id: clickedData.id, updatedBy: userId })
-      .then(response => {
-        message.success('Sukses Delete User')
-        initiateData()
-      })
-      .then(() => {
-        setLoading(false)
-      })
-      .catch(error => {
-        setLoading(false)
-        message.error(error.message)
-      })
+    try {
+      setLoading(true)
+      await dataUserDeleteService({ id: clickedData.id, updatedBy: userId })
+      message.success('Sukses Delete User')
+      await initiateData()
+    } catch (error: any) {
+      message.error(error.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const getColumnSearchProps = (
-    dataIndex: DataIndex,
-  ): ColumnType<IUser> => ({
+  const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<IUser> => ({
     filterDropdown: ({
       setSelectedKeys,
       selectedKeys,
@@ -153,12 +131,7 @@ export const UserMenu = () => {
             }}>
             Filter
           </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close()
-            }}>
+          <Button type="link" size="small" onClick={() => close()}>
             close
           </Button>
         </Space>
@@ -173,9 +146,7 @@ export const UserMenu = () => {
         .toLowerCase()
         .includes((value as string).toLowerCase()),
     onFilterDropdownOpenChange: visible => {
-      if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100)
-      }
+      if (visible) setTimeout(() => searchInput.current?.select(), 100)
     },
     render: text =>
       searchedColumn === dataIndex ? (
@@ -185,7 +156,8 @@ export const UserMenu = () => {
                 .toString()
                 .split(new RegExp(`(${searchText})`, 'gi'))
                 .map((part: string, index: number) =>
-                  searchText && part.toLowerCase() === searchText.toLowerCase() ? (
+                  searchText &&
+                  part.toLowerCase() === searchText.toLowerCase() ? (
                     <span key={index} style={{ backgroundColor: '#ffc069', padding: 0 }}>
                       {part}
                     </span>
@@ -236,7 +208,7 @@ export const UserMenu = () => {
           <Button
             type="primary"
             size="middle"
-            className="bg-blue-500"
+            className="btnPrimary"
             onClick={() => showModal('edit', record)}>
             Edit User
           </Button>
@@ -244,15 +216,11 @@ export const UserMenu = () => {
             <Popconfirm
               title="Konfirmasi Delete"
               description="Anda Yakin Ingin Menghapus Data Ini?"
-              onConfirm={e => handleConfirmDelete(record)}
+              onConfirm={() => handleConfirmDelete(record)}
               okText="Yes"
               okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
               cancelText="No">
-              <Button
-                danger
-                type="primary"
-                size="middle"
-                className="bg-blue-500">
+              <Button danger type="primary" size="middle" className="btnPrimary">
                 Delete
               </Button>
             </Popconfirm>
@@ -263,43 +231,20 @@ export const UserMenu = () => {
   ]
 
   if (userRole !== 'admin') {
-    // Remove the Updated At column from the columns array if the userRole is not 'admin'
     columns = columns.filter(column => column.key !== 'updatedBy')
     columns = columns.filter(column => column.key !== 'updatedAt')
   }
 
-  return (
-    <Spin tip="Loading Data" spinning={loading}>
-      <div className="rounded-md bg-white p-2 h-[100%] overflow-scroll">
-        <div className="my-4 flex items-center justify-between px-4">
-          <div className="flex items-center">
-            <h2 className="text-xl font-bold text-black">Data User</h2>
-          </div>
-          <div className="flex items-center">
-            <Button
-              type="primary"
-              size="middle"
-              className="bg-blue-500"
-              onClick={() => showModal('tambah', {} as IUser)}>
-              Tambah User
-            </Button>
-            <ModalTambahUser
-              getData={initiateData}
-              action={actions}
-              open={open}
-              setOpen={setOpen}
-              dataUserInput={dataUserInput}
-              setDataUserInput={setDataUserInput}
-            />
-          </div>
-        </div>
-        <Table
-          columns={columns}
-          dataSource={dataUser}
-          scroll={{ x: 400 }}
-          className="h-[100%]"
-        />
-      </div>
-    </Spin>
-  )
-    }
+  return {
+    loading,
+    columns,
+    dataUser,
+    open,
+    setOpen,
+    actions,
+    dataUserInput,
+    setDataUserInput,
+    showModal,
+    initiateData,
+  }
+}

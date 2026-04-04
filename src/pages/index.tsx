@@ -1,11 +1,9 @@
 import Image from 'next/image'
 import { Inter } from 'next/font/google'
-import { useContext, useState } from 'react'
-import { Alert, message, Button, Spin } from 'antd'
-import { LoadingOutlined } from '@ant-design/icons'
+import { useState } from 'react'
+import { message, Button } from 'antd'
 import axios from 'axios'
-import { THEME_COLOR } from '@/helper/util/theme'
-import { encodeData, key } from '@/helper/util/saltPassword'
+import { useUserStore } from '@/store/userStore'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -21,17 +19,13 @@ export default function Login() {
       axios
         .post('/api/login', { username, password })
         .then(response => {
-          // console.log(response)
           messageApi.open({ type: 'success', content: 'Login Succes' })
-          localStorage.setItem(
-            'user',
-            encodeData(JSON.stringify({
-              id: response.data.user.id,
-              username: response.data.user.username,
-              isLogin: true,
-              role: response.data.user.role,
-            }), key),
-          )
+          useUserStore.getState().setUser({
+            id: response.data.user.id,
+            username: response.data.user.username,
+            isLogin: true,
+            role: response.data.user.role,
+          })
           setLoading(false)
           window.location.href = '/home'
         })
