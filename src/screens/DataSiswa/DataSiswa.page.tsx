@@ -26,6 +26,8 @@ export function DataSiswaPage() {
     dataHistorySeragam,
     setDataHistorySeragam,
     getHistoryPembayaranSppBySiswaId,
+    pagination,
+    handleTableChange,
   } = useDataSiswaController()
 
   return (
@@ -69,6 +71,12 @@ export function DataSiswaPage() {
           dataSource={dataSiswa}
           scroll={{ x: 400 }}
           className="tableFullHeight"
+          pagination={{
+            current: pagination.current,
+            pageSize: pagination.pageSize,
+            total: pagination.total,
+          }}
+          onChange={handleTableChange}
         />
       </div>
     </Spin>

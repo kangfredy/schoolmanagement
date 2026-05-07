@@ -24,6 +24,8 @@ export function PembayaranSeragamPage() {
     showModal,
     initiateData,
     getHistoryPembayaranSeragamByPembayaranSeragamId,
+    pagination,
+    handleTableChange,
   } = usePembayaranSeragamController()
 
   return (
@@ -72,6 +74,12 @@ export function PembayaranSeragamPage() {
           dataSource={dataPembayaranSeragam}
           scroll={{ x: 400 }}
           className="tableFullHeight"
+          pagination={{
+            current: pagination.current,
+            pageSize: pagination.pageSize,
+            total: pagination.total,
+          }}
+          onChange={handleTableChange}
         />
       </div>
     </Spin>

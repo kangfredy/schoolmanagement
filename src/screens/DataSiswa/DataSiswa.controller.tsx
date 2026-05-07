@@ -41,6 +41,7 @@ export function useDataSiswaController() {
     IHistorySeragam[]
   >([])
   const { userId, userRole } = useUserSession()
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 })
 
   const getHistoryPembayaranSppBySiswaId = async (siswaId: number) => {
     try {
@@ -114,10 +115,16 @@ export function useDataSiswaController() {
     }
   }
 
-  const initiateData = async () => {
+  const initiateData = async (page = pagination.current, pageSize = pagination.pageSize, searchCol = searchedColumn, searchTxt = searchText) => {
     try {
       setLoading(true)
-      const response = await getDataSiswa()
+      const params = {
+        page,
+        pageSize,
+        searchColumn: Array.isArray(searchCol) ? searchCol.join(',') : searchCol,
+        searchText: searchTxt,
+      }
+      const response = await getDataSiswa(params)
       const arrayTemp: Isiswa[] = []
       response.data.dataSiswaData?.map((datas: any) => {
         const object1: Isiswa = {
@@ -141,6 +148,9 @@ export function useDataSiswaController() {
         arrayTemp.push(object1)
       })
       setDataSiswa(arrayTemp)
+      const hasNextPage = response.data.hasNextPage
+      const simulatedTotal = hasNextPage ? page * pageSize + 1 : (page - 1) * pageSize + arrayTemp.length
+      setPagination(prev => ({ ...prev, total: simulatedTotal, current: page, pageSize }))
     } catch {
       // ignore
     } finally {
@@ -149,7 +159,7 @@ export function useDataSiswaController() {
   }
 
   useEffect(() => {
-    initiateData()
+    initiateData(1, pagination.pageSize, searchedColumn, searchText)
   }, [])
 
   const handleSearch = (
@@ -158,8 +168,10 @@ export function useDataSiswaController() {
     dataIndex: DataIndex,
   ) => {
     confirm()
-    setSearchText(selectedKeys[0])
+    const text = selectedKeys[0] || ''
+    setSearchText(text)
     setSearchedColumn(dataIndex)
+    initiateData(1, pagination.pageSize, dataIndex, text)
   }
 
   const handleReset = (
@@ -168,7 +180,17 @@ export function useDataSiswaController() {
   ) => {
     clearFilters()
     setSearchText('')
+    setSearchedColumn('')
     confirm()
+    initiateData(1, pagination.pageSize, '', '')
+  }
+
+  const handleTableChange = (newPagination: any) => {
+    let newPage = newPagination.current;
+    if (newPagination.pageSize !== pagination.pageSize) {
+      newPage = 1;
+    }
+    initiateData(newPage, newPagination.pageSize, searchedColumn, searchText);
   }
 
   const handleConfirmDelete = async (clickedData: any) => {
@@ -242,17 +264,6 @@ export function useDataSiswaController() {
     filterIcon: (filtered: boolean) => (
       <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />
     ),
-    onFilter: (value, record) => {
-      let data = record
-      for (const key of dataIndex) {
-        data = (data as any)[key]
-        if (data === undefined) return false
-      }
-      return data
-        .toString()
-        .toLowerCase()
-        .includes(value.toString().toLowerCase())
-    },
     onFilterDropdownOpenChange: visible => {
       if (visible) setTimeout(() => searchInput.current?.select(), 100)
     },
@@ -427,5 +438,7 @@ export function useDataSiswaController() {
     dataHistorySeragam,
     setDataHistorySeragam,
     getHistoryPembayaranSppBySiswaId,
+    pagination,
+    handleTableChange,
   }
 }

@@ -19,6 +19,8 @@ export function PembayaranSppPage() {
     showModal,
     initiateData,
     getHistoryPembayaranSppByPembayaranSppId,
+    pagination,
+    handleTableChange,
   } = usePembayaranSppController()
 
   return (
@@ -52,6 +54,12 @@ export function PembayaranSppPage() {
             dataSource={dataSpp}
             scroll={{ x: 400 }}
             className="tableFullHeight"
+            pagination={{
+              current: pagination.current,
+              pageSize: pagination.pageSize,
+              total: pagination.total,
+            }}
+            onChange={handleTableChange}
           />
         </div>
       </Spin>

@@ -1,9 +1,9 @@
 import axios from 'axios'
 
-export const getDataSiswa = () => {
+export const getDataSiswa = (params?: any) => {
   return new Promise<any>((resolve, reject) => {
     axios
-      .get('/api/siswa/dataSiswaData')
+      .get('/api/siswa/dataSiswaData', { params })
       .then(response => resolve(response))
       .catch(error => reject(error))
   })

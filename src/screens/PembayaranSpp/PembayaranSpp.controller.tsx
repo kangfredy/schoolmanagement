@@ -34,6 +34,7 @@ export function usePembayaranSppController() {
   )
   const [dataAllHistorySpp, setDataAllHistorySpp] = useState<IHistorySpp[]>([])
   const { userId, userRole } = useUserSession()
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 })
 
   const reCalculate = async (data: ISpp) => {
     try {
@@ -93,10 +94,16 @@ export function usePembayaranSppController() {
     }
   }
 
-  const initiateData = async () => {
+  const initiateData = async (page = pagination.current, pageSize = pagination.pageSize, searchCol = searchedColumn, searchTxt = searchText) => {
     setLoading(true)
     try {
-      const response1 = await getPembayaranSpp()
+      const params = {
+        page,
+        pageSize,
+        searchColumn: Array.isArray(searchCol) ? searchCol.join(',') : searchCol,
+        searchText: searchTxt,
+      }
+      const response1 = await getPembayaranSpp(params)
       const arrayTemp1: ISpp[] = []
       response1.data.getPembayaranSpp?.map((datas: any) => {
         arrayTemp1.push({
@@ -111,6 +118,9 @@ export function usePembayaranSppController() {
         })
       })
       setDataSpp(arrayTemp1)
+      const hasNextPage = response1.data.hasNextPage
+      const simulatedTotal = hasNextPage ? page * pageSize + 1 : (page - 1) * pageSize + arrayTemp1.length
+      setPagination(prev => ({ ...prev, total: simulatedTotal, current: page, pageSize }))
 
       const response2 = await getHistoryPembayaranSpp()
       const arrayTemp2: IHistorySpp[] = []
@@ -136,7 +146,7 @@ export function usePembayaranSppController() {
   }
 
   useEffect(() => {
-    initiateData()
+    initiateData(1, pagination.pageSize, searchedColumn, searchText)
   }, [])
 
   const handleSearch = (
@@ -145,8 +155,10 @@ export function usePembayaranSppController() {
     dataIndex: DataIndex,
   ) => {
     confirm()
-    setSearchText(selectedKeys[0])
+    const text = selectedKeys[0] || ''
+    setSearchText(text)
     setSearchedColumn(dataIndex)
+    initiateData(1, pagination.pageSize, dataIndex, text)
   }
 
   const handleReset = (
@@ -155,7 +167,17 @@ export function usePembayaranSppController() {
   ) => {
     clearFilters()
     setSearchText('')
+    setSearchedColumn('')
     confirm()
+    initiateData(1, pagination.pageSize, '', '')
+  }
+
+  const handleTableChange = (newPagination: any) => {
+    let newPage = newPagination.current;
+    if (newPagination.pageSize !== pagination.pageSize) {
+      newPage = 1;
+    }
+    initiateData(newPage, newPagination.pageSize, searchedColumn, searchText);
   }
 
   const getColumnSearchProps = (dataIndex: any): ColumnType<ISpp> => ({
@@ -216,17 +238,6 @@ export function usePembayaranSppController() {
     filterIcon: (filtered: boolean) => (
       <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />
     ),
-    onFilter: (value, record) => {
-      let data = record
-      for (const key of dataIndex) {
-        data = (data as any)[key]
-        if (data === undefined) return false
-      }
-      return data
-        .toString()
-        .toLowerCase()
-        .includes(value.toString().toLowerCase())
-    },
     onFilterDropdownOpenChange: visible => {
       if (visible) setTimeout(() => searchInput.current?.select(), 100)
     },
@@ -379,5 +390,7 @@ export function usePembayaranSppController() {
     showModal,
     initiateData,
     getHistoryPembayaranSppByPembayaranSppId,
+    pagination,
+    handleTableChange,
   }
 }

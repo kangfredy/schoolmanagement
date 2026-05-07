@@ -15,6 +15,8 @@ export function DataKelasPage() {
     setDataKelasInput,
     showModal,
     initiateData,
+    pagination,
+    handleTableChange,
   } = useDataKelasController()
 
   return (
@@ -47,6 +49,12 @@ export function DataKelasPage() {
           dataSource={dataKelas}
           scroll={{ x: 400 }}
           className="tableFullHeight"
+          pagination={{
+            current: pagination.current,
+            pageSize: pagination.pageSize,
+            total: pagination.total,
+          }}
+          onChange={handleTableChange}
         />
       </div>
     </Spin>

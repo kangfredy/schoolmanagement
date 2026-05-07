@@ -2,7 +2,7 @@ import { Spin, Table, Button } from 'antd'
 import { useReminderSPPController } from './ReminderSPP.controller'
 
 export function ReminderSPPPage() {
-  const { loading, columns, dataUser, handleGeneratePdf } =
+  const { loading, columns, dataUser, handleGeneratePdf, pagination, handleTableChange } =
     useReminderSPPController()
 
   return (
@@ -24,12 +24,18 @@ export function ReminderSPPPage() {
             </Button>
           </div>
         </div>
-        <Table
-          columns={columns}
-          dataSource={dataUser}
-          scroll={{ x: 400 }}
-          className="tableFullHeight"
-        />
+          <Table
+            columns={columns}
+            dataSource={dataUser}
+            scroll={{ x: 400 }}
+            className="tableFullHeight"
+            pagination={{
+              current: pagination.current,
+              pageSize: pagination.pageSize,
+              total: pagination.total,
+            }}
+            onChange={handleTableChange}
+          />
       </div>
     </Spin>
   )

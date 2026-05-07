@@ -1,9 +1,9 @@
 import axios from "axios";
 
-export const getJurusan = () => {
+export const getJurusan = (params?: any) => {
   return new Promise<any>((resolve, reject) => {
     axios
-      .get("/api/jurusan/jurusanData")
+      .get("/api/jurusan/jurusanData", { params })
       .then((response) => resolve(response))
       .catch((error) => reject(error));
   });

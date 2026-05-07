@@ -1,9 +1,9 @@
 import axios from "axios";
 
-export const getDataKelas = () => {
+export const getDataKelas = (params?: any) => {
   return new Promise<any>((resolve, reject) => {
     axios
-      .get("/api/kelas/kelasData")
+      .get("/api/kelas/kelasData", { params })
       .then((response) => resolve(response))
       .catch((error) => reject(error));
   });

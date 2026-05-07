@@ -48,6 +48,7 @@ export function usePembayaranSeragamController() {
     IHistorySeragam[]
   >([])
   const { userId, userRole } = useUserSession()
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 })
 
   const showModal = (action: string, data: IPembayaranSeragam) => {
     if (action === 'detail') {
@@ -133,10 +134,16 @@ export function usePembayaranSeragamController() {
     fetchData()
   }
 
-  const initiateData = async () => {
+  const initiateData = async (page = pagination.current, pageSize = pagination.pageSize, searchCol = searchedColumn, searchTxt = searchText) => {
     setLoading(true)
     try {
-      const response1 = await getPembayaranSeragam()
+      const params = {
+        page,
+        pageSize,
+        searchColumn: Array.isArray(searchCol) ? searchCol.join(',') : searchCol,
+        searchText: searchTxt,
+      }
+      const response1 = await getPembayaranSeragam(params)
       const arrayTemp1: IPembayaranSeragam[] = []
       response1.data.getPembayaranSeragam?.map((datas: any) => {
         arrayTemp1.push({
@@ -151,6 +158,9 @@ export function usePembayaranSeragamController() {
         })
       })
       setDataPembayaranSeragam(arrayTemp1)
+      const hasNextPage = response1.data.hasNextPage
+      const simulatedTotal = hasNextPage ? page * pageSize + 1 : (page - 1) * pageSize + arrayTemp1.length
+      setPagination(prev => ({ ...prev, total: simulatedTotal, current: page, pageSize }))
 
       const response2 = await getDataSeragam()
       const arrayTemp2: ISeragam[] = []
@@ -188,7 +198,7 @@ export function usePembayaranSeragamController() {
   }
 
   useEffect(() => {
-    initiateData()
+    initiateData(1, pagination.pageSize, searchedColumn, searchText)
   }, [])
 
   const handleSearch = (
@@ -197,8 +207,10 @@ export function usePembayaranSeragamController() {
     dataIndex: DataIndex,
   ) => {
     confirm()
-    setSearchText(selectedKeys[0])
+    const text = selectedKeys[0] || ''
+    setSearchText(text)
     setSearchedColumn(dataIndex)
+    initiateData(1, pagination.pageSize, dataIndex, text)
   }
 
   const handleReset = (
@@ -207,7 +219,17 @@ export function usePembayaranSeragamController() {
   ) => {
     clearFilters()
     setSearchText('')
+    setSearchedColumn('')
     confirm()
+    initiateData(1, pagination.pageSize, '', '')
+  }
+
+  const handleTableChange = (newPagination: any) => {
+    let newPage = newPagination.current;
+    if (newPagination.pageSize !== pagination.pageSize) {
+      newPage = 1;
+    }
+    initiateData(newPage, newPagination.pageSize, searchedColumn, searchText);
   }
 
   const getColumnSearchProps = (
@@ -270,17 +292,6 @@ export function usePembayaranSeragamController() {
     filterIcon: (filtered: boolean) => (
       <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />
     ),
-    onFilter: (value, record) => {
-      let data = record
-      for (const key of dataIndex) {
-        data = (data as any)[key]
-        if (data === undefined) return false
-      }
-      return data
-        .toString()
-        .toLowerCase()
-        .includes(value.toString().toLowerCase())
-    },
     onFilterDropdownOpenChange: visible => {
       if (visible) setTimeout(() => searchInput.current?.select(), 100)
     },
@@ -430,5 +441,7 @@ export function usePembayaranSeragamController() {
     showModal,
     initiateData,
     getHistoryPembayaranSeragamByPembayaranSeragamId,
+    pagination,
+    handleTableChange,
   }
 }

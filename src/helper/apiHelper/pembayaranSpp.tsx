@@ -1,9 +1,9 @@
 import axios from 'axios'
 
-export const getPembayaranSpp = () => {
+export const getPembayaranSpp = (params?: any) => {
   return new Promise<any>((resolve, reject) => {
     axios
-      .get('/api/pembayaranSpp/pembayaranSppData')
+      .get('/api/pembayaranSpp/pembayaranSppData', { params })
       .then(response => resolve(response))
       .catch(error => reject(error))
   })

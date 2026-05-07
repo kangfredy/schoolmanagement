@@ -72,12 +72,12 @@ export const dataHistoryPembayaranSppUpdate = (
   })
 }
 
-export const getSiswaBelumBayarService = () => {
+export const getSiswaBelumBayarService = (params?: any) => {
   const url = '/api/historyPembayaranSpp/getSiswaBelumBayar'
   // console.log("🚀 Fetching URL: " + url);
   return new Promise<any>((resolve, reject) => {
     axios
-      .get(url)
+      .get(url, { params })
       .then(response => {
         // console.log("🎉 Success Response : ", response)
         resolve(response)
