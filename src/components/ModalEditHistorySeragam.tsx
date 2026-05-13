@@ -6,6 +6,7 @@ import { ModalEditHistorySeragamProps } from '@/interface/ui/props/ModalEditHist
 import { dataHistoryPembayaranSeragamUpdate } from '@/helper/apiHelper/historyPembayaranSeragam'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 import { addDecimalPoints } from '@/helper/util/number'
+import { FaRegEdit } from 'react-icons/fa'
 
 export function ModalEditHistorySeragam({
   open,
@@ -131,7 +132,7 @@ export function ModalEditHistorySeragam({
       title="Edit Pembayaran Seragam"
       open={open}
       onOk={handleOk}
-      okButtonProps={{ className: 'bg-blue-500' }}
+      okButtonProps={{ className: 'bg-blue-500', icon: <FaRegEdit /> }}
       confirmLoading={confirmLoading}
       onCancel={handleCancel}>
       <Spin spinning={loading}>

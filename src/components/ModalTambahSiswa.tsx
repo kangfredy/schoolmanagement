@@ -23,7 +23,7 @@ import { ISelect } from '@/interface/ui/component/dropdown'
 import { IDataSiswaModal } from '@/interface/ui/state/dataSiswaModal'
 import { ModalTambahSiswaProps } from '@/interface/ui/props/ModalTambahSiswa'
 import { UserOutlined, IdcardOutlined } from '@ant-design/icons'
-import { FaSchool } from 'react-icons/fa'
+import { FaSchool, FaPlus, FaRegEdit } from 'react-icons/fa'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 
 export function ModalTambahSiswa({
@@ -493,6 +493,7 @@ export function ModalTambahSiswa({
               key="okButton"
               type="primary"
               onClick={handleOk}
+              icon={action === 'edit' ? <FaRegEdit /> : <FaPlus />}
               style={{ backgroundColor: '#1890ff', borderColor: '#1890ff' }}>
               OK
             </Button>

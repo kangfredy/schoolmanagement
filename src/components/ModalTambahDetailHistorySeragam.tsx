@@ -7,6 +7,7 @@ import { tambahDetailHistoryPembayaranSeragam } from '@/helper/apiHelper/detailH
 import { ISelect } from '@/interface/ui/component/dropdown'
 import { IDataDetailHistorySeragamModal } from '@/interface/ui/state/dataDetailHistorySeragamModal'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
+import { FaPlus } from 'react-icons/fa'
 
 export function ModalTambahDetailHistorySeragam({
   open,
@@ -110,7 +111,7 @@ export function ModalTambahDetailHistorySeragam({
       title="Tambah Seragam"
       open={open}
       onOk={handleOk}
-      okButtonProps={{ className: 'bg-blue-500' }}
+      okButtonProps={{ className: 'bg-blue-500', icon: <FaPlus /> }}
       confirmLoading={confirmLoading}
       onCancel={handleCancel}>
       <Spin spinning={loading}>

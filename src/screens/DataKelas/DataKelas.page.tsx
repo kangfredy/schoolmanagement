@@ -1,4 +1,6 @@
 import { Spin, Table, Button } from 'antd'
+import { FaPlus } from 'react-icons/fa'
+import { buildServerTablePagination } from '@/helper/util/serverTablePagination'
 import { ModalTambahKelas } from '@/components/ModalTambahKelas'
 import { useDataKelasController } from './DataKelas.controller'
 import { Ikelas } from '@/interface/ui/state/dataKelasTable'
@@ -16,6 +18,7 @@ export function DataKelasPage() {
     showModal,
     initiateData,
     pagination,
+    hasNextPage,
     handleTableChange,
   } = useDataKelasController()
 
@@ -31,6 +34,7 @@ export function DataKelasPage() {
               type="primary"
               size="middle"
               className="btnPrimary"
+              icon={<FaPlus />}
               onClick={() => showModal('tambah', {} as Ikelas)}>
               Tambah Kelas
             </Button>
@@ -49,11 +53,12 @@ export function DataKelasPage() {
           dataSource={dataKelas}
           scroll={{ x: 400 }}
           className="tableFullHeight"
-          pagination={{
-            current: pagination.current,
-            pageSize: pagination.pageSize,
-            total: pagination.total,
-          }}
+          pagination={buildServerTablePagination(
+            pagination.current,
+            pagination.pageSize,
+            hasNextPage,
+            dataKelas.length,
+          )}
           onChange={handleTableChange}
         />
       </div>

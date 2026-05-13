@@ -7,6 +7,8 @@ import { dataUserDeleteService, getUserService } from '@/helper/apiHelper/user'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 import { useUserSession } from '@/hook/useUserSession'
 import { IUser, IUserModal } from '@/interface/ui/state/dataUser'
+import { FaRegEdit } from 'react-icons/fa'
+import { MdDelete } from 'react-icons/md'
 
 type DataIndex = keyof IUser
 
@@ -209,6 +211,7 @@ export function useUserMenuController() {
             type="primary"
             size="middle"
             className="btnPrimary"
+            icon={<FaRegEdit />}
             onClick={() => showModal('edit', record)}>
             Edit User
           </Button>
@@ -220,7 +223,7 @@ export function useUserMenuController() {
               okText="Yes"
               okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
               cancelText="No">
-              <Button danger type="primary" size="middle" className="btnPrimary">
+              <Button danger type="primary" size="middle" className="btnPrimary" icon={<MdDelete />}>
                 Delete
               </Button>
             </Popconfirm>

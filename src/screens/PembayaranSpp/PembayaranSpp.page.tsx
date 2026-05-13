@@ -1,4 +1,5 @@
 import { Spin, Table } from 'antd'
+import { buildServerTablePagination } from '@/helper/util/serverTablePagination'
 import { ModalSpp } from '@/components/ModalSpp'
 import { usePembayaranSppController } from './PembayaranSpp.controller'
 
@@ -20,6 +21,7 @@ export function PembayaranSppPage() {
     initiateData,
     getHistoryPembayaranSppByPembayaranSppId,
     pagination,
+    hasNextPage,
     handleTableChange,
   } = usePembayaranSppController()
 
@@ -54,11 +56,12 @@ export function PembayaranSppPage() {
             dataSource={dataSpp}
             scroll={{ x: 400 }}
             className="tableFullHeight"
-            pagination={{
-              current: pagination.current,
-              pageSize: pagination.pageSize,
-              total: pagination.total,
-            }}
+            pagination={buildServerTablePagination(
+              pagination.current,
+              pagination.pageSize,
+              hasNextPage,
+              dataSpp.length,
+            )}
             onChange={handleTableChange}
           />
         </div>

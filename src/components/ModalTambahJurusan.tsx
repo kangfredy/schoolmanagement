@@ -4,6 +4,7 @@ import { dataJurusanUpdate, tambahJurusan } from '@/helper/apiHelper/jurusan'
 import { IDataJurusanModal } from '@/interface/ui/state/dataJurusanModal'
 import { ModalTambahJurusanProps } from '@/interface/ui/props/ModalTambahJurusan'
 import { MdWarehouse } from 'react-icons/md'
+import { FaPlus, FaRegEdit } from 'react-icons/fa'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 
 export function ModalTambahJurusan({
@@ -114,7 +115,15 @@ export function ModalTambahJurusan({
       }
       open={open}
       onOk={handleOk}
-      okButtonProps={{ className: 'bg-blue-500' }}
+      okButtonProps={{
+        className: 'bg-blue-500',
+        icon:
+          action === 'edit' ? (
+            <FaRegEdit />
+          ) : action === 'tambah' ? (
+            <FaPlus />
+          ) : undefined,
+      }}
       confirmLoading={confirmLoading}
       onCancel={handleCancel}>
       <Spin spinning={loading}>

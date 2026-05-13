@@ -5,6 +5,7 @@ import { IDataSeragamnModal } from '@/interface/ui/state/dataSeragamModal'
 import { ModalTambahSeragamBaruProps } from '@/interface/ui/props/ModalTambahSeragamBaru'
 import { dataSeragamUpdate } from '@/helper/apiHelper/seragam'
 import { RiShirtLine } from 'react-icons/ri'
+import { FaRegEdit } from 'react-icons/fa'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 import { addDecimalPoints } from '@/helper/util/number'
 
@@ -104,7 +105,7 @@ export function ModalTambahSeragamBaru({
       title="Edit Seragam"
       open={open}
       onOk={handleOk}
-      okButtonProps={{ className: 'bg-blue-500' }}
+      okButtonProps={{ className: 'bg-blue-500', icon: <FaRegEdit /> }}
       confirmLoading={confirmLoading}
       onCancel={handleCancel}>
       <Spin spinning={loading}>

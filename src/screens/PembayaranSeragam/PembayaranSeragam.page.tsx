@@ -1,4 +1,6 @@
 import { Spin, Table, Button } from 'antd'
+import { FaPlus } from 'react-icons/fa'
+import { buildServerTablePagination } from '@/helper/util/serverTablePagination'
 import { ModalSeragam } from '@/components/ModalSeragam'
 import { usePembayaranSeragamController } from './PembayaranSeragam.controller'
 import { IPembayaranSeragam } from '@/interface/ui/state/dataPembayaranSeragamTable'
@@ -25,6 +27,7 @@ export function PembayaranSeragamPage() {
     initiateData,
     getHistoryPembayaranSeragamByPembayaranSeragamId,
     pagination,
+    hasNextPage,
     handleTableChange,
   } = usePembayaranSeragamController()
 
@@ -40,6 +43,7 @@ export function PembayaranSeragamPage() {
               type="primary"
               size="middle"
               className="btnPrimary"
+              icon={<FaPlus />}
               onClick={() => showModal('tambah', {} as IPembayaranSeragam)}>
               Tambah Seragam
             </Button>
@@ -74,11 +78,12 @@ export function PembayaranSeragamPage() {
           dataSource={dataPembayaranSeragam}
           scroll={{ x: 400 }}
           className="tableFullHeight"
-          pagination={{
-            current: pagination.current,
-            pageSize: pagination.pageSize,
-            total: pagination.total,
-          }}
+          pagination={buildServerTablePagination(
+            pagination.current,
+            pagination.pageSize,
+            hasNextPage,
+            dataPembayaranSeragam.length,
+          )}
           onChange={handleTableChange}
         />
       </div>

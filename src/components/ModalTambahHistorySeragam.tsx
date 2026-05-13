@@ -6,6 +6,7 @@ import { tambahHistoryPembayaranSeragam } from '@/helper/apiHelper/historyPembay
 import { IDataHistorySeragamModal } from '@/interface/ui/state/dataHistorySeragamModal'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 import { addDecimalPoints } from '@/helper/util/number'
+import { FaMoneyCheckAlt } from 'react-icons/fa'
 
 export function ModalTambahHistorySeragam({
   open,
@@ -127,7 +128,7 @@ export function ModalTambahHistorySeragam({
       title="Tambah Pembayaran Seragam"
       open={open}
       onOk={handleOk}
-      okButtonProps={{ className: 'bg-blue-500' }}
+      okButtonProps={{ className: 'bg-blue-500', icon: <FaMoneyCheckAlt /> }}
       confirmLoading={confirmLoading}
       onCancel={handleCancel}>
       <Spin spinning={loading}>

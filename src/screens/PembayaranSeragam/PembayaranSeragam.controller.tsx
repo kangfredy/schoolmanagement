@@ -48,7 +48,8 @@ export function usePembayaranSeragamController() {
     IHistorySeragam[]
   >([])
   const { userId, userRole } = useUserSession()
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 })
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 })
+  const [hasNextPage, setHasNextPage] = useState(false)
 
   const showModal = (action: string, data: IPembayaranSeragam) => {
     if (action === 'detail') {
@@ -158,9 +159,8 @@ export function usePembayaranSeragamController() {
         })
       })
       setDataPembayaranSeragam(arrayTemp1)
-      const hasNextPage = response1.data.hasNextPage
-      const simulatedTotal = hasNextPage ? page * pageSize + 1 : (page - 1) * pageSize + arrayTemp1.length
-      setPagination(prev => ({ ...prev, total: simulatedTotal, current: page, pageSize }))
+      setHasNextPage(!!response1.data.hasNextPage)
+      setPagination({ current: page, pageSize })
 
       const response2 = await getDataSeragam()
       const arrayTemp2: ISeragam[] = []
@@ -442,6 +442,7 @@ export function usePembayaranSeragamController() {
     initiateData,
     getHistoryPembayaranSeragamByPembayaranSeragamId,
     pagination,
+    hasNextPage,
     handleTableChange,
   }
 }

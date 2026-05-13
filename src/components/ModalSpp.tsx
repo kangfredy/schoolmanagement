@@ -15,6 +15,7 @@ import {
 import type { ColumnType, ColumnsType } from 'antd/es/table'
 import type { FilterConfirmProps } from 'antd/es/table/interface'
 import { SearchOutlined } from '@ant-design/icons'
+import { FaMoneyCheckAlt, FaPrint, FaUndo } from 'react-icons/fa'
 import { useRef } from 'react'
   // import Highlighter from 'react-highlight-words'
 import {
@@ -643,7 +644,7 @@ export function ModalSpp({
               okText="Yes"
               okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
               cancelText="No">
-              <Button type="primary" size="middle" className="bg-blue-500">
+              <Button type="primary" size="middle" className="bg-blue-500" icon={<FaMoneyCheckAlt />}>
                 BAYAR
               </Button>
             </Popconfirm>
@@ -660,6 +661,7 @@ export function ModalSpp({
               <Button
                 type="primary"
                 size="middle"
+                icon={<FaUndo />}
                 style={{
                   backgroundColor: '#DF8634',
                   borderColor: '#DF8634',
@@ -748,6 +750,7 @@ export function ModalSpp({
           type="primary"
           size="large"
           className="bg-red-500"
+          icon={<FaPrint />}
           onClick={handleGeneratePdf}>
           CETAK
         </Button>

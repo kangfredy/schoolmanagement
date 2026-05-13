@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { Select } from 'antd'
 import { dataKelasUpdate, tambahKelas } from '@/helper/apiHelper/kelas'
 import { SiGoogleclassroom } from 'react-icons/si'
+import { FaPlus, FaRegEdit } from 'react-icons/fa'
 import { getJurusan } from '@/helper/apiHelper/jurusan'
 import { ISelect } from '@/interface/ui/component/dropdown'
 import { IDataKelasModal } from '@/interface/ui/state/dataKelasModal'
@@ -164,7 +165,15 @@ export function ModalTambahKelas({
       }
       open={open}
       onOk={handleOk}
-      okButtonProps={{ className: 'bg-blue-500' }}
+      okButtonProps={{
+        className: 'bg-blue-500',
+        icon:
+          action === 'edit' ? (
+            <FaRegEdit />
+          ) : action === 'tambah' ? (
+            <FaPlus />
+          ) : undefined,
+      }}
       confirmLoading={confirmLoading}
       onCancel={handleCancel}>
       <Spin spinning={loading}>

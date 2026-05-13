@@ -20,6 +20,8 @@ import { IDetailHistorySeragam } from '@/interface/ui/state/dataDetailHistorySer
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 import { convertDateTime } from '@/helper/util/time'
 import { convertMoney } from '@/helper/util/money'
+import { FaPlus } from 'react-icons/fa'
+import { MdDelete } from 'react-icons/md'
 import { ModalTambahDetailHistorySeragam } from '../components/ModalTambahDetailHistorySeragam'
 
 type DataIndex = keyof IDetailHistorySeragam
@@ -245,7 +247,7 @@ export function ModalDetailHistoryPembayaranSeragam({
             okText="Yes"
             okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
             cancelText="No">
-            <Button danger type="primary" size="middle" className="bg-blue-500">
+            <Button danger type="primary" size="middle" className="bg-blue-500" icon={<MdDelete />}>
               Delete
             </Button>
           </Popconfirm>
@@ -356,6 +358,7 @@ export function ModalDetailHistoryPembayaranSeragam({
             type="primary"
             size="large"
             className="bg-blue-500 ml-2"
+            icon={<FaPlus />}
             onClick={() => handleTambahDetailHistoryPembayaranSeragam()}>
             TAMBAH SERAGAM
           </Button>

@@ -7,6 +7,7 @@ import {
   tambahUserService,
 } from '@/helper/apiHelper/user'
 import { BsKey, BsPeople } from 'react-icons/bs'
+import { FaPlus, FaRegEdit } from 'react-icons/fa'
 
 export function ModalTambahUser({
   action,
@@ -107,7 +108,15 @@ export function ModalTambahUser({
       }
       open={open}
       onOk={handleOk}
-      okButtonProps={{ className: 'bg-blue-500' }}
+      okButtonProps={{
+        className: 'bg-blue-500',
+        icon:
+          action === 'edit' ? (
+            <FaRegEdit />
+          ) : action === 'tambah' ? (
+            <FaPlus />
+          ) : undefined,
+      }}
       confirmLoading={confirmLoading}
       onCancel={handleCancel}>
       <Spin spinning={loading}>

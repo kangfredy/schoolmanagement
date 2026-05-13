@@ -1,4 +1,6 @@
 import { Spin, Table, Button } from 'antd'
+import { FaPlus } from 'react-icons/fa'
+import { buildServerTablePagination } from '@/helper/util/serverTablePagination'
 import { ModalTambahJurusan } from '@/components/ModalTambahJurusan'
 import { useDataJurusanController } from './DataJurusan.controller'
 import { IJurusan } from '@/interface/ui/state/dataJurusanModal'
@@ -16,6 +18,7 @@ export function DataJurusanPage() {
     showModal,
     initiateData,
     pagination,
+    hasNextPage,
     handleTableChange,
   } = useDataJurusanController()
 
@@ -31,6 +34,7 @@ export function DataJurusanPage() {
               type="primary"
               size="middle"
               className="btnPrimary"
+              icon={<FaPlus />}
               onClick={() => showModal('tambah', {} as IJurusan)}>
               Tambah Jurusan
             </Button>
@@ -49,11 +53,12 @@ export function DataJurusanPage() {
           dataSource={dataJurusan}
           scroll={{ x: 400 }}
           className="tableFullHeight"
-          pagination={{
-            current: pagination.current,
-            pageSize: pagination.pageSize,
-            total: pagination.total,
-          }}
+          pagination={buildServerTablePagination(
+            pagination.current,
+            pagination.pageSize,
+            hasNextPage,
+            dataJurusan.length,
+          )}
           onChange={handleTableChange}
         />
       </div>

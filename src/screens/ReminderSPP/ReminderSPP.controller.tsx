@@ -19,7 +19,8 @@ export function useReminderSPPController() {
   const [dataUser, setDataUser] = useState<IReminderSPP[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const { userId, userRole } = useUserSession()
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 })
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 })
+  const [hasNextPage, setHasNextPage] = useState(false)
 
   const initiateData = async (page = pagination.current, pageSize = pagination.pageSize, searchCol = searchedColumn, searchTxt = searchText) => {
     try {
@@ -32,9 +33,8 @@ export function useReminderSPPController() {
       }
       const response = await getSiswaBelumBayarService(params)
       setDataUser(response.data.getHistoryPembayaranSpp)
-      const hasNextPage = response.data.hasNextPage
-      const simulatedTotal = hasNextPage ? page * pageSize + 1 : (page - 1) * pageSize + response.data.getHistoryPembayaranSpp.length
-      setPagination(prev => ({ ...prev, total: simulatedTotal, current: page, pageSize }))
+      setHasNextPage(!!response.data.hasNextPage)
+      setPagination({ current: page, pageSize })
     } catch {
       // ignore
     } finally {
@@ -326,6 +326,7 @@ export function useReminderSPPController() {
     dataUser,
     handleGeneratePdf,
     pagination,
+    hasNextPage,
     handleTableChange,
   }
 }

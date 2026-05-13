@@ -16,6 +16,7 @@ import { convertMoney } from '@/helper/util/money'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 import { useUserSession } from '@/hook/useUserSession'
 import { convertDateTime } from '@/helper/util/time'
+import { FaMoneyCheckAlt, FaCalculator } from 'react-icons/fa'
 
 type DataIndex = keyof ISpp
 
@@ -34,7 +35,8 @@ export function usePembayaranSppController() {
   )
   const [dataAllHistorySpp, setDataAllHistorySpp] = useState<IHistorySpp[]>([])
   const { userId, userRole } = useUserSession()
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 })
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 })
+  const [hasNextPage, setHasNextPage] = useState(false)
 
   const reCalculate = async (data: ISpp) => {
     try {
@@ -118,9 +120,8 @@ export function usePembayaranSppController() {
         })
       })
       setDataSpp(arrayTemp1)
-      const hasNextPage = response1.data.hasNextPage
-      const simulatedTotal = hasNextPage ? page * pageSize + 1 : (page - 1) * pageSize + arrayTemp1.length
-      setPagination(prev => ({ ...prev, total: simulatedTotal, current: page, pageSize }))
+      setHasNextPage(!!response1.data.hasNextPage)
+      setPagination({ current: page, pageSize })
 
       const response2 = await getHistoryPembayaranSpp()
       const arrayTemp2: IHistorySpp[] = []
@@ -354,6 +355,7 @@ export function usePembayaranSppController() {
             type="primary"
             size="middle"
             className="btnPrimary"
+            icon={<FaMoneyCheckAlt />}
             onClick={() => showModal(record)}>
             Pembayaran
           </Button>
@@ -361,6 +363,7 @@ export function usePembayaranSppController() {
             type="primary"
             size="middle"
             className="btnRecalculate"
+            icon={<FaCalculator />}
             onClick={() => reCalculate(record)}>
             Kalkulasi Ulang
           </Button>
@@ -391,6 +394,7 @@ export function usePembayaranSppController() {
     initiateData,
     getHistoryPembayaranSppByPembayaranSppId,
     pagination,
+    hasNextPage,
     handleTableChange,
   }
 }

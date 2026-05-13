@@ -1,9 +1,18 @@
 import { Spin, Table, Button } from 'antd'
+import { FaPrint } from 'react-icons/fa'
+import { buildServerTablePagination } from '@/helper/util/serverTablePagination'
 import { useReminderSPPController } from './ReminderSPP.controller'
 
 export function ReminderSPPPage() {
-  const { loading, columns, dataUser, handleGeneratePdf, pagination, handleTableChange } =
-    useReminderSPPController()
+  const {
+    loading,
+    columns,
+    dataUser,
+    handleGeneratePdf,
+    pagination,
+    hasNextPage,
+    handleTableChange,
+  } = useReminderSPPController()
 
   return (
     <Spin tip="Loading Data" spinning={loading}>
@@ -19,6 +28,7 @@ export function ReminderSPPPage() {
               type="primary"
               size="middle"
               className="btnPrint"
+              icon={<FaPrint />}
               onClick={() => handleGeneratePdf()}>
               CETAK
             </Button>
@@ -29,11 +39,12 @@ export function ReminderSPPPage() {
             dataSource={dataUser}
             scroll={{ x: 400 }}
             className="tableFullHeight"
-            pagination={{
-              current: pagination.current,
-              pageSize: pagination.pageSize,
-              total: pagination.total,
-            }}
+            pagination={buildServerTablePagination(
+              pagination.current,
+              pagination.pageSize,
+              hasNextPage,
+              dataUser.length,
+            )}
             onChange={handleTableChange}
           />
       </div>

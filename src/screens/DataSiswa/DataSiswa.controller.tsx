@@ -15,6 +15,9 @@ import { IHistorySeragam } from '@/interface/ui/state/dataHistorySeragamTable'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 import { useUserSession } from '@/hook/useUserSession'
 import { convertDateTime } from '@/helper/util/time'
+import { FaRegEdit } from 'react-icons/fa'
+import { MdDelete } from 'react-icons/md'
+import { FaMagnifyingGlassArrowRight } from 'react-icons/fa6'
 
 type DataIndex = keyof Isiswa
 
@@ -41,7 +44,8 @@ export function useDataSiswaController() {
     IHistorySeragam[]
   >([])
   const { userId, userRole } = useUserSession()
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 })
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 })
+  const [hasNextPage, setHasNextPage] = useState(false)
 
   const getHistoryPembayaranSppBySiswaId = async (siswaId: number) => {
     try {
@@ -148,9 +152,8 @@ export function useDataSiswaController() {
         arrayTemp.push(object1)
       })
       setDataSiswa(arrayTemp)
-      const hasNextPage = response.data.hasNextPage
-      const simulatedTotal = hasNextPage ? page * pageSize + 1 : (page - 1) * pageSize + arrayTemp.length
-      setPagination(prev => ({ ...prev, total: simulatedTotal, current: page, pageSize }))
+      setHasNextPage(!!response.data.hasNextPage)
+      setPagination({ current: page, pageSize })
     } catch {
       // ignore
     } finally {
@@ -384,6 +387,7 @@ export function useDataSiswaController() {
           <Button
             type="default"
             size="middle"
+            icon={<FaMagnifyingGlassArrowRight />}
             onClick={() => showModal('detail', record)}
             className="btnDetail">
             Detail
@@ -392,6 +396,7 @@ export function useDataSiswaController() {
             type="primary"
             size="middle"
             className="btnPrimary"
+            icon={<FaRegEdit />}
             onClick={() => showModal('edit', record)}>
             Edit Siswa
           </Button>
@@ -403,7 +408,7 @@ export function useDataSiswaController() {
               okText="Yes"
               okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
               cancelText="No">
-              <Button danger type="primary" size="middle" className="btnPrimary">
+              <Button danger type="primary" size="middle" className="btnPrimary" icon={<MdDelete />}>
                 Delete
               </Button>
             </Popconfirm>
@@ -439,6 +444,7 @@ export function useDataSiswaController() {
     setDataHistorySeragam,
     getHistoryPembayaranSppBySiswaId,
     pagination,
+    hasNextPage,
     handleTableChange,
   }
 }

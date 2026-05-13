@@ -13,6 +13,8 @@ import {
 import type { ColumnType, ColumnsType } from 'antd/es/table'
 import type { FilterConfirmProps } from 'antd/es/table/interface'
 import { SearchOutlined } from '@ant-design/icons'
+import { FaMoneyCheckAlt, FaPlus, FaPrint, FaRegEdit } from 'react-icons/fa'
+import { MdDelete } from 'react-icons/md'
 import { useState, useEffect, useRef } from 'react'
 import { convertDate } from '@/helper/util/time'
 import { convertMoney } from '@/helper/util/money'
@@ -704,6 +706,7 @@ export function ModalSeragam({
             type="primary"
             size="middle"
             className="bg-blue-500"
+            icon={<FaRegEdit />}
             onClick={() => showModalTambahSeragamBaru(record)}>
             Edit
           </Button>
@@ -719,7 +722,8 @@ export function ModalSeragam({
                 danger
                 type="primary"
                 size="middle"
-                className="bg-blue-500">
+                className="bg-blue-500"
+                icon={<MdDelete />}>
                 Delete
               </Button>
             </Popconfirm>
@@ -859,6 +863,7 @@ export function ModalSeragam({
                 type="primary"
                 size="middle"
                 className="bg-blue-500"
+                icon={<FaRegEdit />}
                 onClick={e => handleEditHistoryPembayaranSeragam(record)}>
                 EDIT
               </Button>
@@ -874,7 +879,8 @@ export function ModalSeragam({
                   danger
                   type="primary"
                   size="middle"
-                  className="bg-blue-500">
+                  className="bg-blue-500"
+                  icon={<MdDelete />}>
                   DELETE
                 </Button>
               </Popconfirm>
@@ -945,6 +951,7 @@ export function ModalSeragam({
           type="primary"
           size="large"
           className="bg-blue-500 ml-2"
+          icon={<FaMoneyCheckAlt />}
           onClick={() => showModalTambahHistoryPembayaranSeragam()}>
           TAMBAH PEMBAYARAN
         </Button>
@@ -952,6 +959,7 @@ export function ModalSeragam({
           type="primary"
           size="large"
           className="bg-red-500 ml-2"
+          icon={<FaPrint />}
           onClick={handleGeneratePdf}>
           CETAK
         </Button>
@@ -1118,6 +1126,7 @@ export function ModalSeragam({
           type="primary"
           size="middle"
           className="bg-blue-500 w-60 mb-4 mt-2"
+          icon={<FaPlus />}
           onClick={handleTambahSeragam}>
           Tambah
         </Button>
@@ -1150,7 +1159,10 @@ export function ModalSeragam({
       }
       open={open}
       onOk={handleOk}
-      okButtonProps={{ className: 'bg-blue-500' }}
+      okButtonProps={{
+        className: 'bg-blue-500',
+        icon: action === 'detail' ? undefined : <FaPlus />,
+      }}
       confirmLoading={confirmLoading}
       width={action === 'detail' ? '80%' : '60%'}
       footer={action === 'detail' ? null : undefined}

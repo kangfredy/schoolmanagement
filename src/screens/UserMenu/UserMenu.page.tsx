@@ -1,4 +1,5 @@
 import { Spin, Table, Button } from 'antd'
+import { FaPlus } from 'react-icons/fa'
 import { ModalTambahUser } from '@/components/ModalTambahUser'
 import { useUserMenuController } from './UserMenu.controller'
 import { IUser } from '@/interface/ui/state/dataUser'
@@ -29,6 +30,7 @@ export function UserMenuPage() {
               type="primary"
               size="middle"
               className="btnPrimary"
+              icon={<FaPlus />}
               onClick={() => showModal('tambah', {} as IUser)}>
               Tambah User
             </Button>

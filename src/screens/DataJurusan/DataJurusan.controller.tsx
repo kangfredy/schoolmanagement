@@ -11,6 +11,8 @@ import { IJurusan } from '@/interface/ui/state/dataJurusanModal'
 import { getUserInfoWithNullCheck } from '@/helper/util/userInfo'
 import { useUserSession } from '@/hook/useUserSession'
 import { convertDateTime } from '@/helper/util/time'
+import { FaRegEdit } from 'react-icons/fa'
+import { MdDelete } from 'react-icons/md'
 
 type DataIndex = keyof IJurusan
 
@@ -26,7 +28,8 @@ export function useDataJurusanController() {
     {} as IDataJurusanModal,
   )
   const { userId, userRole } = useUserSession()
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 })
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 })
+  const [hasNextPage, setHasNextPage] = useState(false)
 
   const showModal = (action: string, data: IJurusan) => {
     const dataInput = {
@@ -50,9 +53,8 @@ export function useDataJurusanController() {
       }
       const response = await getJurusan(params)
       setDataJurusan(response.data.getJurusan)
-      const hasNextPage = response.data.hasNextPage
-      const simulatedTotal = hasNextPage ? page * pageSize + 1 : (page - 1) * pageSize + arrayTemp.length
-      setPagination(prev => ({ ...prev, total: simulatedTotal, current: page, pageSize }))
+      setHasNextPage(!!response.data.hasNextPage)
+      setPagination({ current: page, pageSize })
     } catch {
       // ignore
     } finally {
@@ -240,6 +242,7 @@ export function useDataJurusanController() {
             type="primary"
             size="middle"
             className="btnPrimary"
+            icon={<FaRegEdit />}
             onClick={() => showModal('edit', record)}>
             Edit Jurusan
           </Button>
@@ -251,7 +254,7 @@ export function useDataJurusanController() {
               okText="Yes"
               okButtonProps={{ className: 'bg-blue-500', size: 'small' }}
               cancelText="No">
-              <Button danger type="primary" size="middle" className="btnPrimary">
+              <Button danger type="primary" size="middle" className="btnPrimary" icon={<MdDelete />}>
                 Delete
               </Button>
             </Popconfirm>
@@ -278,6 +281,7 @@ export function useDataJurusanController() {
     showModal,
     initiateData,
     pagination,
+    hasNextPage,
     handleTableChange,
   }
 }

@@ -2,6 +2,7 @@ import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import { useState } from 'react'
 import { message, Button } from 'antd'
+import { IoMdLogIn } from 'react-icons/io'
 import axios from 'axios'
 import { useUserStore } from '@/store/userStore'
 
@@ -94,6 +95,7 @@ export default function Login() {
               className="mt-5 w-[80%] lg:h-[10%] md:h-[15%] xs:h-[50px] sm:h-[50px] rounded-xl"
               style={{ backgroundColor: '#325D55', color: 'white' }}
               loading={loading}
+              icon={<IoMdLogIn size={18} />}
               onClick={handleLogin}>
               Login
             </Button>

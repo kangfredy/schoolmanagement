@@ -1,5 +1,7 @@
 import { Spin, Table } from 'antd'
 import { Button } from 'antd'
+import { FaPlus } from 'react-icons/fa'
+import { buildServerTablePagination } from '@/helper/util/serverTablePagination'
 import { ModalDetailSiswa } from '@/components/ModalDetailSiswa'
 import { ModalTambahSiswa } from '@/components/ModalTambahSiswa'
 import { useDataSiswaController } from './DataSiswa.controller'
@@ -27,6 +29,7 @@ export function DataSiswaPage() {
     setDataHistorySeragam,
     getHistoryPembayaranSppBySiswaId,
     pagination,
+    hasNextPage,
     handleTableChange,
   } = useDataSiswaController()
 
@@ -52,6 +55,7 @@ export function DataSiswaPage() {
               type="primary"
               size="middle"
               className="btnPrimary"
+              icon={<FaPlus />}
               onClick={() => showModal('tambah', {} as Isiswa)}>
               Tambah Data Siswa
             </Button>
@@ -71,11 +75,12 @@ export function DataSiswaPage() {
           dataSource={dataSiswa}
           scroll={{ x: 400 }}
           className="tableFullHeight"
-          pagination={{
-            current: pagination.current,
-            pageSize: pagination.pageSize,
-            total: pagination.total,
-          }}
+          pagination={buildServerTablePagination(
+            pagination.current,
+            pagination.pageSize,
+            hasNextPage,
+            dataSiswa.length,
+          )}
           onChange={handleTableChange}
         />
       </div>
